@@ -1148,6 +1148,17 @@ a{color:inherit;}
     grid-template-columns:45% 55%;
     min-height:245px;
   }
+  .card-body{
+    min-width:0;
+  }
+  .card-body:has(.extras-box){
+    display:grid;
+    grid-template-columns:1fr;
+    align-content:start;
+  }
+  .card-body:has(.extras-box) .card-footer{
+    margin-top:12px;
+  }
   .card > .photo{
     height:100%;
     min-height:245px;
@@ -1163,7 +1174,10 @@ a{color:inherit;}
     margin-top:auto;
   }
   .extras-box{
-    display:none;
+    display:block;
+    grid-column:1 / -1;
+    margin-top:10px;
+    background:rgba(247,241,228,.92);
   }
 }
 
@@ -1228,6 +1242,181 @@ a{color:inherit;}
   .admin-view .admin-body{
     padding-bottom:calc(70px + env(safe-area-inset-bottom));
   }
+}
+
+
+/* ============================================================
+   CONTABILIDAD — mensual + resumen anual
+   ============================================================ */
+.accounting-filter-card{padding-bottom:4px;}
+.accounting-filters{align-items:end;}
+.monthly-kpis{margin-bottom:20px;}
+.annual-summary{display:grid;gap:14px;margin-bottom:24px;}
+.chart-card{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+}
+.chart-card h4{
+  margin:0 0 4px;
+  font-family:'Anton',sans-serif;
+  font-size:15px;
+  font-weight:400;
+  text-transform:uppercase;
+  color:var(--cream);
+}
+.chart-subtitle{
+  margin:0 0 16px;
+  font-size:11.5px;
+  color:rgba(247,241,228,.45);
+}
+.month-bars{
+  height:210px;
+  display:grid;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  gap:6px;
+  align-items:end;
+  border-bottom:1px solid rgba(247,241,228,.15);
+  padding:8px 2px 0;
+}
+.month-bar-col{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+}
+.month-bar-value{
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px;
+  color:rgba(247,241,228,.48);
+  white-space:nowrap;
+  transform:rotate(-55deg);
+  transform-origin:center;
+  margin-bottom:12px;
+}
+.month-bar{
+  width:100%;
+  max-width:30px;
+  min-height:2px;
+  border-radius:6px 6px 0 0;
+  background:var(--mustard);
+  opacity:.88;
+}
+.month-bar.profit{
+  background:var(--pickle);
+}
+.month-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px;
+  color:rgba(247,241,228,.48);
+  text-transform:uppercase;
+  padding-bottom:5px;
+}
+.annual-totals{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
+.annual-total{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px;
+  background:rgba(247,241,228,.03);
+}
+.annual-total span{display:block;font-size:10px;color:rgba(247,241,228,.45);text-transform:uppercase;}
+.annual-total strong{display:block;margin-top:3px;font-family:'JetBrains Mono',monospace;color:var(--cream);}
+@media(min-width:800px){
+  .annual-summary{grid-template-columns:1fr 1fr;}
+  .annual-summary .annual-overview{grid-column:1/-1;}
+}
+@media(max-width:560px){
+  .month-bars{gap:3px;height:185px;}
+  .month-bar-value{display:none;}
+  .month-label{font-size:7px;}
+  .accounting-filters{flex-direction:column;gap:0;}
+  .annual-totals{grid-template-columns:1fr 1fr;}
+}
+
+
+/* ============================================================
+   CONTABILIDAD COMPLETA — gastos, gráficos mensuales, Excel
+   ============================================================ */
+.monthly-charts{
+  display:grid;
+  gap:14px;
+  margin-bottom:24px;
+}
+.daily-bars{
+  height:220px;
+  display:flex;
+  align-items:flex-end;
+  gap:3px;
+  padding:10px 2px 0;
+  border-bottom:1px solid rgba(247,241,228,.15);
+  overflow:hidden;
+}
+.daily-bar-col{
+  flex:1 1 0;
+  height:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  gap:4px;
+}
+.daily-bar{
+  width:100%;
+  max-width:20px;
+  min-height:2px;
+  border-radius:5px 5px 0 0;
+  background:var(--mustard);
+}
+.daily-bar.expense{background:var(--ember);}
+.daily-bar.net{background:var(--pickle);}
+.daily-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:7px;
+  color:rgba(247,241,228,.42);
+  padding-bottom:5px;
+}
+.expense-form input[type="date"]{
+  color-scheme:dark;
+}
+.expense-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:start;
+}
+.expense-meta{
+  margin-top:4px;
+  font-size:11px;
+  color:rgba(247,241,228,.46);
+}
+.expense-amount{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  color:#e78673;
+  white-space:nowrap;
+}
+.export-excel-btn{
+  min-width:105px;
+}
+.kpi.net-positive .kpi-value{color:#b8c98a;}
+.kpi.net-negative .kpi-value{color:#e78673;}
+@media(min-width:800px){
+  .monthly-charts{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(max-width:600px){
+  .expense-row{flex-direction:column;gap:0;}
+  .daily-bars{height:175px;gap:2px;}
+  .daily-label{font-size:6px;}
 }
 
 </style>
@@ -1398,6 +1587,95 @@ a{color:inherit;}
 
       <div class="admin-section-title"><h3>Hoy</h3></div>
       <div class="kpi-grid" id="kpi-hoy"></div>
+
+      <div class="admin-section-title">
+        <h3>Resumen mensual</h3>
+      </div>
+      <div class="admin-card accounting-filter-card">
+        <div class="a-row accounting-filters">
+          <div class="a-field">
+            <label for="conta-mes">Mes</label>
+            <select id="conta-mes" onchange="cambiarMesContabilidad()"></select>
+          </div>
+          <div class="a-field">
+            <label for="conta-anio">Año</label>
+            <select id="conta-anio" onchange="cambiarAnioContabilidad()"></select>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-grid monthly-kpis" id="kpi-mes"></div>
+
+      <div class="admin-section-title">
+        <h3>Gráficos del mes</h3>
+        <button class="a-btn save export-excel-btn" style="flex:none;padding:8px 14px;" onclick="descargarExcelContabilidad()">⬇ Excel</button>
+      </div>
+      <div class="monthly-charts" id="graficos-mes"></div>
+
+      <div class="admin-section-title"><h3>Resumen anual</h3></div>
+      <div class="annual-summary" id="resumen-anual"></div>
+
+      <div class="admin-section-title"><h3>Registrar gasto</h3></div>
+      <div class="admin-card expense-form">
+        <div class="a-row expense-row">
+          <div class="a-field">
+            <label for="gasto-fecha">Fecha</label>
+            <input type="date" id="gasto-fecha">
+          </div>
+          <div class="a-field">
+            <label for="gasto-categoria">Categoría</label>
+            <select id="gasto-categoria">
+              <option value="Insumos">Insumos</option>
+              <option value="Electricidad">Electricidad</option>
+              <option value="Gas">Gas</option>
+              <option value="Agua">Agua</option>
+              <option value="Empaques">Empaques</option>
+              <option value="Publicidad">Publicidad</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+              <option value="Alquiler">Alquiler</option>
+              <option value="Salarios">Salarios</option>
+              <option value="Impuestos">Impuestos</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+        </div>
+        <div class="a-field">
+          <label for="gasto-descripcion">Descripción</label>
+          <input type="text" id="gasto-descripcion" placeholder="Ej: Recibo de luz de agosto">
+        </div>
+        <div class="a-row expense-row">
+          <div class="a-field">
+            <label for="gasto-monto">Monto (₡)</label>
+            <input type="number" min="0" step="1" id="gasto-monto" placeholder="0">
+          </div>
+          <div class="a-field">
+            <label for="gasto-proveedor">Proveedor (opcional)</label>
+            <input type="text" id="gasto-proveedor" placeholder="Ej: ICE, Auto Mercado...">
+          </div>
+        </div>
+        <div class="a-row expense-row">
+          <div class="a-field">
+            <label for="gasto-pago">Forma de pago</label>
+            <select id="gasto-pago">
+              <option value="Efectivo">Efectivo</option>
+              <option value="SINPE">SINPE</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="a-field">
+            <label for="gasto-nota">Nota (opcional)</label>
+            <input type="text" id="gasto-nota" placeholder="Detalle adicional">
+          </div>
+        </div>
+        <button class="a-btn add" onclick="registrarGasto()">Registrar gasto</button>
+      </div>
+
+      <div class="admin-section-title">
+        <h3>Gastos del mes</h3>
+      </div>
+      <div id="admin-gastos-lista"></div>
 
       <div class="admin-section-title"><h3>Registrar una venta</h3></div>
       <div class="admin-card">
@@ -1600,6 +1878,7 @@ function asegurarSupabase(){
 let PRODUCTOS = [];
 let PROMOS = [];
 let VENTAS = [];
+let GASTOS = [];
 let EXTRAS = [];
 let supabaseListo = false;
 
@@ -1632,10 +1911,11 @@ async function cargarDatosSupabase(modoAdmin = false){
 
   if(modoAdmin){
     consultas.push(supabaseClient.from("ventas").select("*").order("fecha", { ascending:false }));
+    consultas.push(supabaseClient.from("gastos").select("*").order("fecha", { ascending:false }));
   }
 
   const resultados = await Promise.all(consultas);
-  const [productosRes, extrasRes, promosRes, ventasRes] = resultados;
+  const [productosRes, extrasRes, promosRes, ventasRes, gastosRes] = resultados;
 
   for(const r of resultados){
     if(r.error) throw r.error;
@@ -1681,6 +1961,17 @@ async function cargarDatosSupabase(modoAdmin = false){
       total: Number(v.total) || 0,
       costoTotal: Number(v.costo_total) || 0,
       utilidad: Number(v.utilidad) || 0
+    }));
+
+    GASTOS = ((gastosRes && gastosRes.data) || []).map(g => ({
+      id: String(g.id),
+      fecha: g.fecha,
+      categoria: g.categoria || "Otros",
+      descripcion: g.descripcion || "",
+      monto: Number(g.monto) || 0,
+      proveedor: g.proveedor || "",
+      formaPago: g.forma_pago || "",
+      nota: g.nota || ""
     }));
   }
 
@@ -1741,6 +2032,27 @@ async function guardarVentaDB(v){
     costo_total: v.costoTotal,
     utilidad: v.utilidad
   });
+  if(error) throw error;
+}
+
+async function guardarGastoDB(g){
+  await asegurarSupabase();
+  const { error } = await supabaseClient.from("gastos").upsert({
+    id: g.id,
+    fecha: g.fecha,
+    categoria: g.categoria,
+    descripcion: g.descripcion,
+    monto: g.monto,
+    proveedor: g.proveedor || null,
+    forma_pago: g.formaPago || null,
+    nota: g.nota || null
+  });
+  if(error) throw error;
+}
+
+async function eliminarGastoDB(id){
+  await asegurarSupabase();
+  const { error } = await supabaseClient.from("gastos").delete().eq("id", id);
   if(error) throw error;
 }
 
@@ -2588,31 +2900,56 @@ function toggleExtraDisponible(id){
 async function guardarExtra(id){
   const e = EXTRAS.find(e => e.id === id);
   if(!e) return;
-  e.nombre = document.getElementById("e-nombre-" + id).value.trim();
+
+  const nombre = document.getElementById("e-nombre-" + id).value.trim();
+  if(!nombre){
+    alert("Poné un nombre al extra antes de guardarlo.");
+    document.getElementById("e-nombre-" + id).focus();
+    return;
+  }
+
+  e.nombre = nombre;
   e.precio = Number(document.getElementById("e-precio-" + id).value) || 0;
   e.costo = Number(document.getElementById("e-costo-" + id).value) || 0;
   e.disponible = document.getElementById("e-switch-" + id).classList.contains("on");
 
-  try{ await guardarExtraDB(e); }catch(error){ alert("No se pudo guardar el extra: " + error.message); return; }
+  try{
+    await guardarExtraDB(e);
+    // Recargar desde Supabase evita diferencias entre el panel y el menú público.
+    await cargarDatosSupabase(true);
+  }catch(error){
+    alert("No se pudo guardar el extra: " + error.message);
+    return;
+  }
+
   renderAdminExtras();
   renderMenu();
   actualizarBarraCarrito();
 }
 
-async function adminNuevoExtra(){
-  const nuevo = { id: idNuevo("extra"), nombre: "", precio: 0, costo: 0, disponible: true };
+function adminNuevoExtra(){
+  const nuevo = {
+    id: idNuevo("extra"),
+    nombre: "",
+    precio: 0,
+    costo: 0,
+    disponible: true,
+    _nuevo: true
+  };
   EXTRAS.push(nuevo);
-  try{ await guardarExtraDB(nuevo); }catch(error){ EXTRAS = EXTRAS.filter(x => x.id !== nuevo.id); alert("No se pudo crear el extra: " + error.message); return; }
   renderAdminExtras();
   const el = document.getElementById("admin-e-" + nuevo.id);
   if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+  setTimeout(() => document.getElementById("e-nombre-" + nuevo.id)?.focus(), 250);
 }
 
 async function eliminarExtra(id){
   const e = EXTRAS.find(e => e.id === id);
   if(!e) return;
   if(!confirm(`¿Eliminar el extra "${e.nombre || "sin nombre"}"?`)) return;
-  try{ await eliminarFila("extras", id); }catch(error){ alert("No se pudo eliminar el extra: " + error.message); return; }
+  if(!e._nuevo){
+    try{ await eliminarFila("extras", id); }catch(error){ alert("No se pudo eliminar el extra: " + error.message); return; }
+  }
   EXTRAS = EXTRAS.filter(e => e.id !== id);
   Object.keys(seleccionExtras).forEach(productoId => {
     seleccionExtras[productoId] = (seleccionExtras[productoId] || []).filter(extraId => extraId !== id);
@@ -2764,25 +3101,495 @@ function esHoy(fechaISO){
   return f.getFullYear()===h.getFullYear() && f.getMonth()===h.getMonth() && f.getDate()===h.getDate();
 }
 
+let contaMesSeleccionado = new Date().getMonth();
+let contaAnioSeleccionado = new Date().getFullYear();
+
 function renderContabilidad(){
+  prepararFiltrosContabilidad();
+  inicializarFechaGasto();
   renderKpis();
+  renderResumenMensual();
+  renderGraficosMensuales();
+  renderResumenAnual();
+  renderGastos();
   renderVentaLineas();
   renderTablaMargenes();
   renderListaVentas();
 }
 
+function prepararFiltrosContabilidad(){
+  const mesSelect = document.getElementById("conta-mes");
+  const anioSelect = document.getElementById("conta-anio");
+  if(!mesSelect || !anioSelect) return;
+
+  const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  mesSelect.innerHTML = meses.map((m,i) =>
+    `<option value="${i}" ${i===contaMesSeleccionado?"selected":""}>${m}</option>`
+  ).join("");
+
+  const ahora = new Date().getFullYear();
+  const aniosDatos = [
+    ...VENTAS.map(v => new Date(v.fecha).getFullYear()),
+    ...GASTOS.map(g => new Date(g.fecha).getFullYear())
+  ].filter(Number.isFinite);
+  const minAnio = Math.min(ahora, ...(aniosDatos.length ? aniosDatos : [ahora]));
+  const maxAnio = Math.max(ahora, ...(aniosDatos.length ? aniosDatos : [ahora]));
+  const anios = [];
+  for(let y=maxAnio; y>=minAnio; y--) anios.push(y);
+  if(!anios.includes(contaAnioSeleccionado)) contaAnioSeleccionado = anios[0] || ahora;
+
+  anioSelect.innerHTML = anios.map(y =>
+    `<option value="${y}" ${y===contaAnioSeleccionado?"selected":""}>${y}</option>`
+  ).join("");
+}
+
+function cambiarAnioContabilidad(){
+  const anioSelect = document.getElementById("conta-anio");
+  contaAnioSeleccionado = Number(anioSelect?.value) || new Date().getFullYear();
+  renderResumenMensual();
+  renderGraficosMensuales();
+  renderResumenAnual();
+  renderGastos();
+}
+
+function ventasDeMes(anio, mes){
+  return VENTAS.filter(v => {
+    const f = new Date(v.fecha);
+    return f.getFullYear() === anio && f.getMonth() === mes;
+  });
+}
+
+function gastosDeMes(anio, mes){
+  return GASTOS.filter(g => {
+    const f = new Date(g.fecha);
+    return f.getFullYear() === anio && f.getMonth() === mes;
+  });
+}
+
+function cambiarMesContabilidad(){
+  const mesSelect = document.getElementById("conta-mes");
+  contaMesSeleccionado = Number(mesSelect?.value) || 0;
+  renderResumenMensual();
+  renderGraficosMensuales();
+  renderGastos();
+}
+
+function inicializarFechaGasto(){
+  const input = document.getElementById("gasto-fecha");
+  if(input && !input.value){
+    const d = new Date();
+    input.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+}
+
+function resumenGastos(lista){
+  const gastos = lista.reduce((s,g) => s + (Number(g.monto)||0), 0);
+  return {gastos};
+}
+
+function resumenVentas(lista){
+  const ventas = lista.reduce((s,v) => s + (Number(v.total)||0), 0);
+  const utilidad = lista.reduce((s,v) => s + (Number(v.utilidad)||0), 0);
+  const costo = lista.reduce((s,v) => s + (Number(v.costoTotal)||0), 0);
+  const pedidos = lista.length;
+  const ticketPromedio = pedidos ? ventas / pedidos : 0;
+  const margen = ventas ? utilidad / ventas * 100 : 0;
+  return {ventas, utilidad, costo, pedidos, ticketPromedio, margen};
+}
+
+function renderResumenMensual(){
+  const mesSelect = document.getElementById("conta-mes");
+  const anioSelect = document.getElementById("conta-anio");
+  const cont = document.getElementById("kpi-mes");
+  if(!mesSelect || !anioSelect || !cont) return;
+
+  contaMesSeleccionado = Number(mesSelect.value);
+  contaAnioSeleccionado = Number(anioSelect.value);
+
+  const r = resumenVentas(ventasDeMes(contaAnioSeleccionado, contaMesSeleccionado));
+  const gastos = resumenGastos(gastosDeMes(contaAnioSeleccionado, contaMesSeleccionado)).gastos;
+  const neta = r.utilidad - gastos;
+
+  cont.innerHTML = `
+    <div class="kpi"><div class="kpi-label">Ventas del mes</div><div class="kpi-value">${money(r.ventas)}</div></div>
+    <div class="kpi accent"><div class="kpi-label">Utilidad bruta</div><div class="kpi-value">${money(r.utilidad)}</div></div>
+    <div class="kpi"><div class="kpi-label">Gastos operativos</div><div class="kpi-value">${money(gastos)}</div></div>
+    <div class="kpi ${neta >= 0 ? "net-positive" : "net-negative"}"><div class="kpi-label">Ganancia neta</div><div class="kpi-value">${money(neta)}</div></div>
+    <div class="kpi"><div class="kpi-label">Pedidos</div><div class="kpi-value">${r.pedidos}</div></div>
+    <div class="kpi"><div class="kpi-label">Ticket promedio</div><div class="kpi-value">${money(r.ticketPromedio)}</div></div>
+    <div class="kpi"><div class="kpi-label">Costo de producto</div><div class="kpi-value">${money(r.costo)}</div></div>
+    <div class="kpi"><div class="kpi-label">Margen bruto</div><div class="kpi-value">${r.margen.toFixed(1)}%</div></div>
+  `;
+}
+
+function renderGraficoMensual(datos, campo, claseBarra=""){
+  const max = Math.max(1, ...datos.map(d => Math.max(0,d[campo])));
+  return `<div class="month-bars">
+    ${datos.map(d => {
+      const valor = Math.max(0,d[campo]);
+      const alto = valor <= 0 ? 1 : Math.max(3, valor / max * 100);
+      return `<div class="month-bar-col" title="${d.nombre}: ${money(d[campo])}">
+        <div class="month-bar-value">${money(d[campo])}</div>
+        <div class="month-bar ${claseBarra}" style="height:${alto}%"></div>
+        <div class="month-label">${d.abrev}</div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+
+function datosDiariosMes(anio, mes){
+  const dias = new Date(anio, mes + 1, 0).getDate();
+  return Array.from({length:dias}, (_,i) => {
+    const dia = i + 1;
+    const ventasDia = VENTAS.filter(v => {
+      const f = new Date(v.fecha);
+      return f.getFullYear()===anio && f.getMonth()===mes && f.getDate()===dia;
+    });
+    const gastosDia = GASTOS.filter(g => {
+      const f = new Date(g.fecha);
+      return f.getFullYear()===anio && f.getMonth()===mes && f.getDate()===dia;
+    });
+    const rv = resumenVentas(ventasDia);
+    const gasto = resumenGastos(gastosDia).gastos;
+    return {
+      dia,
+      ventas: rv.ventas,
+      utilidad: rv.utilidad,
+      gastos: gasto,
+      neta: rv.utilidad - gasto
+    };
+  });
+}
+
+function renderGraficoDiario(datos, campo, clase=""){
+  const max = Math.max(1, ...datos.map(d => Math.max(0, d[campo])));
+  return `<div class="daily-bars">
+    ${datos.map(d => {
+      const val = Math.max(0, d[campo]);
+      const alto = val <= 0 ? 1 : Math.max(3, val / max * 100);
+      return `<div class="daily-bar-col" title="Día ${d.dia}: ${money(d[campo])}">
+        <div class="daily-bar ${clase}" style="height:${alto}%"></div>
+        <div class="daily-label">${d.dia}</div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function renderGraficosMensuales(){
+  const root = document.getElementById("graficos-mes");
+  if(!root) return;
+  const datos = datosDiariosMes(contaAnioSeleccionado, contaMesSeleccionado);
+  const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const titulo = `${meses[contaMesSeleccionado]} ${contaAnioSeleccionado}`;
+
+  root.innerHTML = `
+    <div class="chart-card">
+      <h4>Ventas diarias</h4>
+      <p class="chart-subtitle">${titulo} · facturación por día.</p>
+      ${renderGraficoDiario(datos, "ventas")}
+    </div>
+    <div class="chart-card">
+      <h4>Gastos diarios</h4>
+      <p class="chart-subtitle">${titulo} · gastos operativos registrados.</p>
+      ${renderGraficoDiario(datos, "gastos", "expense")}
+    </div>
+    <div class="chart-card">
+      <h4>Ganancia neta diaria</h4>
+      <p class="chart-subtitle">${titulo} · utilidad bruta menos gastos.</p>
+      ${renderGraficoDiario(datos, "neta", "net")}
+    </div>
+  `;
+}
+
+function renderResumenAnual(){
+  const root = document.getElementById("resumen-anual");
+  if(!root) return;
+
+  const nombres = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const abrev = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const datos = nombres.map((nombre, mes) => {
+    const r = resumenVentas(ventasDeMes(contaAnioSeleccionado, mes));
+    const gastos = resumenGastos(gastosDeMes(contaAnioSeleccionado, mes)).gastos;
+    return {nombre, abrev:abrev[mes], mes, ...r, gastos, neta:r.utilidad-gastos};
+  });
+
+  const anualVentas = resumenVentas(VENTAS.filter(v => new Date(v.fecha).getFullYear() === contaAnioSeleccionado));
+  const anualGastos = resumenGastos(GASTOS.filter(g => new Date(g.fecha).getFullYear() === contaAnioSeleccionado)).gastos;
+  const netaAnual = anualVentas.utilidad - anualGastos;
+  const mejorMes = datos.reduce((mejor,d) => d.neta > mejor.neta ? d : mejor, datos[0]);
+
+  root.innerHTML = `
+    <div class="chart-card annual-overview">
+      <h4>${contaAnioSeleccionado} · Resumen financiero</h4>
+      <p class="chart-subtitle">Ventas, costos de producto, gastos operativos y ganancia neta.</p>
+      <div class="annual-totals">
+        <div class="annual-total"><span>Ventas anuales</span><strong>${money(anualVentas.ventas)}</strong></div>
+        <div class="annual-total"><span>Utilidad bruta</span><strong>${money(anualVentas.utilidad)}</strong></div>
+        <div class="annual-total"><span>Gastos operativos</span><strong>${money(anualGastos)}</strong></div>
+        <div class="annual-total"><span>Ganancia neta</span><strong>${money(netaAnual)}</strong></div>
+        <div class="annual-total"><span>Pedidos</span><strong>${anualVentas.pedidos}</strong></div>
+        <div class="annual-total"><span>Mejor mes neto</span><strong>${mejorMes && mejorMes.neta > 0 ? escHtml(mejorMes.nombre) : "—"}</strong></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h4>Ventas por mes</h4>
+      <p class="chart-subtitle">Facturación mensual en colones.</p>
+      ${renderGraficoMensual(datos, "ventas")}
+    </div>
+
+    <div class="chart-card">
+      <h4>Ganancia neta por mes</h4>
+      <p class="chart-subtitle">Utilidad bruta menos gastos operativos.</p>
+      ${renderGraficoMensual(datos, "neta", "profit")}
+    </div>
+  `;
+}
+
 function renderKpis(){
   const ventasHoy = VENTAS.filter(v => esHoy(v.fecha));
+  const gastosHoyLista = GASTOS.filter(g => esHoy(g.fecha));
   const totalHoy = ventasHoy.reduce((s,v) => s + v.total, 0);
   const utilidadHoy = ventasHoy.reduce((s,v) => s + v.utilidad, 0);
-  const margenHoy = totalHoy > 0 ? (utilidadHoy/totalHoy*100) : 0;
+  const gastosHoy = gastosHoyLista.reduce((s,g) => s + g.monto, 0);
+  const netaHoy = utilidadHoy - gastosHoy;
 
   document.getElementById("kpi-hoy").innerHTML = `
     <div class="kpi"><div class="kpi-label">Ventas de hoy</div><div class="kpi-value">${money(totalHoy)}</div></div>
-    <div class="kpi accent"><div class="kpi-label">Utilidad de hoy</div><div class="kpi-value">${money(utilidadHoy)}</div></div>
-    <div class="kpi"><div class="kpi-label">Margen de hoy</div><div class="kpi-value">${margenHoy.toFixed(0)}%</div></div>
-    <div class="kpi"><div class="kpi-label">Pedidos hoy</div><div class="kpi-value">${ventasHoy.length}</div></div>
+    <div class="kpi accent"><div class="kpi-label">Utilidad bruta</div><div class="kpi-value">${money(utilidadHoy)}</div></div>
+    <div class="kpi"><div class="kpi-label">Gastos de hoy</div><div class="kpi-value">${money(gastosHoy)}</div></div>
+    <div class="kpi ${netaHoy >= 0 ? "net-positive" : "net-negative"}"><div class="kpi-label">Ganancia neta</div><div class="kpi-value">${money(netaHoy)}</div></div>
   `;
+}
+
+
+async function registrarGasto(){
+  const fecha = document.getElementById("gasto-fecha")?.value;
+  const categoria = document.getElementById("gasto-categoria")?.value || "Otros";
+  const descripcion = document.getElementById("gasto-descripcion")?.value.trim() || "";
+  const monto = Number(document.getElementById("gasto-monto")?.value) || 0;
+  const proveedor = document.getElementById("gasto-proveedor")?.value.trim() || "";
+  const formaPago = document.getElementById("gasto-pago")?.value || "";
+  const nota = document.getElementById("gasto-nota")?.value.trim() || "";
+
+  if(!fecha){
+    alert("Seleccioná la fecha del gasto.");
+    return;
+  }
+  if(!descripcion){
+    alert("Indicá una descripción para el gasto.");
+    document.getElementById("gasto-descripcion")?.focus();
+    return;
+  }
+  if(monto <= 0){
+    alert("El monto del gasto debe ser mayor que cero.");
+    document.getElementById("gasto-monto")?.focus();
+    return;
+  }
+
+  const gasto = {
+    id:idNuevo("gasto"),
+    fecha:new Date(fecha + "T12:00:00").toISOString(),
+    categoria,
+    descripcion,
+    monto,
+    proveedor,
+    formaPago,
+    nota
+  };
+
+  try{
+    await guardarGastoDB(gasto);
+  }catch(error){
+    alert("No se pudo registrar el gasto: " + (error.message || error));
+    return;
+  }
+
+  GASTOS.unshift(gasto);
+  document.getElementById("gasto-descripcion").value = "";
+  document.getElementById("gasto-monto").value = "";
+  document.getElementById("gasto-proveedor").value = "";
+  document.getElementById("gasto-nota").value = "";
+  contaMesSeleccionado = new Date(gasto.fecha).getMonth();
+  contaAnioSeleccionado = new Date(gasto.fecha).getFullYear();
+  renderContabilidad();
+}
+
+async function eliminarGasto(id){
+  const gasto = GASTOS.find(g => g.id === id);
+  if(!gasto) return;
+  if(!confirm(`¿Eliminar el gasto "${gasto.descripcion}"?`)) return;
+
+  try{
+    await eliminarGastoDB(id);
+  }catch(error){
+    alert("No se pudo eliminar el gasto: " + (error.message || error));
+    return;
+  }
+
+  GASTOS = GASTOS.filter(g => g.id !== id);
+  renderContabilidad();
+}
+
+function renderGastos(){
+  const cont = document.getElementById("admin-gastos-lista");
+  if(!cont) return;
+  const lista = gastosDeMes(contaAnioSeleccionado, contaMesSeleccionado)
+    .sort((a,b) => new Date(b.fecha)-new Date(a.fecha));
+
+  if(!lista.length){
+    cont.innerHTML = `<div class="a-empty">No hay gastos registrados para este mes.</div>`;
+    return;
+  }
+
+  cont.innerHTML = lista.map(g => {
+    const fecha = new Date(g.fecha).toLocaleDateString("es-CR", {day:"2-digit",month:"short",year:"numeric"});
+    return `<div class="admin-card expense-item">
+      <div>
+        <div class="admin-card-name">${escHtml(g.descripcion)}</div>
+        <div class="expense-meta">${escHtml(g.categoria)} · ${fecha}${g.proveedor ? " · " + escHtml(g.proveedor) : ""}${g.formaPago ? " · " + escHtml(g.formaPago) : ""}</div>
+        ${g.nota ? `<div class="expense-meta">${escHtml(g.nota)}</div>` : ""}
+      </div>
+      <div>
+        <div class="expense-amount">-${money(g.monto)}</div>
+        <button class="a-btn delete" style="margin-top:8px;padding:6px 9px;" onclick="eliminarGasto('${g.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+let promesaXLSX = null;
+function asegurarXLSX(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  if(promesaXLSX) return promesaXLSX;
+
+  promesaXLSX = new Promise((resolve,reject) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+    s.async = true;
+    s.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error("No se pudo inicializar Excel."));
+    s.onerror = () => reject(new Error("No se pudo descargar la librería de Excel."));
+    document.head.appendChild(s);
+  }).catch(err => {
+    promesaXLSX = null;
+    throw err;
+  });
+  return promesaXLSX;
+}
+
+function filasResumenMensualExcel(){
+  const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  return meses.map((mes,i) => {
+    const r = resumenVentas(ventasDeMes(contaAnioSeleccionado,i));
+    const gastos = resumenGastos(gastosDeMes(contaAnioSeleccionado,i)).gastos;
+    return {
+      Año:contaAnioSeleccionado,
+      Mes:mes,
+      Ventas:r.ventas,
+      "Costo producto":r.costo,
+      "Utilidad bruta":r.utilidad,
+      "Gastos operativos":gastos,
+      "Ganancia neta":r.utilidad-gastos,
+      Pedidos:r.pedidos,
+      "Ticket promedio":Math.round(r.ticketPromedio),
+      "Margen bruto %":Number(r.margen.toFixed(2))
+    };
+  });
+}
+
+async function descargarExcelContabilidad(){
+  try{
+    const XLSX = await asegurarXLSX();
+    const wb = XLSX.utils.book_new();
+
+    const ventasRows = VENTAS.map(v => ({
+      ID:v.id,
+      Fecha:new Date(v.fecha).toLocaleString("es-CR"),
+      Total:v.total,
+      "Costo producto":v.costoTotal,
+      "Utilidad bruta":v.utilidad,
+      Items:v.items.map(it => `${it.nombre} x${it.cantidad}`).join(" | ")
+    }));
+
+    const detalleRows = VENTAS.flatMap(v =>
+      v.items.map(it => ({
+        "ID venta":v.id,
+        Fecha:new Date(v.fecha).toLocaleString("es-CR"),
+        Producto:it.nombre,
+        Cantidad:it.cantidad,
+        "Precio unitario":it.precioUnit,
+        "Costo unitario":it.costoUnit,
+        Subtotal:(it.precioUnit||0)*(it.cantidad||0),
+        "Costo subtotal":(it.costoUnit||0)*(it.cantidad||0)
+      }))
+    );
+
+    const gastosRows = GASTOS.map(g => ({
+      ID:g.id,
+      Fecha:new Date(g.fecha).toLocaleDateString("es-CR"),
+      Categoría:g.categoria,
+      Descripción:g.descripcion,
+      Monto:g.monto,
+      Proveedor:g.proveedor,
+      "Forma de pago":g.formaPago,
+      Nota:g.nota
+    }));
+
+    const productosRows = PRODUCTOS.map(p => ({
+      Producto:p.nombre,
+      Categoría:p.categoria,
+      Precio:p.precio,
+      Costo:p.costo,
+      "Utilidad unitaria":p.precio-p.costo,
+      "Margen %":p.precio ? Number(((p.precio-p.costo)/p.precio*100).toFixed(2)) : 0,
+      Disponible:p.disponible ? "Sí" : "No"
+    }));
+
+    const resumenRows = filasResumenMensualExcel();
+    const anualVentas = resumenVentas(VENTAS.filter(v => new Date(v.fecha).getFullYear()===contaAnioSeleccionado));
+    const anualGastos = resumenGastos(GASTOS.filter(g => new Date(g.fecha).getFullYear()===contaAnioSeleccionado)).gastos;
+    const resumenGeneral = [{
+      Año:contaAnioSeleccionado,
+      "Ventas totales":anualVentas.ventas,
+      "Costo producto":anualVentas.costo,
+      "Utilidad bruta":anualVentas.utilidad,
+      "Gastos operativos":anualGastos,
+      "Ganancia neta":anualVentas.utilidad-anualGastos,
+      Pedidos:anualVentas.pedidos,
+      "Ticket promedio":Math.round(anualVentas.ticketPromedio),
+      "Margen bruto %":Number(anualVentas.margen.toFixed(2))
+    }];
+
+    const agregarHoja = (nombre, rows) => {
+      const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{Mensaje:"Sin datos"}]);
+      const range = XLSX.utils.decode_range(ws["!ref"]);
+      const widths = [];
+      for(let C=range.s.c; C<=range.e.c; C++){
+        let max = 10;
+        for(let R=range.s.r; R<=range.e.r; R++){
+          const cell = ws[XLSX.utils.encode_cell({r:R,c:C})];
+          max = Math.max(max, String(cell?.v ?? "").length + 2);
+        }
+        widths.push({wch:Math.min(max,42)});
+      }
+      ws["!cols"] = widths;
+      XLSX.utils.book_append_sheet(wb,ws,nombre);
+    };
+
+    agregarHoja("Resumen anual",resumenGeneral);
+    agregarHoja("Resumen por mes",resumenRows);
+    agregarHoja("Ventas",ventasRows);
+    agregarHoja("Detalle ventas",detalleRows);
+    agregarHoja("Gastos",gastosRows);
+    agregarHoja("Productos",productosRows);
+
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb,`Pura-Smash-Contabilidad-${contaAnioSeleccionado}-${fecha}.xlsx`);
+  }catch(error){
+    console.error(error);
+    alert("No se pudo generar el Excel: " + (error.message || error));
+  }
 }
 
 function renderVentaLineas(){
