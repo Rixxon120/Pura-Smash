@@ -677,9 +677,21 @@ a{color:inherit;}
 .pin-box #admin-email,.pin-box #admin-password{letter-spacing:normal;text-align:left;font-size:14px;}
 
 
-.admin-view{background:var(--ink);min-height:100vh;padding-bottom:60px;}
+.admin-view{
+  position:fixed;
+  inset:0;
+  z-index:70;
+  width:100%;
+  height:100dvh;
+  min-height:100vh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  background:var(--ink);
+  padding-bottom:60px;
+}
 .admin-header{
-  position:sticky;top:0;z-index:20;
+  position:sticky;top:0;z-index:5;
   background:var(--ink);
   border-bottom:1px solid var(--line);
   padding:16px 20px 0;
@@ -1173,6 +1185,48 @@ a{color:inherit;}
   }
   .hero h1{
     font-size:72px;
+  }
+}
+
+
+/* ============================================================
+   PANEL ADMIN — fullscreen y scroll independiente
+   ============================================================ */
+.admin-view .admin-body{
+  width:min(100%, 1040px);
+  margin:0 auto;
+}
+.admin-view .admin-header-top{
+  width:min(100%, 1040px);
+  margin-left:auto;
+  margin-right:auto;
+}
+.admin-view .admin-tabs{
+  width:min(100%, 1040px);
+  margin-left:auto;
+  margin-right:auto;
+}
+@media (min-width:768px){
+  .admin-view .admin-body{
+    padding:26px 28px 70px;
+  }
+  .admin-view .admin-header{
+    padding-left:28px;
+    padding-right:28px;
+  }
+  .admin-view .admin-card{
+    padding:20px;
+  }
+}
+@media (max-width:767px){
+  .admin-view{
+    height:100dvh;
+  }
+  .admin-view .admin-header{
+    padding-top:max(14px, env(safe-area-inset-top));
+  }
+  .admin-view .admin-body{
+    padding-bottom:calc(70px + env(safe-area-inset-bottom));
   }
 }
 
@@ -2182,7 +2236,9 @@ async function abrirAdmin(){
     abrirPinGate();
     return;
   }
-  document.getElementById("vista-admin").classList.remove("hidden");
+  const vistaAdmin = document.getElementById("vista-admin");
+  vistaAdmin.classList.remove("hidden");
+  vistaAdmin.scrollTop = 0;
   document.body.style.overflow = "hidden";
   try{
     await cargarDatosSupabase(true);
@@ -2190,13 +2246,16 @@ async function abrirAdmin(){
     renderAdminExtras();
     renderAdminPromos();
     renderContabilidad();
+    cambiarTabAdmin("productos");
   }catch(error){
     console.error(error);
     alert("No se pudieron cargar los datos de Supabase: " + (error.message || error));
   }
 }
 function cerrarAdmin(){
-  document.getElementById("vista-admin").classList.add("hidden");
+  const vistaAdmin = document.getElementById("vista-admin");
+  vistaAdmin.classList.add("hidden");
+  vistaAdmin.scrollTop = 0;
   document.body.style.overflow = "";
 }
 function cambiarTabAdmin(tab){
