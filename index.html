@@ -1622,6 +1622,116 @@ a{color:inherit;}
   }
 }
 
+
+/* ============================================================
+   MODAL DE CONFIRMACIÓN PURA SMASH
+   ============================================================ */
+.ps-confirm-overlay{
+  position:fixed;
+  inset:0;
+  z-index:140;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(10,7,5,.78);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  opacity:1;
+  transition:opacity .18s ease;
+}
+.ps-confirm-overlay.hidden{
+  display:none !important;
+}
+.ps-confirm-modal{
+  width:min(420px,100%);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),
+    #1d1611;
+  border:1px solid rgba(227,166,47,.42);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 26px 70px rgba(0,0,0,.55);
+  color:var(--cream);
+  transform:translateY(0) scale(1);
+  animation:psConfirmIn .2s ease both;
+}
+@keyframes psConfirmIn{
+  from{opacity:0;transform:translateY(14px) scale(.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.ps-confirm-icon{
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  margin-bottom:16px;
+  border-radius:50%;
+  background:rgba(227,166,47,.12);
+  border:1px solid rgba(227,166,47,.5);
+  color:var(--mustard);
+  font-family:'Anton',sans-serif;
+  font-size:25px;
+}
+.ps-confirm-modal.danger .ps-confirm-icon{
+  background:rgba(194,67,43,.12);
+  border-color:rgba(194,67,43,.55);
+  color:#e78673;
+}
+.ps-confirm-content h3{
+  margin:0 0 8px;
+  font-family:'Anton',sans-serif;
+  font-size:24px;
+  font-weight:400;
+  letter-spacing:.01em;
+  color:var(--cream);
+}
+.ps-confirm-content p{
+  margin:0;
+  color:rgba(247,241,228,.72);
+  font-size:14px;
+  line-height:1.5;
+}
+.ps-confirm-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:22px;
+}
+.ps-confirm-btn{
+  min-height:46px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  transition:transform .15s ease,opacity .15s ease,background .15s ease;
+}
+.ps-confirm-btn:active{transform:scale(.97);}
+.ps-confirm-btn.cancel{
+  background:transparent;
+  color:rgba(247,241,228,.78);
+  border:1px solid rgba(247,241,228,.22);
+}
+.ps-confirm-btn.accept{
+  background:var(--mustard);
+  color:#1d140d;
+  border:1px solid var(--mustard);
+}
+.ps-confirm-modal.danger .ps-confirm-btn.accept{
+  background:var(--ember);
+  border-color:var(--ember);
+  color:var(--cream);
+}
+@media(max-width:480px){
+  .ps-confirm-overlay{align-items:flex-end;padding:14px;}
+  .ps-confirm-modal{
+    border-radius:24px 24px 18px 18px;
+    padding:22px 18px calc(18px + env(safe-area-inset-bottom));
+  }
+}
+
+
+.ps-modal-open{overflow:hidden !important;}
 </style>
 </head>
 <body>
@@ -1905,6 +2015,21 @@ a{color:inherit;}
 
 
 <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+
+
+<div class="ps-confirm-overlay hidden" id="ps-confirm-overlay" aria-hidden="true">
+  <div class="ps-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ps-confirm-title" aria-describedby="ps-confirm-message">
+    <div class="ps-confirm-icon" id="ps-confirm-icon">✓</div>
+    <div class="ps-confirm-content">
+      <h3 id="ps-confirm-title">Confirmar acción</h3>
+      <p id="ps-confirm-message">¿Querés continuar?</p>
+    </div>
+    <div class="ps-confirm-actions">
+      <button type="button" class="ps-confirm-btn cancel" id="ps-confirm-cancel">Cancelar</button>
+      <button type="button" class="ps-confirm-btn accept" id="ps-confirm-accept">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -2731,6 +2856,75 @@ function enviarPorWhatsapp(){
 }
 
 
+
+let resolverConfirmacionPS = null;
+
+function confirmarAccion({
+  titulo = "Confirmar acción",
+  mensaje = "¿Querés continuar?",
+  confirmar = "Confirmar",
+  cancelar = "Cancelar",
+  peligro = false,
+  icono = "✓"
+} = {}){
+  const overlay = document.getElementById("ps-confirm-overlay");
+  const modal = overlay?.querySelector(".ps-confirm-modal");
+  const titleEl = document.getElementById("ps-confirm-title");
+  const messageEl = document.getElementById("ps-confirm-message");
+  const acceptBtn = document.getElementById("ps-confirm-accept");
+  const cancelBtn = document.getElementById("ps-confirm-cancel");
+  const iconEl = document.getElementById("ps-confirm-icon");
+
+  if(!overlay || !modal || !titleEl || !messageEl || !acceptBtn || !cancelBtn){
+    return Promise.resolve(false);
+  }
+
+  if(resolverConfirmacionPS){
+    resolverConfirmacionPS(false);
+    resolverConfirmacionPS = null;
+  }
+
+  titleEl.textContent = titulo;
+  messageEl.textContent = mensaje;
+  acceptBtn.textContent = confirmar;
+  cancelBtn.textContent = cancelar;
+  iconEl.textContent = icono;
+  modal.classList.toggle("danger", peligro);
+  overlay.classList.remove("hidden");
+  overlay.setAttribute("aria-hidden","false");
+  document.body.classList.add("ps-modal-open");
+
+  return new Promise(resolve => {
+    resolverConfirmacionPS = resolve;
+
+    const cerrar = resultado => {
+      overlay.classList.add("hidden");
+      overlay.setAttribute("aria-hidden","true");
+      document.body.classList.remove("ps-modal-open");
+      resolverConfirmacionPS = null;
+      resolve(resultado);
+    };
+
+    acceptBtn.onclick = () => cerrar(true);
+    cancelBtn.onclick = () => cerrar(false);
+    overlay.onclick = e => {
+      if(e.target === overlay) cerrar(false);
+    };
+
+    const onKey = e => {
+      if(e.key === "Escape"){
+        document.removeEventListener("keydown",onKey);
+        cerrar(false);
+      }else if(e.key === "Enter"){
+        document.removeEventListener("keydown",onKey);
+        cerrar(true);
+      }
+    };
+    document.addEventListener("keydown",onKey,{once:false});
+    setTimeout(() => acceptBtn.focus(),50);
+  });
+}
+
 let adminToastTimer = null;
 function mostrarConfirmacion(mensaje, tipo="ok"){
   const el = document.getElementById("admin-toast");
@@ -2983,7 +3177,12 @@ async function subirFotoProducto(id, input){
   const p = PRODUCTOS.find(x => x.id === id);
   if(!p) return;
 
-  if(!confirm(`¿${p.imagenUrl ? "Reemplazar" : "Subir"} la foto de "${p.nombre || "este producto"}"?`)){
+  if(!await confirmarAccion({
+    titulo:p.imagenUrl ? "Cambiar fotografía" : "Subir fotografía",
+    mensaje:`La nueva imagen se publicará en "${p.nombre || "este producto"}".`,
+    confirmar:p.imagenUrl ? "Cambiar foto" : "Subir foto",
+    icono:"📷"
+  })){
     if(input) input.value = "";
     return;
   }
@@ -3039,7 +3238,13 @@ async function subirFotoProducto(id, input){
 async function eliminarFotoProducto(id){
   const p = PRODUCTOS.find(x => x.id === id);
   if(!p || !p.imagenUrl) return;
-  if(!confirm("¿Eliminar la foto de este producto?")) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar fotografía",
+    mensaje:`Se quitará la foto de "${p.nombre || "este producto"}" del menú.`,
+    confirmar:"Eliminar foto",
+    peligro:true,
+    icono:"📷"
+  })) return;
   const urlAnterior = p.imagenUrl;
   const rutaAnterior = rutaStorageDesdeUrl(urlAnterior);
 
@@ -3079,7 +3284,12 @@ async function guardarProducto(id){
     return;
   }
 
-  if(!confirm(`¿Guardar los cambios de "${cambios.nombre}"?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Guardar producto",
+    mensaje:`Se actualizará "${cambios.nombre}" en el menú para todos los clientes.`,
+    confirmar:"Guardar cambios",
+    icono:"✓"
+  })) return;
 
   const anterior = {...p};
   Object.assign(p, cambios);
@@ -3123,7 +3333,13 @@ async function adminNuevoProducto(){
 async function eliminarProducto(id){
   const p = PRODUCTOS.find(p => p.id === id);
   if(!p) return;
-  if(!confirm(`¿Eliminar "${p.nombre || "este producto"}" del menú?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar producto",
+    mensaje:`"${p.nombre || "Este producto"}" se eliminará del menú. Esta acción no se puede deshacer.`,
+    confirmar:"Eliminar",
+    peligro:true,
+    icono:"!"
+  })) return;
   try{ await eliminarFila("productos", id); }catch(error){ alert("No se pudo eliminar el producto: " + error.message); return; }
   PRODUCTOS = PRODUCTOS.filter(p => p.id !== id);
   mostrarConfirmacion("✓ Producto eliminado");
@@ -3193,7 +3409,12 @@ async function guardarExtra(id){
     return;
   }
 
-  if(!confirm(`¿Guardar el extra "${nombre}" por ${money(precio)}?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Guardar extra",
+    mensaje:`"${nombre}" se mostrará en el menú por ${money(precio)}.`,
+    confirmar:"Guardar extra",
+    icono:"+"
+  })) return;
 
   const anterior = {...e};
   e.nombre = nombre;
@@ -3236,7 +3457,13 @@ function adminNuevoExtra(){
 async function eliminarExtra(id){
   const e = EXTRAS.find(e => e.id === id);
   if(!e) return;
-  if(!confirm(`¿Eliminar el extra "${e.nombre || "sin nombre"}"?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar extra",
+    mensaje:`El extra "${e.nombre || "sin nombre"}" dejará de estar disponible en el menú.`,
+    confirmar:"Eliminar",
+    peligro:true,
+    icono:"!"
+  })) return;
   if(!e._nuevo){
     try{
       await eliminarFila("extras", id);
@@ -3361,7 +3588,12 @@ async function guardarPromo(id){
     return;
   }
 
-  if(!confirm(`¿Guardar los cambios de la promoción "${cambios.nombre}"?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Guardar promoción",
+    mensaje:`Se aplicarán los cambios de "${cambios.nombre}".`,
+    confirmar:"Guardar promoción",
+    icono:"%"
+  })) return;
 
   const anterior = {...pr};
   Object.assign(pr, cambios);
@@ -3403,7 +3635,13 @@ async function adminNuevaPromo(){
 async function eliminarPromo(id){
   const pr = PROMOS.find(pr => pr.id === id);
   if(!pr) return;
-  if(!confirm(`¿Eliminar la promoción "${pr.nombre || "sin nombre"}"?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar promoción",
+    mensaje:`"${pr.nombre || "Esta promoción"}" se eliminará definitivamente.`,
+    confirmar:"Eliminar",
+    peligro:true,
+    icono:"!"
+  })) return;
   try{ await eliminarFila("promociones", id); }catch(error){ alert("No se pudo eliminar la promoción: " + error.message); return; }
   PROMOS = PROMOS.filter(pr => pr.id !== id);
   mostrarConfirmacion("✓ Promoción eliminada");
@@ -3710,7 +3948,12 @@ async function registrarGasto(){
     return;
   }
 
-  if(!confirm(`¿Registrar el gasto "${descripcion}" por ${money(monto)}?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Registrar gasto",
+    mensaje:`${descripcion} · ${money(monto)} · ${categoria}`,
+    confirmar:"Registrar gasto",
+    icono:"₡"
+  })) return;
 
   const gasto = {
     id:idNuevo("gasto"),
@@ -3744,7 +3987,13 @@ async function registrarGasto(){
 async function eliminarGasto(id){
   const gasto = GASTOS.find(g => g.id === id);
   if(!gasto) return;
-  if(!confirm(`¿Eliminar el gasto "${gasto.descripcion}"?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar gasto",
+    mensaje:`"${gasto.descripcion}" por ${money(gasto.monto)} se eliminará de la contabilidad.`,
+    confirmar:"Eliminar gasto",
+    peligro:true,
+    icono:"!"
+  })) return;
 
   try{
     await eliminarGastoDB(id);
@@ -3968,7 +4217,12 @@ async function registrarVenta(){
   const total = items.reduce((s,it) => s + it.precioUnit*it.cantidad, 0);
   const costoTotal = items.reduce((s,it) => s + it.costoUnit*it.cantidad, 0);
 
-  if(!confirm(`¿Registrar esta venta por ${money(total)}?`)) return;
+  if(!await confirmarAccion({
+    titulo:"Registrar venta",
+    mensaje:`Total ${money(total)}. La venta se sumará a la contabilidad.`,
+    confirmar:"Registrar venta",
+    icono:"₡"
+  })) return;
 
   const venta = {
     id: idNuevo("venta"),
@@ -3986,7 +4240,13 @@ async function registrarVenta(){
 }
 
 async function eliminarVenta(id){
-  if(!confirm("¿Eliminar esta venta del registro?")) return;
+  if(!await confirmarAccion({
+    titulo:"Eliminar venta",
+    mensaje:"La venta se quitará de los reportes y cálculos contables.",
+    confirmar:"Eliminar venta",
+    peligro:true,
+    icono:"!"
+  })) return;
   try{ await eliminarFila("ventas", id); }catch(error){ alert("No se pudo eliminar la venta: " + error.message); return; }
   VENTAS = VENTAS.filter(v => v.id !== id);
   mostrarConfirmacion("✓ Venta eliminada");
@@ -3995,7 +4255,13 @@ async function eliminarVenta(id){
 
 async function borrarTodasLasVentas(){
   if(VENTAS.length === 0) return;
-  if(!confirm("Esto borra todo el historial de ventas registradas. ¿Continuar?")) return;
+  if(!await confirmarAccion({
+    titulo:"Borrar historial de ventas",
+    mensaje:"Se eliminarán TODAS las ventas registradas. Esta acción no se puede deshacer.",
+    confirmar:"Borrar todo",
+    peligro:true,
+    icono:"!"
+  })) return;
   try{ await borrarTodasLasVentasDB(); }catch(error){ alert("No se pudo borrar el historial: " + error.message); return; }
   VENTAS = [];
   renderContabilidad();
