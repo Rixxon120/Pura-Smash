@@ -1475,6 +1475,153 @@ a{color:inherit;}
   border-color:var(--ember);
 }
 
+
+/* Corrección definitiva de extras tras re-render */
+.extra-chip{
+  display:grid !important;
+  grid-template-columns:22px minmax(0,1fr) auto !important;
+  align-items:center !important;
+  column-gap:9px !important;
+  width:100% !important;
+  min-height:36px !important;
+  padding:6px 0 !important;
+  overflow:visible !important;
+}
+.extra-chip input[type="checkbox"]{
+  display:block !important;
+  width:18px !important;
+  height:18px !important;
+  margin:0 !important;
+}
+.extra-chip .extra-name{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:static !important;
+  width:auto !important;
+  min-width:0 !important;
+  overflow:visible !important;
+  color:#241A11 !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  line-height:1.3 !important;
+  white-space:normal !important;
+}
+.extra-chip .extra-price{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:static !important;
+  color:#6b5848 !important;
+  font-size:12px !important;
+  white-space:nowrap !important;
+}
+
+
+/* ============================================================
+   FIX EXTRAS — SOLO VISUALIZACIÓN MÓVIL DEL MENÚ
+   ============================================================ */
+@media (max-width:767px){
+  .card .extras-box{
+    display:block !important;
+    position:relative !important;
+    width:100% !important;
+    max-width:100% !important;
+    margin:12px 0 14px !important;
+    padding:12px 13px !important;
+    background:#f3e8d2 !important;
+    border:1px solid rgba(36,26,17,.14) !important;
+    border-radius:12px !important;
+    overflow:visible !important;
+    color:#241a11 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+
+  .card .extras-label{
+    display:block !important;
+    margin:0 0 8px !important;
+    color:#5f4b3b !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+    line-height:1.2 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+
+  .card .extra-chip{
+    display:grid !important;
+    grid-template-columns:20px minmax(0,1fr) auto !important;
+    align-items:center !important;
+    gap:9px !important;
+    width:100% !important;
+    min-height:38px !important;
+    padding:6px 0 !important;
+    margin:0 !important;
+    color:#241a11 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    overflow:visible !important;
+  }
+
+  .card .extra-chip input[type="checkbox"]{
+    display:block !important;
+    appearance:auto !important;
+    -webkit-appearance:auto !important;
+    width:18px !important;
+    height:18px !important;
+    margin:0 !important;
+    padding:0 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+
+  .card .extra-chip .extra-name{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    max-width:none !important;
+    min-width:0 !important;
+    height:auto !important;
+    overflow:visible !important;
+    clip:auto !important;
+    white-space:normal !important;
+    text-overflow:clip !important;
+    color:#241a11 !important;
+    -webkit-text-fill-color:#241a11 !important;
+    font-size:13px !important;
+    font-weight:700 !important;
+    line-height:1.35 !important;
+    letter-spacing:0 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none !important;
+  }
+
+  .card .extra-chip .extra-price{
+    display:block !important;
+    position:static !important;
+    color:#6a5949 !important;
+    -webkit-text-fill-color:#6a5949 !important;
+    font-family:'JetBrains Mono',monospace !important;
+    font-size:12px !important;
+    font-weight:700 !important;
+    white-space:nowrap !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none !important;
+  }
+
+  /* En las tarjetas horizontales, los extras ocupan todo el ancho de la zona de texto */
+  .card-body{
+    overflow:visible !important;
+  }
+
+  .card-body .extras-box{
+    grid-column:1 / -1 !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2173,6 +2320,34 @@ function extrasDisponibles(){
     String(e.nombre || "").trim().length > 0
   );
 }
+
+async function recargarExtrasDesdeSupabase(){
+  await asegurarSupabase();
+
+  // Dentro del panel hay sesión autenticada, por lo que podemos leer también costo.
+  const { data, error } = await supabaseClient
+    .from("extras")
+    .select("id,nombre,precio,costo,disponible")
+    .order("nombre");
+
+  if(error) throw error;
+
+  EXTRAS = (data || []).map(e => ({
+    id: String(e.id),
+    nombre: String(e.nombre ?? "").trim(),
+    precio: Number(e.precio) || 0,
+    costo: Number(e.costo) || 0,
+    disponible: e.disponible !== false
+  }));
+
+  // Limpia selecciones que ya no existan.
+  const idsValidos = new Set(EXTRAS.map(e => e.id));
+  Object.keys(seleccionExtras).forEach(productoId => {
+    seleccionExtras[productoId] = (seleccionExtras[productoId] || [])
+      .filter(extraId => idsValidos.has(String(extraId)));
+  });
+}
+
 function extraPorId(id){
   return EXTRAS.find(e => e.id === id);
 }
@@ -2254,12 +2429,15 @@ function renderCard(p){
         ${(!agotado && extrasDisp.length > 0) ? `
         <div class="extras-box">
           <span class="extras-label">Agregale extras</span>
-          ${extrasDisp.map(e => `
-            <label class="extra-chip">
+          ${extrasDisp.map(e => {
+            const nombreExtra = String(e.nombre || "").trim() || "Extra";
+            return `
+            <label class="extra-chip" data-extra-id="${escAttr(e.id)}">
               <input type="checkbox" ${seleccion.includes(e.id) ? "checked" : ""} onchange="toggleExtraSeleccion('${p.id}','${e.id}', this.checked)">
-              <span>${escHtml(e.nombre)}</span>
+              <span class="extra-name">${escHtml(nombreExtra)}</span>
               <span class="extra-price">+${money(e.precio)}</span>
-            </label>`).join("")}
+            </label>`;
+          }).join("")}
         </div>` : ""}
 
         <div class="card-footer" id="footer-${p.id}">
@@ -3026,7 +3204,7 @@ async function guardarExtra(id){
 
   try{
     await guardarExtraDB(e);
-    await cargarDatosSupabase(true);
+    await recargarExtrasDesdeSupabase();
     mostrarConfirmacion(`✓ Extra "${nombre}" guardado`);
   }catch(error){
     Object.assign(e, anterior);
@@ -3060,13 +3238,22 @@ async function eliminarExtra(id){
   if(!e) return;
   if(!confirm(`¿Eliminar el extra "${e.nombre || "sin nombre"}"?`)) return;
   if(!e._nuevo){
-    try{ await eliminarFila("extras", id); }catch(error){ alert("No se pudo eliminar el extra: " + error.message); return; }
+    try{
+      await eliminarFila("extras", id);
+      await recargarExtrasDesdeSupabase();
+    }catch(error){
+      alert("No se pudo eliminar el extra: " + error.message);
+      return;
+    }
+  }else{
+    EXTRAS = EXTRAS.filter(x => x.id !== id);
   }
-  EXTRAS = EXTRAS.filter(e => e.id !== id);
-  mostrarConfirmacion("✓ Extra eliminado");
+
   Object.keys(seleccionExtras).forEach(productoId => {
-    seleccionExtras[productoId] = (seleccionExtras[productoId] || []).filter(extraId => extraId !== id);
+    seleccionExtras[productoId] = (seleccionExtras[productoId] || []).filter(extraId => String(extraId) !== String(id));
   });
+
+  mostrarConfirmacion("✓ Extra eliminado");
   renderAdminExtras();
   renderMenu();
   actualizarBarraCarrito();
