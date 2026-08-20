@@ -220,7 +220,6 @@ a{color:inherit;}
 }
 .hero h1{
   font-size:15vw;
-  max-font-size:56px;
   font-size:clamp(38px,13vw,56px);
   color:var(--cream);
   margin:0 0 6px;
@@ -355,6 +354,59 @@ a{color:inherit;}
   gap:10px;
 }
 .card .price{font-size:17px;font-weight:700;color:var(--paper-text);}
+.card .price-old{
+  font-size:12.5px;
+  text-decoration:line-through;
+  color:rgba(36,26,17,0.4);
+  margin-right:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+.card-tag.promo{
+  background:rgba(227,166,47,0.22);
+  color:var(--mustard-dark);
+  margin-left:6px;
+}
+.card.agotado{opacity:0.5;}
+.card.agotado .photo{filter:grayscale(1);}
+.sold-out-label{
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;
+  color:rgba(36,26,17,0.45);
+}
+.extras-box{
+  margin:2px 0 14px;
+  padding:10px 12px;
+  background:rgba(36,26,17,0.05);
+  border-radius:10px;
+}
+.extras-label{
+  display:block;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:0.07em;
+  color:rgba(36,26,17,0.5);
+  margin-bottom:8px;
+  font-weight:700;
+}
+.extra-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--paper-text);
+  padding:5px 0;
+  cursor:pointer;
+}
+.extra-chip input{
+  width:17px;height:17px;
+  accent-color:var(--ember);
+  cursor:pointer;
+}
+.extra-chip .extra-price{
+  margin-left:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  color:rgba(36,26,17,0.55);
+}
 
 .stepper{
   display:flex;
@@ -544,10 +596,208 @@ a{color:inherit;}
   font-family:inherit;
 }
 .field textarea{resize:vertical;min-height:60px;}
+.location-share{padding:12px;border:1px solid rgba(247,241,228,0.18);border-radius:12px;background:rgba(247,241,228,0.04);}
+.location-help{font-size:12.5px;color:rgba(247,241,228,0.6);margin:0 0 10px;}
+.location-status{font-size:12.5px;color:rgba(247,241,228,0.65);margin-top:10px;line-height:1.5;}
+.location-status.ok{color:#b8c98a;}
+.location-status.error{color:#e78673;}
+.location-status a{color:var(--mustard);font-weight:700;}
 
 @media (min-width:480px){
   .wrap,.section,.sheet{padding-left:max(20px,calc(50% - 220px));padding-right:max(20px,calc(50% - 220px));}
   .cart-bar{left:calc(50% - 220px);right:calc(50% - 220px);max-width:440px;}
+}
+/* ============================================================
+   MODO ADMIN
+   ============================================================ */
+.admin-link{
+  display:block;
+  text-align:center;
+  margin-top:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:rgba(247,241,228,0.28);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:8px;
+}
+
+.pin-gate{
+  position:fixed;inset:0;
+  background:rgba(10,7,5,0.88);
+  z-index:80;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.pin-box{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:26px 22px;
+  width:100%;max-width:320px;
+  text-align:center;
+}
+.pin-box h2{color:var(--mustard);font-size:20px;margin:0 0 6px;}
+.pin-box p{font-size:13px;color:rgba(247,241,228,0.5);margin:0 0 16px;}
+.pin-box input{
+  width:100%;
+  text-align:center;
+  letter-spacing:0.5em;
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;
+  background:rgba(247,241,228,0.06);
+  border:1px solid rgba(247,241,228,0.25);
+  border-radius:10px;
+  padding:12px;
+  color:var(--cream);
+  margin-bottom:12px;
+}
+.pin-error{color:var(--ember);font-size:12px;margin:-6px 0 12px;min-height:14px;}
+.pin-box #admin-email,.pin-box #admin-password{letter-spacing:normal;text-align:left;font-size:14px;}
+
+
+.admin-view{background:var(--ink);min-height:100vh;padding-bottom:60px;}
+.admin-header{
+  position:sticky;top:0;z-index:20;
+  background:var(--ink);
+  border-bottom:1px solid var(--line);
+  padding:16px 20px 0;
+}
+.admin-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.admin-header-top h1{font-size:20px;color:var(--cream);margin:0;}
+.admin-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.admin-tabs::-webkit-scrollbar{display:none;}
+.admin-tab{
+  flex:0 0 auto;
+  background:transparent;border:none;
+  color:rgba(247,241,228,0.5);
+  padding:10px 4px 12px;
+  font-size:13px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.03em;
+  border-bottom:2px solid transparent;
+  cursor:pointer;
+  margin-right:18px;
+}
+.admin-tab.active{color:var(--mustard);border-bottom-color:var(--mustard);}
+.admin-body{padding:18px 20px 20px;}
+.admin-section-title{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:22px 0 12px;
+}
+.admin-section-title h3{font-size:16px;color:var(--mustard);margin:0;text-transform:uppercase;letter-spacing:0.03em;}
+
+.admin-card{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:12px;
+}
+.admin-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.admin-card-name{font-weight:700;color:var(--cream);font-size:15px;}
+.admin-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;text-transform:uppercase;letter-spacing:0.06em;
+  padding:3px 8px;border-radius:6px;
+}
+.admin-badge.off{background:rgba(194,67,43,0.18);color:#e78673;}
+.admin-badge.on{background:rgba(111,125,62,0.22);color:#b8c98a;}
+.admin-badge.live{background:rgba(227,166,47,0.2);color:var(--mustard);}
+
+.a-field{margin-bottom:10px;}
+.a-field label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(247,241,228,0.4);margin-bottom:4px;}
+.a-field input, .a-field select, .a-field textarea{
+  width:100%;
+  background:rgba(247,241,228,0.05);
+  border:1px solid rgba(247,241,228,0.18);
+  border-radius:8px;
+  padding:9px 11px;
+  color:var(--cream);
+  font-size:13.5px;
+  font-family:inherit;
+}
+.a-field textarea{min-height:50px;resize:vertical;}
+.a-row{display:flex;gap:10px;}
+.a-row .a-field{flex:1;}
+
+.a-toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0 2px;
+}
+.a-toggle-row span{font-size:13px;color:rgba(247,241,228,0.75);}
+.switch{
+  position:relative;width:42px;height:24px;
+  background:rgba(247,241,228,0.15);
+  border-radius:999px;border:none;cursor:pointer;
+  flex:0 0 auto;
+}
+.switch::after{
+  content:"";
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--cream);
+  transition:transform .18s ease;
+}
+.switch.on{background:var(--pickle);}
+.switch.on::after{transform:translateX(18px);}
+
+.a-actions{display:flex;gap:8px;margin-top:12px;}
+.a-btn{
+  flex:1;
+  border:none;border-radius:9px;
+  padding:10px;
+  font-size:12.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.03em;
+  cursor:pointer;
+}
+.a-btn.save{background:var(--mustard);color:var(--ink);}
+.a-btn.delete{background:transparent;color:#e78673;border:1px solid rgba(194,67,43,0.4);}
+.a-btn.add{background:var(--ember);color:var(--cream);width:100%;padding:13px;border-radius:12px;}
+.a-btn.ghost{background:transparent;color:rgba(247,241,228,0.55);border:1px solid rgba(247,241,228,0.2);}
+
+
+.admin-photo-box{margin:0 0 14px;}
+.admin-photo-preview{height:170px;border-radius:12px;overflow:hidden;background:rgba(247,241,228,0.05);border:1px dashed rgba(247,241,228,0.22);display:flex;align-items:center;justify-content:center;color:rgba(247,241,228,0.4);font-size:12px;}
+.admin-photo-preview img{width:100%;height:100%;object-fit:cover;}
+.admin-photo-actions{display:flex;gap:8px;margin-top:8px;}
+.admin-photo-actions .a-btn{display:flex;align-items:center;justify-content:center;}
+.admin-photo-status{font-size:11px;color:rgba(247,241,228,0.5);margin-top:6px;min-height:16px;}
+.a-empty{
+  text-align:center;color:rgba(247,241,228,0.4);
+  font-size:13px;padding:22px 10px;
+  border:1px dashed rgba(247,241,228,0.2);border-radius:12px;
+}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.kpi{
+  background:var(--ink-2);border:1px solid var(--line);
+  border-radius:14px;padding:14px;
+}
+.kpi .kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(247,241,228,0.45);margin-bottom:4px;}
+.kpi .kpi-value{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--cream);}
+.kpi.accent .kpi-value{color:var(--mustard);}
+
+.acc-table{width:100%;border-collapse:collapse;margin-bottom:4px;}
+.acc-table th{
+  text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;
+  color:rgba(247,241,228,0.4);padding:6px 6px;border-bottom:1px solid var(--line);
+}
+.acc-table td{
+  font-size:12.5px;padding:8px 6px;border-bottom:1px solid var(--line);color:rgba(247,241,228,0.85);
+}
+.acc-table td.num, .acc-table th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+.acc-table tr:last-child td{border-bottom:none;}
+
+.venta-line{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.venta-line select{flex:2;}
+.venta-line input{flex:1;}
+.venta-line button{
+  flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+  border:1px solid rgba(194,67,43,0.4);background:transparent;color:#e78673;
+  cursor:pointer;font-size:14px;
 }
 </style>
 </head>
@@ -577,6 +827,7 @@ a{color:inherit;}
 <main id="menu-root"></main>
 
 <p class="footer-note">Pura Smash · Juanilama, Esparza · Pedidos por WhatsApp · Precios en colones</p>
+<button class="admin-link" onclick="abrirPinGate()">Panel del negocio</button>
 
 <div class="cart-bar" id="cart-bar" onclick="abrirCarrito()">
   <div class="left">
@@ -596,46 +847,50 @@ a{color:inherit;}
     </div>
     <div id="lineas-carrito"></div>
     <div class="totals" id="totales-carrito"></div>
-    <button class="btn btn-primary" id="btn-continuar" onclick="irAEntrega()">Continuar al pedido</button>
+    <button class="btn btn-primary" id="btn-continuar" onclick="irAEntrega()">Continuar con Express</button>
   </div>
 </div>
 
-<!-- HOJA: ENTREGA -->
+<!-- HOJA: ENTREGA EXPRESS -->
 <div class="sheet-overlay" id="sheet-entrega">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <h2>¿Cómo lo quieres recibir?</h2>
+      <h2>Entrega Express</h2>
       <button class="icon-btn" onclick="cerrarHoja('sheet-entrega')" aria-label="Cerrar">✕</button>
     </div>
 
-    <button class="fulfill-option" id="opt-recoger" onclick="elegirEntrega('recoger')">
-      <span class="fi-icon">🛍️</span>
-      <span>
-        <span class="fi-title" style="display:block;">Recoger en Pura Smash</span>
-        <span class="fi-sub">Listo en unos 15-20 minutos</span>
-      </span>
-    </button>
-    <button class="fulfill-option" id="opt-entrega" onclick="elegirEntrega('entrega')">
+    <div class="fulfill-option selected" id="opt-entrega" aria-label="Entrega Express">
       <span class="fi-icon">🛵</span>
       <span>
-        <span class="fi-title" style="display:block;">Entrega a domicilio</span>
-        <span class="fi-sub">Coordinamos la dirección por WhatsApp</span>
+        <span class="fi-title" style="display:block;">Entrega Express</span>
+        <span class="fi-sub">Compartí tu ubicación para coordinar la entrega.</span>
       </span>
-    </button>
+    </div>
 
-    <div id="campos-entrega" class="hidden">
+    <div id="campos-entrega">
       <div class="field">
         <label for="input-nombre">Tu nombre</label>
-        <input type="text" id="input-nombre" placeholder="Nombre">
+        <input type="text" id="input-nombre" placeholder="Nombre" autocomplete="name">
       </div>
+
       <div class="field" id="campo-direccion">
-        <label for="input-direccion">Dirección de entrega</label>
-        <textarea id="input-direccion" placeholder="Señas exactas, punto de referencia"></textarea>
+        <label for="input-direccion">Señas / dirección</label>
+        <textarea id="input-direccion" placeholder="Señas exactas o punto de referencia"></textarea>
       </div>
+
+      <div class="field">
+        <label>Ubicación GPS</label>
+        <div class="location-share">
+          <p class="location-help">Es obligatorio compartir tu ubicación para enviar el pedido. La ubicación se enviará como enlace de Google Maps y Waze.</p>
+          <button type="button" class="a-btn add" id="btn-compartir-ubicacion" onclick="compartirUbicacion()">📍 Compartir mi ubicación</button>
+          <div id="ubicacion-estado" class="location-status" aria-live="polite">Aún no has compartido tu ubicación.</div>
+        </div>
+      </div>
+
       <div class="field">
         <label for="input-nota">Notas para tu pedido (opcional)</label>
-        <textarea id="input-nota" placeholder="Sin cebolla, término de la carne, etc."></textarea>
+        <textarea id="input-nota" placeholder="Sin cebolla, salsa aparte, etc."></textarea>
       </div>
     </div>
 
@@ -643,17 +898,98 @@ a{color:inherit;}
   </div>
 </div>
 
+<!-- PUERTA DE PIN PARA ENTRAR AL PANEL -->
+<div class="pin-gate hidden" id="pin-gate">
+  <div class="pin-box">
+    <h2>Panel del negocio</h2>
+    <p>Ingresá con tu usuario administrador de Supabase.</p>
+    <input type="email" id="admin-email" autocomplete="username" placeholder="Correo del administrador">
+    <input type="password" id="admin-password" autocomplete="current-password" placeholder="Contraseña">
+    <div class="pin-error" id="pin-error"></div>
+    <div class="a-actions" style="margin-top:0;">
+      <button class="a-btn ghost" onclick="cerrarPinGate()">Cancelar</button>
+      <button class="a-btn save" onclick="verificarPin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- VISTA ADMIN -->
+<div class="admin-view hidden" id="vista-admin">
+  <div class="admin-header">
+    <div class="admin-header-top">
+      <h1>Panel · Pura Smash</h1>
+      <button class="icon-btn" onclick="cerrarSesionAdmin()" aria-label="Cerrar sesión y volver al menú">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="productos" onclick="cambiarTabAdmin('productos')">Productos</button>
+      <button class="admin-tab" data-tab="extras" onclick="cambiarTabAdmin('extras')">Extras</button>
+      <button class="admin-tab" data-tab="promos" onclick="cambiarTabAdmin('promos')">Promociones</button>
+      <button class="admin-tab" data-tab="contabilidad" onclick="cambiarTabAdmin('contabilidad')">Contabilidad</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- TAB PRODUCTOS -->
+    <div id="tab-productos">
+      <div id="admin-productos-lista"></div>
+      <button class="a-btn add" onclick="adminNuevoProducto()">+ Agregar producto</button>
+    </div>
+
+    <!-- TAB EXTRAS -->
+    <div id="tab-extras" class="hidden">
+      <div class="a-empty" style="border-style:solid;text-align:left;margin-bottom:14px;">Los extras que actives acá aparecen para que el cliente los agregue a sus hamburguesas (bacon, cebolla crispy, etc.). Cada producto decide, en su propia ficha, si admite extras.</div>
+      <div id="admin-extras-lista"></div>
+      <button class="a-btn add" onclick="adminNuevoExtra()">+ Agregar extra</button>
+    </div>
+
+    <!-- TAB PROMOCIONES -->
+    <div id="tab-promos" class="hidden">
+      <div id="admin-promos-lista"></div>
+      <button class="a-btn add" onclick="adminNuevaPromo()">+ Agregar promoción</button>
+    </div>
+
+    <!-- TAB CONTABILIDAD -->
+    <div id="tab-contabilidad" class="hidden">
+
+      <div class="admin-section-title"><h3>Hoy</h3></div>
+      <div class="kpi-grid" id="kpi-hoy"></div>
+
+      <div class="admin-section-title"><h3>Registrar una venta</h3></div>
+      <div class="admin-card">
+        <div id="venta-lineas"></div>
+        <button class="a-btn ghost" style="margin-bottom:12px;" onclick="agregarLineaVenta()">+ Agregar producto a la venta</button>
+        <button class="a-btn add" onclick="registrarVenta()">Registrar venta</button>
+      </div>
+
+      <div class="admin-section-title"><h3>Costo y margen por producto</h3></div>
+      <div class="admin-card">
+        <table class="acc-table" id="tabla-margenes"></table>
+      </div>
+
+      <div class="admin-section-title">
+        <h3>Ventas registradas</h3>
+        <button class="a-btn ghost" style="flex:none;padding:6px 12px;" onclick="borrarTodasLasVentas()">Borrar todo</button>
+      </div>
+      <div id="admin-ventas-lista"></div>
+
+    </div>
+
+  </div>
+</div>
+
 <script>
 /* ============================================================
-   1. DATOS DEL MENÚ
-   Para editar productos, precios o disponibilidad, se modifica
-   solo este bloque. "costo" es el costo de ingredientes: información
-   interna para reportes de ventas y márgenes, y NUNCA se muestra al
-   cliente. El costo del Combo Smash Doble (₡2.540) es la suma de sus
-   componentes: Clásica (₡1.640) + Papas (₡500) + Refresco (₡400).
+   1. DATOS BASE DEL MENÚ
+   Estos son los datos de fábrica. Una vez que se guarda algo desde
+   el panel admin, Supabase se convierte en la fuente de verdad.
+   "costo" es el costo de ingredientes:
+   información interna para reportes de ventas y márgenes, y NUNCA
+   se muestra al cliente.
    ============================================================ */
-const NUMERO_WHATSAPP = "50689810775"; // ← reemplazar por el número real de la soda (código de país + número, sin +)
+const NUMERO_WHATSAPP = "50689810775"; // +506 8981-0775 (wa.me usa solo dígitos)
 const NOMBRE_NEGOCIO = "Pura Smash";
+// Acceso administrativo mediante Supabase Auth.
 
 const CATEGORIAS = [
   { id: "burgers", nombre: "Smash Burgers" },
@@ -661,15 +997,28 @@ const CATEGORIAS = [
   { id: "papas-bebidas", nombre: "Papas y Bebidas" }
 ];
 
-const PRODUCTOS = [
+const PRODUCTOS_BASE = [
   {
     id: "clasica",
     categoria: "burgers",
     nombre: "La Clásica Smash Doble",
     descripcion: "Dos tortas de paleta de 80 g con costra perfecta, dos lascas de queso cheddar americano derretido, cebolla picada fina, pepinillos y salsa especial de la casa en pan brioche tostado con mantequilla.",
     precio: 4900,
-    costo: 1640,
-    etiqueta: "Más pedida"
+    costo: 1638,
+    disponible: true,
+    admiteExtras: true,
+    etiqueta: "Más pedida",
+    desglose_costo: [
+      { insumo: "Solomo 160 g", costo: 768 },
+      { insumo: "Pan", costo: 400 },
+      { insumo: "Queso ×2", costo: 150 },
+      { insumo: "Cebolla", costo: 30 },
+      { insumo: "Pepinillos", costo: 50 },
+      { insumo: "Salsa", costo: 60 },
+      { insumo: "Mantequilla/aceite", costo: 30 },
+      { insumo: "Gas", costo: 50 },
+      { insumo: "Empaque", costo: 100 }
+    ]
   },
   {
     id: "oklahoma",
@@ -678,6 +1027,8 @@ const PRODUCTOS = [
     descripcion: "La favorita de los amantes de la cebolla. Dos tortas de 80 g aplastadas directamente sobre una montaña de cebolla finamente fileteada, logrando que esta se caramelice e incruste en la carne, doble queso cheddar y salsa de la casa.",
     precio: 5100,
     costo: 1700,
+    disponible: true,
+    admiteExtras: true,
     etiqueta: "Favorita del fogón"
   },
   {
@@ -687,6 +1038,8 @@ const PRODUCTOS = [
     descripcion: "Para los de gran apetito. Tres tortas de paleta de 80 g (240 g de carne en total) y tres lascas de queso cheddar americano derretido con pepinillos y salsa de la casa.",
     precio: 6400,
     costo: 2130,
+    disponible: true,
+    admiteExtras: true,
     etiqueta: "Para compartir (o no)"
   },
   {
@@ -695,7 +1048,9 @@ const PRODUCTOS = [
     nombre: "Combo Smash Doble",
     descripcion: "La Clásica Smash Doble + Papas Fritas Sencillas + Refresco en lata.",
     precio: 6900,
-    costo: 2540,
+    costo: 2538,
+    disponible: true,
+    admiteExtras: true,
     etiqueta: "Combo"
   },
   {
@@ -705,6 +1060,8 @@ const PRODUCTOS = [
     descripcion: "Papas crocantes recién fritas.",
     precio: 1500,
     costo: 500,
+    disponible: true,
+    admiteExtras: false,
     etiqueta: ""
   },
   {
@@ -714,20 +1071,304 @@ const PRODUCTOS = [
     descripcion: "Refresco en lata bien fría. Preguntá los sabores disponibles.",
     precio: 1200,
     costo: 400,
+    disponible: true,
+    admiteExtras: false,
     etiqueta: ""
   }
 ];
 
+const PROMOS_BASE = []; // sin promociones de fábrica — se agregan desde el panel
+
+/* Extras de fábrica. Los precios y costos son un estimado inicial —
+   ajustalos desde el panel (pestaña Extras) a lo que realmente
+   cuesten y cobres vos. */
+const EXTRAS_BASE = [
+  { id: "bacon", nombre: "Bacon", precio: 800, costo: 450, disponible: true },
+  { id: "cebolla-crispy", nombre: "Cebolla Crispy", precio: 600, costo: 300, disponible: true }
+];
+
 /* ============================================================
-   2. ESTADO
+   2. SUPABASE — persistencia centralizada
    ============================================================ */
-let carrito = {}; // { productoId: cantidad }
-let entregaSeleccionada = null;
+const SUPABASE_URL = "https://hofmqfujmtmflcjutjvu.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_rI6Vi8smNkCuKvUkZyElIg_PFvu1kXE";
 
-const money = n => "₡" + n.toLocaleString("es-CR");
+let supabase = null;
+let promesaSupabase = null;
+let authListenerConfigurado = false;
+
+function asegurarSupabase(){
+  if(supabase) return Promise.resolve(supabase);
+  if(promesaSupabase) return promesaSupabase;
+
+  promesaSupabase = new Promise((resolve, reject) => {
+    const conectar = () => {
+      if(!window.supabase?.createClient){
+        reject(new Error("No se pudo cargar la librería de Supabase."));
+        return;
+      }
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      if(!authListenerConfigurado){
+        authListenerConfigurado = true;
+        supabase.auth.onAuthStateChange((event) => {
+          if(event === "SIGNED_OUT") cerrarAdmin();
+        });
+      }
+      resolve(supabase);
+    };
+
+    if(window.supabase?.createClient){
+      conectar();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+    script.async = true;
+    script.onload = conectar;
+    script.onerror = () => reject(new Error("No se pudo descargar Supabase JS."));
+    document.head.appendChild(script);
+  }).catch(error => {
+    promesaSupabase = null;
+    throw error;
+  });
+
+  return promesaSupabase;
+}
+
+let PRODUCTOS = [];
+let PROMOS = [];
+let VENTAS = [];
+let EXTRAS = [];
+let supabaseListo = false;
+
+function fechaInputLocal(valor){
+  if(!valor) return "";
+  const d = new Date(valor);
+  if(Number.isNaN(d.getTime())) return "";
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function cargarDatosSupabase(modoAdmin = false){
+  await asegurarSupabase();
+
+  const productosSelect = modoAdmin
+    ? "*"
+    : "id,categoria,nombre,descripcion,precio,disponible,admite_extras,etiqueta,imagen_url";
+  const extrasSelect = modoAdmin
+    ? "*"
+    : "id,nombre,precio,disponible";
+  const promosSelect = modoAdmin
+    ? "*"
+    : "id,nombre,producto_id,tipo,valor,inicio,fin,activa,created_at";
+
+  const consultas = [
+    supabase.from("productos").select(productosSelect).order("nombre"),
+    supabase.from("extras").select(extrasSelect).order("nombre"),
+    supabase.from("promociones").select(promosSelect).order("created_at", { ascending:false })
+  ];
+
+  if(modoAdmin){
+    consultas.push(supabase.from("ventas").select("*").order("fecha", { ascending:false }));
+  }
+
+  const resultados = await Promise.all(consultas);
+  const [productosRes, extrasRes, promosRes, ventasRes] = resultados;
+
+  for(const r of resultados){
+    if(r.error) throw r.error;
+  }
+
+  PRODUCTOS = (productosRes.data || []).map(p => ({
+    id: String(p.id),
+    categoria: p.categoria,
+    nombre: p.nombre,
+    descripcion: p.descripcion || "",
+    precio: Number(p.precio) || 0,
+    costo: modoAdmin ? (Number(p.costo) || 0) : 0,
+    disponible: p.disponible !== false,
+    admiteExtras: !!p.admite_extras,
+    etiqueta: p.etiqueta || "",
+    imagenUrl: p.imagen_url || ""
+  }));
+
+  EXTRAS = (extrasRes.data || []).map(e => ({
+    id: String(e.id),
+    nombre: e.nombre,
+    precio: Number(e.precio) || 0,
+    costo: modoAdmin ? (Number(e.costo) || 0) : 0,
+    disponible: e.disponible !== false
+  }));
+
+  PROMOS = (promosRes.data || []).map(pr => ({
+    id: String(pr.id),
+    nombre: pr.nombre || "",
+    productoId: pr.producto_id || "todos",
+    tipo: pr.tipo || "monto",
+    valor: Number(pr.valor) || 0,
+    inicio: fechaInputLocal(pr.inicio),
+    fin: fechaInputLocal(pr.fin),
+    activa: !!pr.activa
+  }));
+
+  if(modoAdmin){
+    VENTAS = ((ventasRes && ventasRes.data) || []).map(v => ({
+      id: String(v.id),
+      fecha: v.fecha,
+      items: Array.isArray(v.items) ? v.items : [],
+      total: Number(v.total) || 0,
+      costoTotal: Number(v.costo_total) || 0,
+      utilidad: Number(v.utilidad) || 0
+    }));
+  }
+
+  supabaseListo = true;
+}
+
+async function guardarProductoDB(p){
+  await asegurarSupabase();
+  const { error } = await supabase.from("productos").upsert({
+    id: p.id,
+    categoria: p.categoria,
+    nombre: p.nombre,
+    descripcion: p.descripcion,
+    precio: p.precio,
+    costo: p.costo,
+    disponible: p.disponible,
+    admite_extras: p.admiteExtras,
+    etiqueta: p.etiqueta || "",
+    imagen_url: p.imagenUrl || null
+  });
+  if(error) throw error;
+}
+
+async function guardarExtraDB(e){
+  await asegurarSupabase();
+  const { error } = await supabase.from("extras").upsert({
+    id: e.id,
+    nombre: e.nombre,
+    precio: e.precio,
+    costo: e.costo,
+    disponible: e.disponible
+  });
+  if(error) throw error;
+}
+
+async function guardarPromoDB(pr){
+  await asegurarSupabase();
+  const { error } = await supabase.from("promociones").upsert({
+    id: pr.id,
+    nombre: pr.nombre,
+    producto_id: pr.productoId,
+    tipo: pr.tipo,
+    valor: pr.valor,
+    inicio: pr.inicio ? new Date(pr.inicio).toISOString() : null,
+    fin: pr.fin ? new Date(pr.fin).toISOString() : null,
+    activa: pr.activa
+  });
+  if(error) throw error;
+}
+
+async function guardarVentaDB(v){
+  await asegurarSupabase();
+  const { error } = await supabase.from("ventas").upsert({
+    id: v.id,
+    fecha: v.fecha,
+    items: v.items,
+    total: v.total,
+    costo_total: v.costoTotal,
+    utilidad: v.utilidad
+  });
+  if(error) throw error;
+}
+
+async function eliminarFila(tabla, id){
+  await asegurarSupabase();
+  const { error } = await supabase.from(tabla).delete().eq("id", id);
+  if(error) throw error;
+}
+
+async function borrarTodasLasVentasDB(){
+  await asegurarSupabase();
+  const ids = VENTAS.map(v => v.id);
+  if(!ids.length) return;
+  const { error } = await supabase.from("ventas").delete().in("id", ids);
+  if(error) throw error;
+}
 
 /* ============================================================
-   3. RENDER DEL MENÚ
+   3. ESTADO DEL CARRITO
+   Cada línea del carrito es un producto + su combinación de extras.
+   "La Clásica sola" y "La Clásica con bacon" son líneas distintas.
+   carrito = { claveDeLinea: {productoId, extrasIds, cantidad} }
+   ============================================================ */
+let carrito = {};
+let entregaSeleccionada = "entrega";
+let seleccionExtras = {}; // { productoId: [extraId, ...] } — lo que está marcado en cada tarjeta ahora mismo
+
+const money = n => "₡" + Math.round(n).toLocaleString("es-CR");
+const idNuevo = prefijo => prefijo + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+/* ============================================================
+   4. PROMOCIONES — lógica de vigencia y precio
+   ============================================================ */
+function estadoPromo(promo){
+  if(!promo.activa) return "pausada";
+  const ahora = new Date();
+  const inicio = promo.inicio ? new Date(promo.inicio) : null;
+  const fin = promo.fin ? new Date(promo.fin) : null;
+  if(fin && ahora > fin) return "expirada";
+  if(inicio && ahora < inicio) return "programada";
+  return "vigente";
+}
+function promoParaProducto(id){
+  return PROMOS.find(pr => (pr.productoId === id || pr.productoId === "todos") && estadoPromo(pr) === "vigente");
+}
+function precioVigente(p){
+  const promo = promoParaProducto(p.id);
+  if(!promo) return { precio: p.precio, original: null, promo: null };
+  const nuevo = promo.tipo === "precio" ? promo.valor : Math.max(0, p.precio - promo.valor);
+  return { precio: nuevo, original: p.precio, promo };
+}
+
+/* ============================================================
+   5. EXTRAS — ayudantes
+   ============================================================ */
+function extrasDisponibles(){
+  return EXTRAS.filter(e => e.disponible !== false);
+}
+function extraPorId(id){
+  return EXTRAS.find(e => e.id === id);
+}
+function precioExtras(extrasIds){
+  return (extrasIds || []).reduce((s,id) => { const e = extraPorId(id); return s + (e ? e.precio : 0); }, 0);
+}
+function costoExtras(extrasIds){
+  return (extrasIds || []).reduce((s,id) => { const e = extraPorId(id); return s + (e ? e.costo : 0); }, 0);
+}
+function nombreExtras(extrasIds){
+  return (extrasIds || []).map(id => { const e = extraPorId(id); return e ? e.nombre : null; }).filter(Boolean);
+}
+function claveLinea(productoId, extrasIds){
+  const orden = (extrasIds || []).slice().sort();
+  return orden.length ? productoId + "::" + orden.join(",") : productoId;
+}
+function precioLinea(p, extrasIds){
+  return precioVigente(p).precio + precioExtras(extrasIds);
+}
+function toggleExtraSeleccion(productoId, extraId, marcado){
+  if(!seleccionExtras[productoId]) seleccionExtras[productoId] = [];
+  if(marcado){
+    if(!seleccionExtras[productoId].includes(extraId)) seleccionExtras[productoId].push(extraId);
+  }else{
+    seleccionExtras[productoId] = seleccionExtras[productoId].filter(id => id !== extraId);
+  }
+  actualizarControlCantidad(productoId);
+}
+
+/* ============================================================
+   6. RENDER DEL MENÚ (vista cliente)
    ============================================================ */
 function renderNav(){
   const nav = document.getElementById("cat-nav");
@@ -740,6 +1381,7 @@ function renderMenu(){
   const root = document.getElementById("menu-root");
   root.innerHTML = CATEGORIAS.map(cat => {
     const items = PRODUCTOS.filter(p => p.categoria === cat.id);
+    if(items.length === 0) return "";
     return `
       <section class="section" id="sec-${cat.id}">
         <div class="section-title">
@@ -749,70 +1391,129 @@ function renderMenu(){
         ${items.map(renderCard).join("")}
       </section>`;
   }).join("");
+
+  if(window.observadorTarjetas){
+    document.querySelectorAll(".card").forEach(card => window.observadorTarjetas.observe(card));
+  }
 }
 
 function renderCard(p){
+  const agotado = p.disponible === false;
+  const { precio, original, promo } = precioVigente(p);
+  const extrasDisp = p.admiteExtras ? extrasDisponibles() : [];
+  const seleccion = seleccionExtras[p.id] || [];
+
   return `
-    <article class="card" id="card-${p.id}">
-      <div class="photo"><span class="ph-icon">Foto</span></div>
+    <article class="card${agotado ? " agotado" : ""}" id="card-${p.id}">
+      <div class="photo">
+        ${p.imagenUrl ? `<img src="${escAttr(p.imagenUrl)}" alt="${escAttr(p.nombre)}" loading="lazy" decoding="async">` : `<span class="ph-icon">Foto</span>`}
+      </div>
       <div class="card-body">
-        ${p.etiqueta ? `<span class="card-tag">${p.etiqueta}</span>` : ""}
-        <h3>${p.nombre}</h3>
-        <p class="desc">${p.descripcion}</p>
-        <div class="card-footer">
-          <span class="price">${money(p.precio)}</span>
-          ${renderControlCantidad(p.id)}
+        ${p.etiqueta ? `<span class="card-tag">${escHtml(p.etiqueta)}</span>` : ""}
+        ${promo ? `<span class="card-tag promo">🔥 ${escHtml(promo.nombre)}</span>` : ""}
+        <h3>${escHtml(p.nombre)}</h3>
+        <p class="desc">${escHtml(p.descripcion)}</p>
+
+        ${(!agotado && extrasDisp.length > 0) ? `
+        <div class="extras-box">
+          <span class="extras-label">Agregale extras</span>
+          ${extrasDisp.map(e => `
+            <label class="extra-chip">
+              <input type="checkbox" ${seleccion.includes(e.id) ? "checked" : ""} onchange="toggleExtraSeleccion('${p.id}','${e.id}', this.checked)">
+              <span>${escHtml(e.nombre)}</span>
+              <span class="extra-price">+${money(e.precio)}</span>
+            </label>`).join("")}
+        </div>` : ""}
+
+        <div class="card-footer" id="footer-${p.id}">
+          ${renderPrecioFooter(p)}
+          ${agotado ? `<span class="sold-out-label">Agotado</span>` : renderControlCantidad(p.id)}
         </div>
       </div>
     </article>`;
 }
 
-function renderControlCantidad(id){
-  const cant = carrito[id] || 0;
+function renderPrecioFooter(p){
+  const { precio, original } = precioVigente(p);
+  const seleccion = seleccionExtras[p.id] || [];
+  const totalLinea = precio + precioExtras(seleccion);
+  return `
+    <span>
+      ${original !== null ? `<span class="price-old">${money(original)}</span>` : ""}
+      <span class="price">${money(totalLinea)}</span>
+    </span>`;
+}
+
+function renderControlCantidad(productoId){
+  const clave = claveLinea(productoId, seleccionExtras[productoId]);
+  const cant = (carrito[clave] && carrito[clave].cantidad) || 0;
   if(cant === 0){
-    return `<button class="add-btn" onclick="agregar('${id}')">Agregar</button>`;
+    return `<button class="add-btn" onclick="agregar('${productoId}')">Agregar</button>`;
   }
   return `
     <div class="stepper">
-      <button onclick="quitar('${id}')" aria-label="Quitar uno">−</button>
+      <button onclick="quitar('${productoId}')" aria-label="Quitar uno">−</button>
       <span class="qty">${cant}</span>
-      <button onclick="agregar('${id}')" aria-label="Agregar uno">+</button>
+      <button onclick="agregar('${productoId}')" aria-label="Agregar uno">+</button>
     </div>`;
 }
 
+function actualizarControlCantidad(productoId){
+  const footer = document.getElementById("footer-" + productoId);
+  if(!footer) return;
+  const p = PRODUCTOS.find(p => p.id === productoId);
+  if(!p) return;
+  const agotado = p.disponible === false;
+  footer.innerHTML = `
+    ${renderPrecioFooter(p)}
+    ${agotado ? `<span class="sold-out-label">Agotado</span>` : renderControlCantidad(productoId)}`;
+}
+
 /* ============================================================
-   4. LÓGICA DEL CARRITO
+   7. LÓGICA DEL CARRITO
    ============================================================ */
-function agregar(id){
-  carrito[id] = (carrito[id] || 0) + 1;
+function agregar(productoId){
+  const p = PRODUCTOS.find(p => p.id === productoId);
+  if(!p || p.disponible === false) return;
+  const extrasIds = (seleccionExtras[productoId] || []).slice();
+  const clave = claveLinea(productoId, extrasIds);
+  if(carrito[clave]){
+    carrito[clave].cantidad += 1;
+  }else{
+    carrito[clave] = { productoId, extrasIds, cantidad: 1 };
+  }
   actualizarTodo();
 }
-function quitar(id){
-  if(!carrito[id]) return;
-  carrito[id] -= 1;
-  if(carrito[id] <= 0) delete carrito[id];
+function quitar(productoId){
+  const clave = claveLinea(productoId, seleccionExtras[productoId]);
+  if(!carrito[clave]) return;
+  carrito[clave].cantidad -= 1;
+  if(carrito[clave].cantidad <= 0) delete carrito[clave];
+  actualizarTodo();
+}
+function quitarLinea(clave){
+  delete carrito[clave];
+  actualizarTodo();
+}
+function agregarLinea(clave){
+  if(!carrito[clave]) return;
+  carrito[clave].cantidad += 1;
   actualizarTodo();
 }
 
 function totalCarrito(){
-  return Object.entries(carrito).reduce((sum,[id,cant]) => {
-    const p = PRODUCTOS.find(p => p.id === id);
-    return sum + (p ? p.precio * cant : 0);
+  return Object.values(carrito).reduce((sum, linea) => {
+    const p = PRODUCTOS.find(p => p.id === linea.productoId);
+    if(!p) return sum;
+    return sum + precioLinea(p, linea.extrasIds) * linea.cantidad;
   }, 0);
 }
 function cantidadTotal(){
-  return Object.values(carrito).reduce((a,b) => a+b, 0);
+  return Object.values(carrito).reduce((a,linea) => a + linea.cantidad, 0);
 }
 
 function actualizarTodo(){
-  document.querySelectorAll(".card").forEach(card => {
-    const id = card.id.replace("card-","");
-    const footer = card.querySelector(".card-footer");
-    const priceEl = footer.querySelector(".price");
-    footer.innerHTML = "";
-    footer.appendChild(priceEl);
-    footer.insertAdjacentHTML("beforeend", renderControlCantidad(id));
-  });
+  renderMenu();
   actualizarBarraCarrito();
   renderLineasCarrito();
 }
@@ -845,20 +1546,24 @@ function renderLineasCarrito(){
   document.getElementById("btn-continuar").disabled = false;
   document.getElementById("btn-continuar").style.opacity = "1";
 
-  cont.innerHTML = entries.map(([id,cant]) => {
-    const p = PRODUCTOS.find(p => p.id === id);
+  cont.innerHTML = entries.map(([clave, linea]) => {
+    const p = PRODUCTOS.find(p => p.id === linea.productoId);
+    if(!p) return "";
+    const precioUnit = precioLinea(p, linea.extrasIds);
+    const extrasTxt = nombreExtras(linea.extrasIds).join(", ");
     return `
       <div class="line-item">
         <div>
-          <div class="name">${p.nombre}</div>
-          <div class="sub">${money(p.precio)} c/u</div>
+          <div class="name">${escHtml(p.nombre)}</div>
+          ${extrasTxt ? `<div class="sub">+ ${escHtml(extrasTxt)}</div>` : ""}
+          <div class="sub">${money(precioUnit)} c/u</div>
         </div>
         <div class="right">
-          <span class="price">${money(p.precio * cant)}</span>
+          <span class="price">${money(precioUnit * linea.cantidad)}</span>
           <div class="mini-stepper">
-            <button onclick="quitar('${id}')" aria-label="Quitar uno">−</button>
-            <span class="qty">${cant}</span>
-            <button onclick="agregar('${id}')" aria-label="Agregar uno">+</button>
+            <button onclick="quitarLinea('${clave}')" aria-label="Quitar uno">−</button>
+            <span class="qty">${linea.cantidad}</span>
+            <button onclick="agregarLinea('${clave}')" aria-label="Agregar uno">+</button>
           </div>
         </div>
       </div>`;
@@ -872,7 +1577,7 @@ function renderLineasCarrito(){
 }
 
 /* ============================================================
-   5. NAVEGACIÓN ENTRE PANTALLAS
+   8. NAVEGACIÓN ENTRE PANTALLAS
    ============================================================ */
 function irAlMenu(){
   document.getElementById("sec-burgers").scrollIntoView({behavior:"smooth", block:"start"});
@@ -880,6 +1585,7 @@ function irAlMenu(){
 function irACategoria(id){
   document.querySelectorAll(".cat-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === id));
   const el = document.getElementById("sec-" + id);
+  if(!el) return;
   const nav = document.getElementById("cat-nav");
   const y = el.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 8;
   window.scrollTo({top:y, behavior:"smooth"});
@@ -895,20 +1601,61 @@ function cerrarHoja(id){ document.getElementById(id).classList.remove("show"); }
 
 function irAEntrega(){
   if(cantidadTotal() === 0) return;
+  entregaSeleccionada = "entrega";
   cerrarHoja("sheet-carrito");
   setTimeout(() => abrirHoja("sheet-entrega"), 180);
 }
 
-function elegirEntrega(tipo){
-  entregaSeleccionada = tipo;
-  document.getElementById("opt-recoger").classList.toggle("selected", tipo === "recoger");
-  document.getElementById("opt-entrega").classList.toggle("selected", tipo === "entrega");
-  document.getElementById("campos-entrega").classList.remove("hidden");
-  document.getElementById("campo-direccion").style.display = tipo === "entrega" ? "block" : "none";
+function elegirEntrega(){
+  entregaSeleccionada = "entrega";
+}
+
+let ubicacionCliente = null;
+
+function compartirUbicacion(){
+  const estado = document.getElementById("ubicacion-estado");
+  const boton = document.getElementById("btn-compartir-ubicacion");
+
+  if(!navigator.geolocation){
+    estado.textContent = "Este dispositivo o navegador no permite obtener la ubicación.";
+    estado.className = "location-status error";
+    return;
+  }
+
+  boton.disabled = true;
+  boton.textContent = "Obteniendo ubicación…";
+  estado.textContent = "Solicitando permiso de ubicación…";
+  estado.className = "location-status";
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = Number(pos.coords.latitude.toFixed(6));
+      const lng = Number(pos.coords.longitude.toFixed(6));
+      ubicacionCliente = { lat, lng };
+      const maps = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      const waze = `https://waze.com/ul?ll=${lat}%2C${lng}&navigate=yes`;
+      estado.innerHTML = `✅ Ubicación lista · <a href="${maps}" target="_blank" rel="noopener">Google Maps</a> · <a href="${waze}" target="_blank" rel="noopener">Waze</a>`;
+      estado.className = "location-status ok";
+      boton.textContent = "📍 Actualizar ubicación";
+      boton.disabled = false;
+    },
+    err => {
+      const mensajes = {
+        1: "Debés permitir el acceso a la ubicación para poder enviar el pedido.",
+        2: "No se pudo determinar tu ubicación. Activá el GPS e intentá de nuevo.",
+        3: "La ubicación tardó demasiado. Intentá nuevamente."
+      };
+      estado.textContent = mensajes[err.code] || "No se pudo obtener la ubicación.";
+      estado.className = "location-status error";
+      boton.textContent = "📍 Compartir mi ubicación";
+      boton.disabled = false;
+    },
+    { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
+  );
 }
 
 /* ============================================================
-   6. ENVÍO POR WHATSAPP
+   9. ENVÍO POR WHATSAPP
    ============================================================ */
 function enviarPorWhatsapp(){
   if(cantidadTotal() === 0) return;
@@ -918,41 +1665,827 @@ function enviarPorWhatsapp(){
     return;
   }
 
+  if(!ubicacionCliente){
+    alert("Por favor compartí tu ubicación antes de realizar el pedido.");
+    return;
+  }
+
   const nombre = document.getElementById("input-nombre").value.trim();
   const direccion = document.getElementById("input-direccion").value.trim();
   const nota = document.getElementById("input-nota").value.trim();
 
-  let msg = `Hola ${NOMBRE_NEGOCIO}, quiero hacer este pedido:%0A%0A`;
-  Object.entries(carrito).forEach(([id,cant]) => {
-    const p = PRODUCTOS.find(p => p.id === id);
-    msg += `• ${p.nombre} x${cant} — ${money(p.precio * cant)}%0A`;
-  });
-  msg += `%0ATotal: ${money(totalCarrito())}%0A%0A`;
-  msg += entregaSeleccionada === "recoger" ? "Modalidad: Recoger en el local%0A" : "Modalidad: Entrega a domicilio%0A";
-  if(nombre) msg += `Nombre: ${nombre}%0A`;
-  if(direccion && entregaSeleccionada === "entrega") msg += `Dirección: ${direccion}%0A`;
-  if(nota) msg += `Nota: ${nota}%0A`;
+  if(!nombre){
+    alert("Por favor indicá tu nombre.");
+    document.getElementById("input-nombre").focus();
+    return;
+  }
 
+  if(entregaSeleccionada === "entrega" && !direccion){
+    alert("Por favor indicá la dirección de entrega.");
+    document.getElementById("input-direccion").focus();
+    return;
+  }
+
+  const lineas = [];
+  lineas.push(`Hola ${NOMBRE_NEGOCIO}, quiero hacer este pedido:`);
+  lineas.push("");
+
+  Object.values(carrito).forEach(linea => {
+    const p = PRODUCTOS.find(p => p.id === linea.productoId);
+    if(!p) return;
+    const precioUnit = precioLinea(p, linea.extrasIds);
+    const extrasTxt = nombreExtras(linea.extrasIds).join(", ");
+    lineas.push(`• ${p.nombre}${extrasTxt ? " + " + extrasTxt : ""} x${linea.cantidad} — ${money(precioUnit * linea.cantidad)}`);
+  });
+
+  lineas.push("");
+  lineas.push(`Total: ${money(totalCarrito())}`);
+  lineas.push(`Ubicación: https://www.google.com/maps/search/?api=1&query=${ubicacionCliente.lat},${ubicacionCliente.lng}`);
+  lineas.push(`Waze: https://waze.com/ul?ll=${ubicacionCliente.lat}%2C${ubicacionCliente.lng}&navigate=yes`);
+  
+  lineas.push("");
+  lineas.push("Modalidad: Entrega Express");
+
+  if(nombre) lineas.push(`Nombre: ${nombre}`);
+  if(direccion && entregaSeleccionada === "entrega") lineas.push(`Dirección: ${direccion}`);
+  if(nota) lineas.push(`Nota: ${nota}`);
+
+  const msg = encodeURIComponent(lineas.join("\n"));
   const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${msg}`;
   window.open(url, "_blank");
 }
 
 /* ============================================================
-   7. INICIO
+   10. PANEL ADMIN — acceso
    ============================================================ */
-renderNav();
-renderMenu();
-actualizarBarraCarrito();
+async function abrirPinGate(){
+  document.getElementById("pin-error").textContent = "";
+  document.getElementById("admin-email").value = "";
+  document.getElementById("admin-password").value = "";
+  document.getElementById("pin-gate").classList.remove("hidden");
+  setTimeout(() => document.getElementById("admin-email").focus(), 50);
+}
+function cerrarPinGate(){
+  document.getElementById("pin-gate").classList.add("hidden");
+}
+async function verificarPin(){
+  try{
+    await asegurarSupabase();
+  }catch(error){
+    document.getElementById("pin-error").textContent = "No se pudo conectar con Supabase.";
+    return;
+  }
+  const email = document.getElementById("admin-email").value.trim();
+  const password = document.getElementById("admin-password").value;
+  const errorEl = document.getElementById("pin-error");
+  if(!email || !password){
+    errorEl.textContent = "Ingresá correo y contraseña.";
+    return;
+  }
+  errorEl.textContent = "Ingresando…";
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if(error){
+    errorEl.textContent = "No se pudo iniciar sesión. Revisá correo y contraseña.";
+    return;
+  }
+  cerrarPinGate();
+  await abrirAdmin();
+}
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Enter" && !document.getElementById("pin-gate").classList.contains("hidden")){
+    verificarPin();
+  }
+});
+async function cerrarSesionAdmin(){
+  if(supabase) await supabase.auth.signOut();
+  cerrarAdmin();
+}
 
-const observadorTarjetas = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if(entry.isIntersecting){
-      setTimeout(() => entry.target.classList.add("in-view"), i * 60);
-      observadorTarjetas.unobserve(entry.target);
-    }
+async function abrirAdmin(){
+  const { data:{ session } } = await supabase.auth.getSession();
+  if(!session){
+    abrirPinGate();
+    return;
+  }
+  document.getElementById("vista-admin").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  try{
+    await cargarDatosSupabase(true);
+    renderAdminProductos();
+    renderAdminExtras();
+    renderAdminPromos();
+    renderContabilidad();
+  }catch(error){
+    console.error(error);
+    alert("No se pudieron cargar los datos de Supabase: " + (error.message || error));
+  }
+}
+function cerrarAdmin(){
+  document.getElementById("vista-admin").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+function cambiarTabAdmin(tab){
+  document.querySelectorAll(".admin-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  ["productos","extras","promos","contabilidad"].forEach(t => {
+    document.getElementById("tab-" + t).classList.toggle("hidden", t !== tab);
   });
-}, {threshold: 0.15});
-document.querySelectorAll(".card").forEach(card => observadorTarjetas.observe(card));
+  if(tab === "contabilidad") renderContabilidad();
+}
+
+/* ============================================================
+   11. PANEL ADMIN — PRODUCTOS
+   ============================================================ */
+function renderAdminProductos(){
+  const cont = document.getElementById("admin-productos-lista");
+  if(PRODUCTOS.length === 0){
+    cont.innerHTML = `<div class="a-empty">Todavía no hay productos. Agregá el primero abajo.</div>`;
+    return;
+  }
+  cont.innerHTML = PRODUCTOS.map(p => `
+    <div class="admin-card" id="admin-p-${p.id}">
+      <div class="admin-card-top">
+        <span class="admin-card-name">${escHtml(p.nombre || "Producto nuevo")}</span>
+        <span class="admin-badge ${p.disponible === false ? "off" : "on"}">${p.disponible === false ? "Agotado" : "Disponible"}</span>
+      </div>
+
+      <div class="admin-photo-box">
+        <div class="admin-photo-preview" id="foto-preview-${p.id}">
+          ${p.imagenUrl ? `<img src="${escAttr(p.imagenUrl)}" alt="Foto de ${escAttr(p.nombre || 'producto')}">` : `<span>Sin foto todavía</span>`}
+        </div>
+        <input type="file" id="foto-input-${p.id}" accept="image/*" class="hidden" onchange="subirFotoProducto('${p.id}', this)">
+        <div class="admin-photo-actions">
+          <label class="a-btn save" for="foto-input-${p.id}" style="cursor:pointer;">📷 ${p.imagenUrl ? 'Cambiar foto' : 'Subir foto'}</label>
+          ${p.imagenUrl ? `<button type="button" class="a-btn delete" onclick="eliminarFotoProducto('${p.id}')">Eliminar foto</button>` : ''}
+        </div>
+        <div class="admin-photo-status" id="foto-status-${p.id}"></div>
+      </div>
+
+      <div class="a-field">
+        <label>Nombre</label>
+        <input type="text" id="p-nombre-${p.id}" value="${escAttr(p.nombre)}">
+      </div>
+      <div class="a-row">
+        <div class="a-field">
+          <label>Categoría</label>
+          <select id="p-categoria-${p.id}">
+            ${CATEGORIAS.map(c => `<option value="${c.id}" ${c.id===p.categoria?"selected":""}>${c.nombre}</option>`).join("")}
+          </select>
+        </div>
+        <div class="a-field">
+          <label>Etiqueta (opcional)</label>
+          <input type="text" id="p-etiqueta-${p.id}" value="${escAttr(p.etiqueta || "")}" placeholder="Ej: Más pedida">
+        </div>
+      </div>
+      <div class="a-field">
+        <label>Descripción</label>
+        <textarea id="p-desc-${p.id}">${escHtml(p.descripcion || "")}</textarea>
+      </div>
+      <div class="a-row">
+        <div class="a-field">
+          <label>Precio de venta (₡)</label>
+          <input type="number" id="p-precio-${p.id}" value="${p.precio}" min="0" step="50">
+        </div>
+        <div class="a-field">
+          <label>Costo de ingredientes (₡)</label>
+          <input type="number" id="p-costo-${p.id}" value="${p.costo}" min="0" step="10">
+        </div>
+      </div>
+
+      <div class="a-toggle-row">
+        <span>Disponible en el menú</span>
+        <button class="switch ${p.disponible !== false ? "on" : ""}" id="p-switch-${p.id}" onclick="toggleDisponible('${p.id}')"></button>
+      </div>
+      <div class="a-toggle-row">
+        <span>Permite agregar extras (bacon, cebolla crispy, etc.)</span>
+        <button class="switch ${p.admiteExtras ? "on" : ""}" id="p-extras-switch-${p.id}" onclick="toggleAdmiteExtras('${p.id}')"></button>
+      </div>
+
+      <div class="a-actions">
+        <button class="a-btn save" onclick="guardarProducto('${p.id}')">Guardar</button>
+        <button class="a-btn delete" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function escHtml(str){
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escAttr(str){
+  return escHtml(str);
+}
+
+function toggleDisponible(id){
+  document.getElementById("p-switch-" + id).classList.toggle("on");
+}
+function toggleAdmiteExtras(id){
+  document.getElementById("p-extras-switch-" + id).classList.toggle("on");
+}
+
+const STORAGE_BUCKET_PRODUCTOS = "productos";
+
+function extensionImagen(file){
+  const tipo = (file.type || "").toLowerCase();
+  if(tipo.includes("png")) return "png";
+  if(tipo.includes("webp")) return "webp";
+  return "jpg";
+}
+
+function cargarImagenArchivo(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("No se pudo leer la imagen.")); };
+    img.src = url;
+  });
+}
+
+async function comprimirImagen(file, maxLado = 1400, calidad = 0.82){
+  if(!file || !file.type.startsWith("image/")) throw new Error("Seleccioná un archivo de imagen válido.");
+  if(file.size > 25 * 1024 * 1024) throw new Error("La imagen es demasiado grande. Máximo 25 MB antes de comprimir.");
+
+  const img = await cargarImagenArchivo(file);
+  let ancho = img.naturalWidth || img.width;
+  let alto = img.naturalHeight || img.height;
+  if(!ancho || !alto) throw new Error("No se pudieron obtener las dimensiones de la imagen.");
+
+  const escala = Math.min(1, maxLado / Math.max(ancho, alto));
+  ancho = Math.max(1, Math.round(ancho * escala));
+  alto = Math.max(1, Math.round(alto * escala));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = ancho;
+  canvas.height = alto;
+  const ctx = canvas.getContext("2d", { alpha:false });
+  ctx.drawImage(img, 0, 0, ancho, alto);
+
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("No se pudo comprimir la imagen.")), "image/jpeg", calidad);
+  });
+}
+
+function rutaStorageDesdeUrl(url){
+  if(!url) return null;
+  const marcador = `/storage/v1/object/public/${STORAGE_BUCKET_PRODUCTOS}/`;
+  const pos = url.indexOf(marcador);
+  if(pos === -1) return null;
+  return decodeURIComponent(url.slice(pos + marcador.length).split("?")[0]);
+}
+
+async function subirFotoProducto(id, input){
+  const file = input?.files?.[0];
+  if(!file) return;
+  const p = PRODUCTOS.find(x => x.id === id);
+  if(!p) return;
+
+  const status = document.getElementById("foto-status-" + id);
+  if(status) status.textContent = "Comprimiendo foto…";
+
+  try{
+    await asegurarSupabase();
+    const { data:{ session } } = await supabase.auth.getSession();
+    if(!session) throw new Error("Tu sesión de administrador expiró. Iniciá sesión de nuevo.");
+
+    const blob = await comprimirImagen(file);
+    const rutaAnterior = rutaStorageDesdeUrl(p.imagenUrl);
+    const ruta = `productos/${id}/${Date.now()}.jpg`;
+
+    if(status) status.textContent = "Subiendo a Supabase…";
+    const { error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET_PRODUCTOS)
+      .upload(ruta, blob, { contentType:"image/jpeg", cacheControl:"31536000", upsert:false });
+    if(uploadError) throw uploadError;
+
+    const { data: publicData } = supabase.storage.from(STORAGE_BUCKET_PRODUCTOS).getPublicUrl(ruta);
+    const nuevaUrl = publicData?.publicUrl;
+    if(!nuevaUrl) throw new Error("Supabase no devolvió la URL pública de la foto.");
+
+    const urlAnterior = p.imagenUrl || "";
+    p.imagenUrl = nuevaUrl;
+    try{
+      await guardarProductoDB(p);
+    }catch(error){
+      p.imagenUrl = urlAnterior;
+      await supabase.storage.from(STORAGE_BUCKET_PRODUCTOS).remove([ruta]);
+      throw error;
+    }
+
+    if(rutaAnterior){
+      supabase.storage.from(STORAGE_BUCKET_PRODUCTOS).remove([rutaAnterior]).catch(() => {});
+    }
+
+    renderAdminProductos();
+    renderMenu();
+  }catch(error){
+    console.error(error);
+    if(status) status.textContent = "Error: " + (error.message || error);
+    alert("No se pudo subir la foto: " + (error.message || error));
+  }finally{
+    if(input) input.value = "";
+  }
+}
+
+async function eliminarFotoProducto(id){
+  const p = PRODUCTOS.find(x => x.id === id);
+  if(!p || !p.imagenUrl) return;
+  if(!confirm("¿Eliminar la foto de este producto?")) return;
+  const urlAnterior = p.imagenUrl;
+  const rutaAnterior = rutaStorageDesdeUrl(urlAnterior);
+
+  try{
+    p.imagenUrl = "";
+    await guardarProductoDB(p);
+    if(rutaAnterior){
+      const { error } = await supabase.storage.from(STORAGE_BUCKET_PRODUCTOS).remove([rutaAnterior]);
+      if(error) console.warn("La referencia se eliminó, pero no se pudo borrar el archivo viejo:", error);
+    }
+    renderAdminProductos();
+    renderMenu();
+  }catch(error){
+    p.imagenUrl = urlAnterior;
+    alert("No se pudo eliminar la foto: " + (error.message || error));
+  }
+}
+
+async function guardarProducto(id){
+  const p = PRODUCTOS.find(p => p.id === id);
+  if(!p) return;
+  p.nombre = document.getElementById("p-nombre-" + id).value.trim();
+  p.categoria = document.getElementById("p-categoria-" + id).value;
+  p.etiqueta = document.getElementById("p-etiqueta-" + id).value.trim();
+  p.descripcion = document.getElementById("p-desc-" + id).value.trim();
+  p.precio = Number(document.getElementById("p-precio-" + id).value) || 0;
+  p.costo = Number(document.getElementById("p-costo-" + id).value) || 0;
+  p.disponible = document.getElementById("p-switch-" + id).classList.contains("on");
+  p.admiteExtras = document.getElementById("p-extras-switch-" + id).classList.contains("on");
+
+  try{ await guardarProductoDB(p); }catch(error){ alert("No se pudo guardar el producto: " + error.message); return; }
+  renderAdminProductos();
+  renderMenu();
+  actualizarBarraCarrito();
+  renderContabilidad();
+}
+
+async function adminNuevoProducto(){
+  const nuevo = {
+    id: idNuevo("p"),
+    categoria: CATEGORIAS[0].id,
+    nombre: "",
+    descripcion: "",
+    precio: 0,
+    costo: 0,
+    disponible: true,
+    admiteExtras: false,
+    etiqueta: "",
+    imagenUrl: ""
+  };
+  PRODUCTOS.push(nuevo);
+  try{ await guardarProductoDB(nuevo); }catch(error){ PRODUCTOS = PRODUCTOS.filter(x => x.id !== nuevo.id); alert("No se pudo crear el producto: " + error.message); return; }
+  renderAdminProductos();
+  renderMenu();
+  const el = document.getElementById("admin-p-" + nuevo.id);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+async function eliminarProducto(id){
+  const p = PRODUCTOS.find(p => p.id === id);
+  if(!p) return;
+  if(!confirm(`¿Eliminar "${p.nombre || "este producto"}" del menú?`)) return;
+  try{ await eliminarFila("productos", id); }catch(error){ alert("No se pudo eliminar el producto: " + error.message); return; }
+  PRODUCTOS = PRODUCTOS.filter(p => p.id !== id);
+  renderAdminProductos();
+  renderMenu();
+  actualizarBarraCarrito();
+  renderContabilidad();
+}
+
+/* ============================================================
+   12. PANEL ADMIN — EXTRAS
+   ============================================================ */
+function renderAdminExtras(){
+  const cont = document.getElementById("admin-extras-lista");
+  if(EXTRAS.length === 0){
+    cont.innerHTML = `<div class="a-empty">No hay extras creados. Agregá el primero abajo.</div>`;
+    return;
+  }
+  cont.innerHTML = EXTRAS.map(e => `
+    <div class="admin-card" id="admin-e-${e.id}">
+      <div class="admin-card-top">
+        <span class="admin-card-name">${escHtml(e.nombre || "Extra nuevo")}</span>
+        <span class="admin-badge ${e.disponible === false ? "off" : "on"}">${e.disponible === false ? "Oculto" : "Visible"}</span>
+      </div>
+      <div class="a-field">
+        <label>Nombre del extra</label>
+        <input type="text" id="e-nombre-${e.id}" value="${escAttr(e.nombre)}" placeholder="Ej: Bacon">
+      </div>
+      <div class="a-row">
+        <div class="a-field">
+          <label>Precio para el cliente (₡)</label>
+          <input type="number" id="e-precio-${e.id}" value="${e.precio}" min="0" step="50">
+        </div>
+        <div class="a-field">
+          <label>Costo del extra (₡)</label>
+          <input type="number" id="e-costo-${e.id}" value="${e.costo}" min="0" step="10">
+        </div>
+      </div>
+      <div class="a-toggle-row">
+        <span>Visible para el cliente</span>
+        <button class="switch ${e.disponible !== false ? "on" : ""}" id="e-switch-${e.id}" onclick="toggleExtraDisponible('${e.id}')"></button>
+      </div>
+      <div class="a-actions">
+        <button class="a-btn save" onclick="guardarExtra('${e.id}')">Guardar</button>
+        <button class="a-btn delete" onclick="eliminarExtra('${e.id}')">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function toggleExtraDisponible(id){
+  document.getElementById("e-switch-" + id).classList.toggle("on");
+}
+
+async function guardarExtra(id){
+  const e = EXTRAS.find(e => e.id === id);
+  if(!e) return;
+  e.nombre = document.getElementById("e-nombre-" + id).value.trim();
+  e.precio = Number(document.getElementById("e-precio-" + id).value) || 0;
+  e.costo = Number(document.getElementById("e-costo-" + id).value) || 0;
+  e.disponible = document.getElementById("e-switch-" + id).classList.contains("on");
+
+  try{ await guardarExtraDB(e); }catch(error){ alert("No se pudo guardar el extra: " + error.message); return; }
+  renderAdminExtras();
+  renderMenu();
+  actualizarBarraCarrito();
+}
+
+async function adminNuevoExtra(){
+  const nuevo = { id: idNuevo("extra"), nombre: "", precio: 0, costo: 0, disponible: true };
+  EXTRAS.push(nuevo);
+  try{ await guardarExtraDB(nuevo); }catch(error){ EXTRAS = EXTRAS.filter(x => x.id !== nuevo.id); alert("No se pudo crear el extra: " + error.message); return; }
+  renderAdminExtras();
+  const el = document.getElementById("admin-e-" + nuevo.id);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+async function eliminarExtra(id){
+  const e = EXTRAS.find(e => e.id === id);
+  if(!e) return;
+  if(!confirm(`¿Eliminar el extra "${e.nombre || "sin nombre"}"?`)) return;
+  try{ await eliminarFila("extras", id); }catch(error){ alert("No se pudo eliminar el extra: " + error.message); return; }
+  EXTRAS = EXTRAS.filter(e => e.id !== id);
+  Object.keys(seleccionExtras).forEach(productoId => {
+    seleccionExtras[productoId] = (seleccionExtras[productoId] || []).filter(extraId => extraId !== id);
+  });
+  renderAdminExtras();
+  renderMenu();
+  actualizarBarraCarrito();
+}
+
+/* ============================================================
+   13. PANEL ADMIN — PROMOCIONES
+   ============================================================ */
+const ETIQUETA_ESTADO_PROMO = {
+  vigente: "Vigente ahora",
+  programada: "Programada",
+  expirada: "Expirada",
+  pausada: "Pausada"
+};
+const CLASE_ESTADO_PROMO = {
+  vigente: "live",
+  programada: "on",
+  expirada: "off",
+  pausada: "off"
+};
+
+function renderAdminPromos(){
+  const cont = document.getElementById("admin-promos-lista");
+  if(PROMOS.length === 0){
+    cont.innerHTML = `<div class="a-empty">No hay promociones creadas. Agregá una promoción por tiempo limitado abajo.</div>`;
+    return;
+  }
+  cont.innerHTML = PROMOS.map(pr => {
+    const estado = estadoPromo(pr);
+    return `
+    <div class="admin-card" id="admin-promo-${pr.id}">
+      <div class="admin-card-top">
+        <span class="admin-card-name">${escHtml(pr.nombre || "Promoción nueva")}</span>
+        <span class="admin-badge ${CLASE_ESTADO_PROMO[estado]}">${ETIQUETA_ESTADO_PROMO[estado]}</span>
+      </div>
+
+      <div class="a-field">
+        <label>Nombre de la promoción</label>
+        <input type="text" id="pr-nombre-${pr.id}" value="${escAttr(pr.nombre)}" placeholder="Ej: Miércoles de Smash">
+      </div>
+      <div class="a-field">
+        <label>Aplica a</label>
+        <select id="pr-producto-${pr.id}">
+          <option value="todos" ${pr.productoId==="todos"?"selected":""}>Todo el menú</option>
+          ${PRODUCTOS.map(p => `<option value="${p.id}" ${pr.productoId===p.id?"selected":""}>${p.nombre}</option>`).join("")}
+        </select>
+      </div>
+      <div class="a-row">
+        <div class="a-field">
+          <label>Tipo de descuento</label>
+          <select id="pr-tipo-${pr.id}">
+            <option value="monto" ${pr.tipo==="monto"?"selected":""}>Rebaja un monto (₡)</option>
+            <option value="precio" ${pr.tipo==="precio"?"selected":""}>Precio fijo (₡)</option>
+          </select>
+        </div>
+        <div class="a-field">
+          <label>Valor (₡)</label>
+          <input type="number" id="pr-valor-${pr.id}" value="${pr.valor || 0}" min="0" step="50">
+        </div>
+      </div>
+      <div class="a-row">
+        <div class="a-field">
+          <label>Empieza (opcional)</label>
+          <input type="datetime-local" id="pr-inicio-${pr.id}" value="${pr.inicio || ""}">
+        </div>
+        <div class="a-field">
+          <label>Termina</label>
+          <input type="datetime-local" id="pr-fin-${pr.id}" value="${pr.fin || ""}">
+        </div>
+      </div>
+
+      <div class="a-toggle-row">
+        <span>Promoción activa</span>
+        <button class="switch ${pr.activa ? "on" : ""}" id="pr-switch-${pr.id}" onclick="togglePromoActiva('${pr.id}')"></button>
+      </div>
+
+      <div class="a-actions">
+        <button class="a-btn save" onclick="guardarPromo('${pr.id}')">Guardar</button>
+        <button class="a-btn delete" onclick="eliminarPromo('${pr.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function togglePromoActiva(id){
+  document.getElementById("pr-switch-" + id).classList.toggle("on");
+}
+
+async function guardarPromo(id){
+  const pr = PROMOS.find(pr => pr.id === id);
+  if(!pr) return;
+  pr.nombre = document.getElementById("pr-nombre-" + id).value.trim();
+  pr.productoId = document.getElementById("pr-producto-" + id).value;
+  pr.tipo = document.getElementById("pr-tipo-" + id).value;
+  pr.valor = Number(document.getElementById("pr-valor-" + id).value) || 0;
+  pr.inicio = document.getElementById("pr-inicio-" + id).value;
+  pr.fin = document.getElementById("pr-fin-" + id).value;
+  pr.activa = document.getElementById("pr-switch-" + id).classList.contains("on");
+
+  try{ await guardarPromoDB(pr); }catch(error){ alert("No se pudo guardar la promoción: " + error.message); return; }
+  renderAdminPromos();
+  renderMenu();
+  actualizarBarraCarrito();
+}
+
+async function adminNuevaPromo(){
+  const ahora = new Date();
+  const enUnaSemana = new Date(ahora.getTime() + 7*24*60*60*1000);
+  const nueva = {
+    id: idNuevo("promo"),
+    nombre: "",
+    productoId: "todos",
+    tipo: "monto",
+    valor: 0,
+    inicio: "",
+    fin: enUnaSemana.toISOString().slice(0,16),
+    activa: false
+  };
+  PROMOS.push(nueva);
+  try{ await guardarPromoDB(nueva); }catch(error){ PROMOS = PROMOS.filter(x => x.id !== nueva.id); alert("No se pudo crear la promoción: " + error.message); return; }
+  renderAdminPromos();
+  const el = document.getElementById("admin-promo-" + nueva.id);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+async function eliminarPromo(id){
+  const pr = PROMOS.find(pr => pr.id === id);
+  if(!pr) return;
+  if(!confirm(`¿Eliminar la promoción "${pr.nombre || "sin nombre"}"?`)) return;
+  try{ await eliminarFila("promociones", id); }catch(error){ alert("No se pudo eliminar la promoción: " + error.message); return; }
+  PROMOS = PROMOS.filter(pr => pr.id !== id);
+  renderAdminPromos();
+  renderMenu();
+  actualizarBarraCarrito();
+}
+
+/* ============================================================
+   14. PANEL ADMIN — CONTABILIDAD
+   ============================================================ */
+let lineasVentaTemp = []; // [{productoId, cantidad}]
+
+function esHoy(fechaISO){
+  const f = new Date(fechaISO);
+  const h = new Date();
+  return f.getFullYear()===h.getFullYear() && f.getMonth()===h.getMonth() && f.getDate()===h.getDate();
+}
+
+function renderContabilidad(){
+  renderKpis();
+  renderVentaLineas();
+  renderTablaMargenes();
+  renderListaVentas();
+}
+
+function renderKpis(){
+  const ventasHoy = VENTAS.filter(v => esHoy(v.fecha));
+  const totalHoy = ventasHoy.reduce((s,v) => s + v.total, 0);
+  const utilidadHoy = ventasHoy.reduce((s,v) => s + v.utilidad, 0);
+  const margenHoy = totalHoy > 0 ? (utilidadHoy/totalHoy*100) : 0;
+
+  document.getElementById("kpi-hoy").innerHTML = `
+    <div class="kpi"><div class="kpi-label">Ventas de hoy</div><div class="kpi-value">${money(totalHoy)}</div></div>
+    <div class="kpi accent"><div class="kpi-label">Utilidad de hoy</div><div class="kpi-value">${money(utilidadHoy)}</div></div>
+    <div class="kpi"><div class="kpi-label">Margen de hoy</div><div class="kpi-value">${margenHoy.toFixed(0)}%</div></div>
+    <div class="kpi"><div class="kpi-label">Pedidos hoy</div><div class="kpi-value">${ventasHoy.length}</div></div>
+  `;
+}
+
+function renderVentaLineas(){
+  const cont = document.getElementById("venta-lineas");
+  if(lineasVentaTemp.length === 0){
+    cont.innerHTML = `<div class="a-empty" style="margin-bottom:12px;">Agregá los productos de la venta que querés registrar.</div>`;
+    return;
+  }
+  cont.innerHTML = lineasVentaTemp.map((l, i) => `
+    <div class="venta-line">
+      <select onchange="actualizarLineaVenta(${i}, 'productoId', this.value)">
+        ${PRODUCTOS.map(p => `<option value="${p.id}" ${p.id===l.productoId?"selected":""}>${p.nombre}</option>`).join("")}
+      </select>
+      <input type="number" min="1" value="${l.cantidad}" onchange="actualizarLineaVenta(${i}, 'cantidad', this.value)">
+      <button onclick="quitarLineaVenta(${i})" aria-label="Quitar línea">✕</button>
+    </div>
+  `).join("");
+}
+
+function agregarLineaVenta(){
+  if(PRODUCTOS.length === 0) return;
+  lineasVentaTemp.push({ productoId: PRODUCTOS[0].id, cantidad: 1 });
+  renderVentaLineas();
+}
+function actualizarLineaVenta(i, campo, valor){
+  lineasVentaTemp[i][campo] = campo === "cantidad" ? Math.max(1, Number(valor) || 1) : valor;
+}
+function quitarLineaVenta(i){
+  lineasVentaTemp.splice(i, 1);
+  renderVentaLineas();
+}
+
+async function registrarVenta(){
+  if(lineasVentaTemp.length === 0){
+    alert("Agregá al menos un producto para registrar la venta.");
+    return;
+  }
+  const items = lineasVentaTemp.map(l => {
+    const p = PRODUCTOS.find(p => p.id === l.productoId);
+    const precioUnit = p ? precioVigente(p).precio : 0;
+    const costoUnit = p ? p.costo : 0;
+    return {
+      productoId: l.productoId,
+      nombre: p ? p.nombre : "Producto eliminado",
+      cantidad: l.cantidad,
+      precioUnit,
+      costoUnit
+    };
+  });
+  const total = items.reduce((s,it) => s + it.precioUnit*it.cantidad, 0);
+  const costoTotal = items.reduce((s,it) => s + it.costoUnit*it.cantidad, 0);
+
+  const venta = {
+    id: idNuevo("venta"),
+    fecha: new Date().toISOString(),
+    items,
+    total,
+    costoTotal,
+    utilidad: total - costoTotal
+  };
+  try{ await guardarVentaDB(venta); }catch(error){ alert("No se pudo registrar la venta: " + error.message); return; }
+  VENTAS.unshift(venta);
+  lineasVentaTemp = [];
+  renderContabilidad();
+}
+
+async function eliminarVenta(id){
+  if(!confirm("¿Eliminar esta venta del registro?")) return;
+  try{ await eliminarFila("ventas", id); }catch(error){ alert("No se pudo eliminar la venta: " + error.message); return; }
+  VENTAS = VENTAS.filter(v => v.id !== id);
+  renderContabilidad();
+}
+
+async function borrarTodasLasVentas(){
+  if(VENTAS.length === 0) return;
+  if(!confirm("Esto borra todo el historial de ventas registradas. ¿Continuar?")) return;
+  try{ await borrarTodasLasVentasDB(); }catch(error){ alert("No se pudo borrar el historial: " + error.message); return; }
+  VENTAS = [];
+  renderContabilidad();
+}
+
+function renderTablaMargenes(){
+  const tabla = document.getElementById("tabla-margenes");
+  if(PRODUCTOS.length === 0){
+    tabla.innerHTML = `<tr><td class="a-empty">No hay productos.</td></tr>`;
+    return;
+  }
+  tabla.innerHTML = `
+    <tr>
+      <th>Producto</th><th class="num">Costo</th><th class="num">Precio</th><th class="num">Utilidad</th><th class="num">Margen</th>
+    </tr>
+    ${PRODUCTOS.map(p => {
+      const utilidad = p.precio - p.costo;
+      const margen = p.precio > 0 ? (utilidad/p.precio*100) : 0;
+      return `<tr>
+        <td>${escHtml(p.nombre || "—")}</td>
+        <td class="num">${money(p.costo)}</td>
+        <td class="num">${money(p.precio)}</td>
+        <td class="num">${money(utilidad)}</td>
+        <td class="num">${margen.toFixed(0)}%</td>
+      </tr>`;
+    }).join("")}
+  `;
+}
+
+function renderListaVentas(){
+  const cont = document.getElementById("admin-ventas-lista");
+  if(VENTAS.length === 0){
+    cont.innerHTML = `<div class="a-empty">Todavía no hay ventas registradas.</div>`;
+    return;
+  }
+
+  const conteoProductos = {};
+  VENTAS.forEach(v => v.items.forEach(it => {
+    conteoProductos[it.nombre] = (conteoProductos[it.nombre] || 0) + it.cantidad;
+  }));
+  const masVendido = Object.entries(conteoProductos).sort((a,b) => b[1]-a[1])[0];
+
+  const resumen = masVendido
+    ? `<div class="a-empty" style="border-style:solid;text-align:left;">Más vendido histórico: <strong style="color:var(--cream);">${escHtml(masVendido[0])}</strong> (${masVendido[1]} unidades)</div>`
+    : "";
+
+  cont.innerHTML = resumen + VENTAS.map(v => {
+    const fecha = new Date(v.fecha);
+    const fechaTxt = fecha.toLocaleDateString("es-CR", {day:"2-digit", month:"short"}) + " · " + fecha.toLocaleTimeString("es-CR", {hour:"2-digit", minute:"2-digit"});
+    const resumenItems = v.items.map(it => `${it.nombre} x${it.cantidad}`).join(", ");
+    return `
+    <div class="admin-card">
+      <div class="admin-card-top">
+        <span class="admin-card-name" style="font-size:13px;">${fechaTxt}</span>
+        <span class="admin-badge on">${money(v.total)}</span>
+      </div>
+      <p style="font-size:12.5px;color:rgba(247,241,228,0.6);margin:0 0 8px;">${escHtml(resumenItems)}</p>
+      <p style="font-size:12px;color:rgba(247,241,228,0.4);margin:0 0 10px;">Costo ${money(v.costoTotal)} · Utilidad ${money(v.utilidad)}</p>
+      <div class="a-actions" style="margin-top:0;">
+        <button class="a-btn delete" onclick="eliminarVenta('${v.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ============================================================
+   15. INICIO
+   ============================================================ */
+async function iniciarAplicacion(){
+  renderNav();
+  PRODUCTOS = JSON.parse(JSON.stringify(PRODUCTOS_BASE));
+  EXTRAS = JSON.parse(JSON.stringify(EXTRAS_BASE));
+  PROMOS = JSON.parse(JSON.stringify(PROMOS_BASE));
+  renderMenu();
+  actualizarBarraCarrito();
+
+  try{
+    await Promise.race([
+      cargarDatosSupabase(false),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Tiempo de conexión agotado")), 5000))
+    ]);
+    renderMenu();
+    actualizarBarraCarrito();
+  }catch(error){
+    console.warn("Supabase no disponible; se muestra el menú base:", error);
+  }
+
+  window.observadorTarjetas = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if(entry.isIntersecting){
+        setTimeout(() => entry.target.classList.add("in-view"), i * 60);
+        window.observadorTarjetas.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.15});
+  document.querySelectorAll(".card").forEach(card => window.observadorTarjetas.observe(card));
+}
+
+iniciarAplicacion();
 </script>
 </body>
 </html>
+
+
