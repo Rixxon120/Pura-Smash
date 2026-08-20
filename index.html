@@ -851,6 +851,41 @@ a{color:inherit;}
 .btn,.add-btn,.a-btn,.cat-btn,.switch{touch-action:manipulation;}
 :focus-visible{outline:3px solid var(--mustard);outline-offset:3px;}
 
+
+/* ============================================================
+   AJUSTE MÓVIL — evita que el logo cubra el botón "Ver menú"
+   ============================================================ */
+@media (max-width:479px){
+  .hero{
+    min-height:340px;
+    height:92vw;
+    max-height:390px;
+  }
+  .logo-badge{
+    width:82px;
+    height:82px;
+    left:auto;
+    right:16px;
+    top:16px;
+    bottom:auto;
+    transform:none;
+    opacity:1;
+    animation:none;
+    border-width:3px;
+  }
+  .logo-badge::after{
+    display:none;
+  }
+  .hero-content{
+    bottom:20px;
+    padding-right:20px;
+  }
+  .hero-content > .btn-primary{
+    position:relative;
+    z-index:6;
+  }
+}
+
 </style>
 </head>
 <body>
