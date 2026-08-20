@@ -1732,6 +1732,97 @@ a{color:inherit;}
 
 
 .ps-modal-open{overflow:hidden !important;}
+
+/* ============================================================
+   PEDIDOS — gestión y tiempos
+   ============================================================ */
+.order-filter-card{margin-bottom:14px;}
+.order-card{border-left:4px solid rgba(247,241,228,.2);}
+.order-card.pendiente{border-left-color:var(--mustard);}
+.order-card.preparando{border-left-color:#e88943;}
+.order-card.listo{border-left-color:var(--pickle);}
+.order-card.entregado{border-left-color:#7f9d68;opacity:.86;}
+.order-card.cancelado{border-left-color:#8c6f63;opacity:.65;}
+.order-code{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--mustard);
+  font-size:12px;
+  letter-spacing:.04em;
+}
+.order-status{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  border:1px solid var(--line);
+}
+.order-status.pendiente{color:var(--mustard);border-color:rgba(227,166,47,.45);}
+.order-status.preparando{color:#f0a15c;border-color:rgba(240,161,92,.45);}
+.order-status.listo{color:#b8c98a;border-color:rgba(184,201,138,.5);}
+.order-status.entregado{color:#a9c999;border-color:rgba(169,201,153,.4);}
+.order-status.cancelado{color:#b59789;border-color:rgba(181,151,137,.35);}
+.order-time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;
+  color:var(--cream);
+  margin:8px 0 2px;
+}
+.order-time-label{font-size:10px;color:rgba(247,241,228,.45);text-transform:uppercase;}
+.order-customer{font-size:14px;color:var(--cream);margin:7px 0 2px;font-weight:700;}
+.order-meta{font-size:11.5px;color:rgba(247,241,228,.5);line-height:1.5;}
+.order-items{
+  margin:12px 0;
+  padding:10px 12px;
+  background:rgba(247,241,228,.035);
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.order-item-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:4px 0;
+  font-size:12px;
+  color:rgba(247,241,228,.75);
+}
+.order-item-row strong{color:var(--cream);}
+.order-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+.order-actions .a-btn{flex:1 1 auto;}
+.order-actions .ready-btn{background:var(--pickle);color:#1c1b12;border-color:var(--pickle);}
+.order-actions .start-btn{background:var(--mustard);color:#1d140d;border-color:var(--mustard);}
+.order-actions .delivered-btn{background:#7f9d68;color:#10150c;border-color:#7f9d68;}
+.order-location-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:8px;
+}
+.order-location-links a{
+  color:var(--mustard);
+  font-size:11px;
+  text-decoration:none;
+  border-bottom:1px dotted rgba(227,166,47,.4);
+}
+.order-metric-note{font-size:10px;color:rgba(247,241,228,.45);margin-top:3px;}
+@media(min-width:850px){
+  #admin-pedidos-lista{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  #admin-pedidos-lista .a-empty{grid-column:1/-1;}
+}
+
 </style>
 </head>
 <body>
@@ -1820,6 +1911,12 @@ a{color:inherit;}
         <input type="text" id="input-nombre" placeholder="Nombre" autocomplete="name">
       </div>
 
+      <div class="field">
+        <label for="input-telefono">WhatsApp para avisarte cuando esté listo</label>
+        <input type="tel" id="input-telefono" placeholder="Ej: 89810775" inputmode="tel" autocomplete="tel" maxlength="16">
+        <small style="display:block;margin-top:5px;color:rgba(247,241,228,.48);font-size:11px;">Lo usamos únicamente para identificar tu pedido y avisarte por WhatsApp.</small>
+      </div>
+
       <div class="field" id="campo-direccion">
         <label for="input-direccion">Señas / dirección</label>
         <textarea id="input-direccion" placeholder="Señas exactas o punto de referencia"></textarea>
@@ -1867,7 +1964,8 @@ a{color:inherit;}
       <button class="icon-btn" onclick="cerrarSesionAdmin()" aria-label="Cerrar sesión y volver al menú">✕</button>
     </div>
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="productos" onclick="cambiarTabAdmin('productos')">Productos</button>
+      <button class="admin-tab active" data-tab="pedidos" onclick="cambiarTabAdmin('pedidos')">Pedidos</button>
+      <button class="admin-tab" data-tab="productos" onclick="cambiarTabAdmin('productos')">Productos</button>
       <button class="admin-tab" data-tab="extras" onclick="cambiarTabAdmin('extras')">Extras</button>
       <button class="admin-tab" data-tab="promos" onclick="cambiarTabAdmin('promos')">Promociones</button>
       <button class="admin-tab" data-tab="contabilidad" onclick="cambiarTabAdmin('contabilidad')">Contabilidad</button>
@@ -1876,8 +1974,41 @@ a{color:inherit;}
 
   <div class="admin-body">
 
+    <!-- TAB PEDIDOS -->
+    <div id="tab-pedidos">
+      <div class="admin-section-title">
+        <h3>Pedidos en tiempo real</h3>
+        <button class="a-btn ghost" style="flex:none;padding:7px 12px;" onclick="recargarPedidosAdmin(true)">↻ Actualizar</button>
+      </div>
+
+      <div class="kpi-grid" id="kpi-pedidos"></div>
+
+      <div class="admin-card order-filter-card">
+        <div class="a-row">
+          <div class="a-field">
+            <label for="pedido-filtro-estado">Estado</label>
+            <select id="pedido-filtro-estado" onchange="renderPedidosAdmin()">
+              <option value="activos">Activos</option>
+              <option value="todos">Todos</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="preparando">Preparando</option>
+              <option value="listo">Listos</option>
+              <option value="entregado">Entregados</option>
+              <option value="cancelado">Cancelados</option>
+            </select>
+          </div>
+          <div class="a-field">
+            <label for="pedido-buscar">Buscar</label>
+            <input type="text" id="pedido-buscar" placeholder="Código, nombre o teléfono" oninput="renderPedidosAdmin()">
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-pedidos-lista"></div>
+    </div>
+
     <!-- TAB PRODUCTOS -->
-    <div id="tab-productos">
+    <div id="tab-productos" class="hidden">
       <div id="admin-productos-lista"></div>
       <button class="a-btn add" onclick="adminNuevoProducto()">+ Agregar producto</button>
     </div>
@@ -2210,6 +2341,7 @@ let PRODUCTOS = [];
 let PROMOS = [];
 let VENTAS = [];
 let GASTOS = [];
+let PEDIDOS = [];
 let EXTRAS = [];
 let supabaseListo = false;
 
@@ -2364,6 +2496,67 @@ async function guardarVentaDB(v){
     utilidad: v.utilidad
   });
   if(error) throw error;
+}
+
+
+async function guardarPedidoPublico(pedido){
+  await asegurarSupabase();
+  const { error } = await supabaseClient.from("pedidos").insert({
+    id: pedido.id,
+    codigo: pedido.codigo,
+    fecha_pedido: pedido.fechaPedido,
+    cliente_nombre: pedido.clienteNombre,
+    cliente_telefono: pedido.clienteTelefono,
+    direccion: pedido.direccion,
+    lat: pedido.lat,
+    lng: pedido.lng,
+    nota: pedido.nota || null,
+    items: pedido.items,
+    total: pedido.total,
+    estado: "pendiente"
+  });
+  if(error) throw error;
+}
+
+async function actualizarPedidoDB(id, cambios){
+  await asegurarSupabase();
+  const db = {};
+  if("estado" in cambios) db.estado = cambios.estado;
+  if("preparandoEn" in cambios) db.preparando_en = cambios.preparandoEn;
+  if("listoEn" in cambios) db.listo_en = cambios.listoEn;
+  if("entregadoEn" in cambios) db.entregado_en = cambios.entregadoEn;
+  if("canceladoEn" in cambios) db.cancelado_en = cambios.canceladoEn;
+  const { error } = await supabaseClient.from("pedidos").update(db).eq("id", id);
+  if(error) throw error;
+}
+
+async function cargarPedidosAdmin(){
+  await asegurarSupabase();
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .order("fecha_pedido", {ascending:false})
+    .limit(500);
+  if(error) throw error;
+
+  PEDIDOS = (data || []).map(p => ({
+    id:String(p.id),
+    codigo:p.codigo || String(p.id).slice(-8).toUpperCase(),
+    fechaPedido:p.fecha_pedido,
+    clienteNombre:p.cliente_nombre || "",
+    clienteTelefono:p.cliente_telefono || "",
+    direccion:p.direccion || "",
+    lat:Number(p.lat),
+    lng:Number(p.lng),
+    nota:p.nota || "",
+    items:Array.isArray(p.items) ? p.items : [],
+    total:Number(p.total)||0,
+    estado:p.estado || "pendiente",
+    preparandoEn:p.preparando_en,
+    listoEn:p.listo_en,
+    entregadoEn:p.entregado_en,
+    canceladoEn:p.cancelado_en
+  }));
 }
 
 async function guardarGastoDB(g){
@@ -2797,7 +2990,44 @@ function compartirUbicacion(){
 /* ============================================================
    9. ENVÍO POR WHATSAPP
    ============================================================ */
-function enviarPorWhatsapp(){
+function normalizarTelefonoCR(valor){
+  const digitos = String(valor || "").replace(/\D/g,"");
+  if(digitos.length === 8) return "506" + digitos;
+  if(digitos.length === 11 && digitos.startsWith("506")) return digitos;
+  return "";
+}
+
+function codigoPedido(){
+  const d = new Date();
+  const y = String(d.getFullYear()).slice(-2);
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  const rand = Math.random().toString(36).slice(2,6).toUpperCase();
+  return `PS-${y}${m}${day}-${rand}`;
+}
+
+function construirItemsPedido(){
+  return Object.values(carrito).map(linea => {
+    const p = PRODUCTOS.find(p => p.id === linea.productoId);
+    if(!p) return null;
+    const extras = (linea.extrasIds || []).map(id => {
+      const e = extraPorId(id);
+      return e ? {id:e.id,nombre:e.nombre,precio:Number(e.precio)||0} : null;
+    }).filter(Boolean);
+    const precioUnit = precioLinea(p, linea.extrasIds);
+    return {
+      productoId:p.id,
+      nombre:p.nombre,
+      cantidad:linea.cantidad,
+      precioUnit,
+      extrasIds:extras.map(e => e.id),
+      extras,
+      subtotal:precioUnit * linea.cantidad
+    };
+  }).filter(Boolean);
+}
+
+async function enviarPorWhatsapp(){
   if(cantidadTotal() === 0) return;
   if(!entregaSeleccionada){
     document.getElementById("campos-entrega").classList.remove("hidden");
@@ -2811,6 +3041,8 @@ function enviarPorWhatsapp(){
   }
 
   const nombre = document.getElementById("input-nombre").value.trim();
+  const telefonoRaw = document.getElementById("input-telefono").value.trim();
+  const telefono = normalizarTelefonoCR(telefonoRaw);
   const direccion = document.getElementById("input-direccion").value.trim();
   const nota = document.getElementById("input-nota").value.trim();
 
@@ -2819,39 +3051,75 @@ function enviarPorWhatsapp(){
     document.getElementById("input-nombre").focus();
     return;
   }
-
+  if(!telefono){
+    alert("Ingresá un número de WhatsApp válido de Costa Rica (8 dígitos).");
+    document.getElementById("input-telefono").focus();
+    return;
+  }
   if(entregaSeleccionada === "entrega" && !direccion){
     alert("Por favor indicá la dirección de entrega.");
     document.getElementById("input-direccion").focus();
     return;
   }
 
+  const items = construirItemsPedido();
+  const codigo = codigoPedido();
+  const pedido = {
+    id:(crypto.randomUUID ? crypto.randomUUID() : idNuevo("pedido")),
+    codigo,
+    fechaPedido:new Date().toISOString(),
+    clienteNombre:nombre,
+    clienteTelefono:telefono,
+    direccion,
+    lat:ubicacionCliente.lat,
+    lng:ubicacionCliente.lng,
+    nota,
+    items,
+    total:totalCarrito()
+  };
+
+  const boton = document.getElementById("btn-enviar-whatsapp");
+  const textoAnterior = boton.textContent;
+  boton.disabled = true;
+  boton.textContent = "Registrando pedido…";
+
+  try{
+    await guardarPedidoPublico(pedido);
+  }catch(error){
+    console.error("Pedido Supabase:", error);
+    alert("No se pudo registrar el pedido. Revisá tu conexión e intentá nuevamente.");
+    boton.disabled = false;
+    boton.textContent = textoAnterior;
+    return;
+  }
+
   const lineas = [];
   lineas.push(`Hola ${NOMBRE_NEGOCIO}, quiero hacer este pedido:`);
+  lineas.push(`Pedido: ${codigo}`);
   lineas.push("");
 
-  Object.values(carrito).forEach(linea => {
-    const p = PRODUCTOS.find(p => p.id === linea.productoId);
-    if(!p) return;
-    const precioUnit = precioLinea(p, linea.extrasIds);
-    const extrasTxt = nombreExtras(linea.extrasIds).join(", ");
-    lineas.push(`• ${p.nombre}${extrasTxt ? " + " + extrasTxt : ""} x${linea.cantidad} — ${money(precioUnit * linea.cantidad)}`);
+  items.forEach(it => {
+    const extrasTxt = (it.extras || []).map(e => e.nombre).join(", ");
+    lineas.push(`• ${it.nombre}${extrasTxt ? " + " + extrasTxt : ""} x${it.cantidad} — ${money(it.subtotal)}`);
   });
 
   lineas.push("");
-  lineas.push(`Total: ${money(totalCarrito())}`);
-  lineas.push(`Ubicación: https://www.google.com/maps/search/?api=1&query=${ubicacionCliente.lat},${ubicacionCliente.lng}`);
-  lineas.push(`Waze: https://waze.com/ul?ll=${ubicacionCliente.lat}%2C${ubicacionCliente.lng}&navigate=yes`);
-  
+  lineas.push(`Total: ${money(pedido.total)}`);
+  lineas.push(`Ubicación: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`);
+  lineas.push(`Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`);
   lineas.push("");
   lineas.push("Modalidad: Entrega Express");
-
-  if(nombre) lineas.push(`Nombre: ${nombre}`);
-  if(direccion && entregaSeleccionada === "entrega") lineas.push(`Dirección: ${direccion}`);
+  lineas.push(`Nombre: ${nombre}`);
+  lineas.push(`WhatsApp: +${telefono}`);
+  lineas.push(`Dirección: ${direccion}`);
   if(nota) lineas.push(`Nota: ${nota}`);
 
   const msg = encodeURIComponent(lineas.join("\n"));
   const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${msg}`;
+
+  mostrarConfirmacion(`✓ Pedido ${codigo} registrado`);
+  boton.disabled = false;
+  boton.textContent = textoAnterior;
   window.open(url, "_blank");
 }
 
@@ -3004,7 +3272,10 @@ async function abrirAdmin(){
     renderAdminExtras();
     renderAdminPromos();
     renderContabilidad();
-    cambiarTabAdmin("productos");
+    try{ await cargarPedidosAdmin(); }catch(error){ console.warn("Pedidos:", error); }
+    renderPedidosAdmin();
+    configurarRealtimePedidos();
+    cambiarTabAdmin("pedidos");
   }catch(error){
     console.error(error);
     alert("No se pudieron cargar los datos de Supabase: " + (error.message || error));
@@ -3018,10 +3289,392 @@ function cerrarAdmin(){
 }
 function cambiarTabAdmin(tab){
   document.querySelectorAll(".admin-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-  ["productos","extras","promos","contabilidad"].forEach(t => {
+  ["pedidos","productos","extras","promos","contabilidad"].forEach(t => {
     document.getElementById("tab-" + t).classList.toggle("hidden", t !== tab);
   });
   if(tab === "contabilidad") renderContabilidad();
+  if(tab === "pedidos"){
+    renderPedidosAdmin();
+    recargarPedidosAdmin(false);
+  }
+}
+
+
+/* ============================================================
+   11. PANEL ADMIN — PEDIDOS Y TIEMPOS
+   ============================================================ */
+let pedidosRealtimeChannel = null;
+let pedidosPollTimer = null;
+let pedidosClockTimer = null;
+
+function estadoPedidoLabel(estado){
+  return ({
+    pendiente:"Pendiente",
+    preparando:"Preparando",
+    listo:"Listo",
+    entregado:"Entregado",
+    cancelado:"Cancelado"
+  })[estado] || estado;
+}
+
+function msPreparacionPedido(p){
+  const inicio = new Date(p.fechaPedido).getTime();
+  const fin = p.listoEn ? new Date(p.listoEn).getTime() : Date.now();
+  return Math.max(0, fin - inicio);
+}
+
+function formatoDuracion(ms){
+  if(!Number.isFinite(ms) || ms < 0) return "—";
+  const totalSeg = Math.floor(ms/1000);
+  const min = Math.floor(totalSeg/60);
+  const seg = totalSeg%60;
+  if(min >= 60){
+    const h = Math.floor(min/60);
+    const mm = min%60;
+    return `${h}h ${String(mm).padStart(2,"0")}m`;
+  }
+  return `${min}:${String(seg).padStart(2,"0")}`;
+}
+
+function promedio(arr){
+  return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+}
+
+function actualizarRelojesPedidos(){
+  document.querySelectorAll("[data-pedido-timer]").forEach(el => {
+    const id = el.dataset.pedidoTimer;
+    const p = PEDIDOS.find(x => x.id === id);
+    if(!p) return;
+    el.textContent = formatoDuracion(msPreparacionPedido(p));
+  });
+}
+
+async function recargarPedidosAdmin(mostrarAviso=false){
+  try{
+    await cargarPedidosAdmin();
+    renderPedidosAdmin();
+    if(mostrarAviso) mostrarConfirmacion("✓ Pedidos actualizados");
+  }catch(error){
+    console.error(error);
+    if(mostrarAviso) mostrarConfirmacion("No se pudieron actualizar los pedidos","error");
+  }
+}
+
+function configurarRealtimePedidos(){
+  if(!supabaseClient) return;
+
+  if(!pedidosRealtimeChannel){
+    try{
+      pedidosRealtimeChannel = supabaseClient
+        .channel("pura-smash-pedidos-admin")
+        .on("postgres_changes",
+          {event:"*",schema:"public",table:"pedidos"},
+          () => recargarPedidosAdmin(false)
+        )
+        .subscribe();
+    }catch(error){
+      console.warn("Realtime pedidos no disponible:",error);
+    }
+  }
+
+  if(!pedidosPollTimer){
+    pedidosPollTimer = setInterval(() => {
+      const vista = document.getElementById("vista-admin");
+      if(vista && !vista.classList.contains("hidden")) recargarPedidosAdmin(false);
+    }, 20000);
+  }
+
+  if(!pedidosClockTimer){
+    pedidosClockTimer = setInterval(actualizarRelojesPedidos,1000);
+  }
+}
+
+function metricasPedidos(){
+  const ahora = new Date();
+  const hoy = PEDIDOS.filter(p => {
+    const f = new Date(p.fechaPedido);
+    return f.getFullYear()===ahora.getFullYear() && f.getMonth()===ahora.getMonth() && f.getDate()===ahora.getDate();
+  });
+  const mes = PEDIDOS.filter(p => {
+    const f = new Date(p.fechaPedido);
+    return f.getFullYear()===ahora.getFullYear() && f.getMonth()===ahora.getMonth();
+  });
+  const finalizadosHoy = hoy.filter(p => p.listoEn && p.estado !== "cancelado");
+  const finalizadosMes = mes.filter(p => p.listoEn && p.estado !== "cancelado");
+  return {
+    activos:PEDIDOS.filter(p => ["pendiente","preparando","listo"].includes(p.estado)).length,
+    pendientes:PEDIDOS.filter(p => p.estado==="pendiente").length,
+    listos:PEDIDOS.filter(p => p.estado==="listo").length,
+    pedidosHoy:hoy.length,
+    promedioHoy:promedio(finalizadosHoy.map(msPreparacionPedido)),
+    promedioMes:promedio(finalizadosMes.map(msPreparacionPedido))
+  };
+}
+
+function renderKpisPedidos(){
+  const root = document.getElementById("kpi-pedidos");
+  if(!root) return;
+  const m = metricasPedidos();
+  root.innerHTML = `
+    <div class="kpi"><div class="kpi-label">Activos</div><div class="kpi-value">${m.activos}</div></div>
+    <div class="kpi"><div class="kpi-label">Pendientes</div><div class="kpi-value">${m.pendientes}</div></div>
+    <div class="kpi accent"><div class="kpi-label">Listos</div><div class="kpi-value">${m.listos}</div></div>
+    <div class="kpi"><div class="kpi-label">Pedidos hoy</div><div class="kpi-value">${m.pedidosHoy}</div></div>
+    <div class="kpi"><div class="kpi-label">Prep. promedio hoy</div><div class="kpi-value">${m.promedioHoy ? formatoDuracion(m.promedioHoy) : "—"}</div></div>
+    <div class="kpi"><div class="kpi-label">Prep. promedio mes</div><div class="kpi-value">${m.promedioMes ? formatoDuracion(m.promedioMes) : "—"}</div></div>
+  `;
+}
+
+function filtrarPedidosAdmin(){
+  const estado = document.getElementById("pedido-filtro-estado")?.value || "activos";
+  const q = (document.getElementById("pedido-buscar")?.value || "").trim().toLowerCase();
+  return PEDIDOS.filter(p => {
+    const cumpleEstado = estado==="todos"
+      ? true
+      : estado==="activos"
+        ? ["pendiente","preparando","listo"].includes(p.estado)
+        : p.estado===estado;
+    const blob = `${p.codigo} ${p.clienteNombre} ${p.clienteTelefono}`.toLowerCase();
+    return cumpleEstado && (!q || blob.includes(q));
+  });
+}
+
+function botonesPedido(p){
+  const b = [];
+  if(p.estado==="pendiente"){
+    b.push(`<button class="a-btn start-btn" onclick="iniciarPreparacionPedido('${p.id}')">▶ Iniciar preparación</button>`);
+  }
+  if(["pendiente","preparando"].includes(p.estado)){
+    b.push(`<button class="a-btn ready-btn" onclick="marcarPedidoListo('${p.id}')">✓ Marcar listo</button>`);
+  }
+  if(p.estado==="listo"){
+    b.push(`<button class="a-btn save" onclick="avisarPedidoListo('${p.id}')">WhatsApp cliente</button>`);
+    b.push(`<button class="a-btn delivered-btn" onclick="marcarPedidoEntregado('${p.id}')">🛵 Entregado</button>`);
+  }
+  if(["pendiente","preparando","listo"].includes(p.estado)){
+    b.push(`<button class="a-btn delete" onclick="cancelarPedido('${p.id}')">Cancelar</button>`);
+  }
+  return b.join("");
+}
+
+function renderPedidosAdmin(){
+  renderKpisPedidos();
+  const root = document.getElementById("admin-pedidos-lista");
+  if(!root) return;
+  const lista = filtrarPedidosAdmin();
+
+  if(!lista.length){
+    root.innerHTML = `<div class="a-empty">No hay pedidos para este filtro.</div>`;
+    return;
+  }
+
+  root.innerHTML = lista.map(p => {
+    const fecha = new Date(p.fechaPedido);
+    const hora = fecha.toLocaleTimeString("es-CR",{hour:"2-digit",minute:"2-digit"});
+    const fechaTxt = fecha.toLocaleDateString("es-CR",{day:"2-digit",month:"short"});
+    const maps = Number.isFinite(p.lat)&&Number.isFinite(p.lng)
+      ? `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}` : "";
+    const waze = Number.isFinite(p.lat)&&Number.isFinite(p.lng)
+      ? `https://waze.com/ul?ll=${p.lat}%2C${p.lng}&navigate=yes` : "";
+    const items = p.items.map(it => {
+      const ex = (it.extras || []).map(e => e.nombre).filter(Boolean).join(", ");
+      return `<div class="order-item-row"><span><strong>${escHtml(it.nombre)}</strong> x${Number(it.cantidad)||1}${ex?`<br><small>+ ${escHtml(ex)}</small>`:""}</span><span>${money(it.subtotal || (it.precioUnit*it.cantidad))}</span></div>`;
+    }).join("");
+
+    const listoReal = p.listoEn ? formatoDuracion(new Date(p.listoEn)-new Date(p.fechaPedido)) : null;
+
+    return `<div class="admin-card order-card ${p.estado}">
+      <div class="admin-card-top">
+        <div>
+          <div class="order-code">${escHtml(p.codigo)}</div>
+          <div class="order-customer">${escHtml(p.clienteNombre)}</div>
+        </div>
+        <span class="order-status ${p.estado}">${estadoPedidoLabel(p.estado)}</span>
+      </div>
+
+      <div class="order-time" data-pedido-timer="${escAttr(p.id)}">${formatoDuracion(msPreparacionPedido(p))}</div>
+      <div class="order-time-label">${p.listoEn ? "Tiempo total de preparación" : "Tiempo desde que se pidió"}</div>
+      ${listoReal ? `<div class="order-metric-note">Listo en ${listoReal}</div>` : ""}
+
+      <div class="order-meta">${fechaTxt} · ${hora} · WhatsApp +${escHtml(p.clienteTelefono)}</div>
+      <div class="order-meta">${escHtml(p.direccion)}</div>
+      ${p.nota ? `<div class="order-meta">Nota: ${escHtml(p.nota)}</div>` : ""}
+
+      <div class="order-location-links">
+        ${maps ? `<a href="${maps}" target="_blank" rel="noopener">Google Maps</a>` : ""}
+        ${waze ? `<a href="${waze}" target="_blank" rel="noopener">Waze</a>` : ""}
+      </div>
+
+      <div class="order-items">${items}</div>
+
+      <div class="admin-card-top">
+        <span style="color:rgba(247,241,228,.5);font-size:11px;">Total</span>
+        <strong style="color:var(--mustard);font-family:'JetBrains Mono',monospace;">${money(p.total)}</strong>
+      </div>
+
+      <div class="order-actions">${botonesPedido(p)}</div>
+    </div>`;
+  }).join("");
+
+  actualizarRelojesPedidos();
+}
+
+async function iniciarPreparacionPedido(id){
+  const p = PEDIDOS.find(x => x.id===id);
+  if(!p) return;
+  if(!await confirmarAccion({
+    titulo:"Iniciar preparación",
+    mensaje:`El pedido ${p.codigo} pasará a preparación y empezará el seguimiento de cocina.`,
+    confirmar:"Iniciar",
+    icono:"▶"
+  })) return;
+
+  const ahora = new Date().toISOString();
+  try{
+    await actualizarPedidoDB(id,{estado:"preparando",preparandoEn:ahora});
+    p.estado="preparando";
+    p.preparandoEn=ahora;
+    mostrarConfirmacion(`✓ ${p.codigo} en preparación`);
+    renderPedidosAdmin();
+  }catch(error){
+    alert("No se pudo actualizar el pedido: "+error.message);
+  }
+}
+
+function urlWhatsAppCliente(p,mensaje){
+  const tel = normalizarTelefonoCR(p.clienteTelefono);
+  if(!tel) return null;
+  return `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`;
+}
+
+function mensajePedidoListo(p){
+  const tiempo = p.listoEn ? formatoDuracion(new Date(p.listoEn)-new Date(p.fechaPedido)) : "";
+  return `Hola ${p.clienteNombre} 👋\n\nTu pedido ${p.codigo} de Pura Smash ya está listo para entrega Express. 🍔🔥\n${tiempo ? `Tiempo de preparación: ${tiempo}\n` : ""}Total: ${money(p.total)}\n\n¡Gracias por pedir con nosotros!`;
+}
+
+function avisarPedidoListo(id){
+  const p = PEDIDOS.find(x=>x.id===id);
+  if(!p) return;
+  const url = urlWhatsAppCliente(p,mensajePedidoListo(p));
+  if(!url){
+    mostrarConfirmacion("Este pedido no tiene un WhatsApp válido","error");
+    return;
+  }
+  window.open(url,"_blank");
+}
+
+async function marcarPedidoListo(id){
+  const p = PEDIDOS.find(x => x.id===id);
+  if(!p) return;
+
+  if(!await confirmarAccion({
+    titulo:"Pedido listo",
+    mensaje:`Marcar ${p.codigo} como listo y preparar el aviso para ${p.clienteNombre}.`,
+    confirmar:"Marcar listo",
+    icono:"✓"
+  })) return;
+
+  // Abrimos una ventana en el gesto del usuario para evitar bloqueadores de popups.
+  const ventanaWhatsapp = window.open("about:blank","_blank");
+  const ahora = new Date().toISOString();
+
+  try{
+    const cambios = {estado:"listo",listoEn:ahora};
+    if(!p.preparandoEn) cambios.preparandoEn = p.fechaPedido;
+    await actualizarPedidoDB(id,cambios);
+    p.estado="listo";
+    p.listoEn=ahora;
+    if(!p.preparandoEn) p.preparandoEn=p.fechaPedido;
+    renderPedidosAdmin();
+    mostrarConfirmacion(`✓ ${p.codigo} listo en ${formatoDuracion(new Date(ahora)-new Date(p.fechaPedido))}`);
+
+    const url = urlWhatsAppCliente(p,mensajePedidoListo(p));
+    if(url && ventanaWhatsapp){
+      ventanaWhatsapp.location.href=url;
+    }else if(ventanaWhatsapp){
+      ventanaWhatsapp.close();
+    }
+  }catch(error){
+    if(ventanaWhatsapp) ventanaWhatsapp.close();
+    alert("No se pudo marcar el pedido como listo: "+error.message);
+  }
+}
+
+function ventaDesdePedido(p){
+  const items = p.items.map(it => {
+    const prod = PRODUCTOS.find(x => String(x.id)===String(it.productoId));
+    const extrasIds = (it.extrasIds || (it.extras||[]).map(e=>e.id) || []).map(String);
+    const costoUnit = (prod ? Number(prod.costo)||0 : 0) + costoExtras(extrasIds);
+    return {
+      productoId:it.productoId,
+      nombre:it.nombre,
+      cantidad:Number(it.cantidad)||1,
+      precioUnit:Number(it.precioUnit)||0,
+      costoUnit,
+      extrasIds
+    };
+  });
+  const costoTotal = items.reduce((s,it)=>s+it.costoUnit*it.cantidad,0);
+  return {
+    id:`pedido-${p.id}`,
+    fecha:p.entregadoEn || new Date().toISOString(),
+    items,
+    total:Number(p.total)||0,
+    costoTotal,
+    utilidad:(Number(p.total)||0)-costoTotal
+  };
+}
+
+async function marcarPedidoEntregado(id){
+  const p = PEDIDOS.find(x=>x.id===id);
+  if(!p) return;
+
+  if(!await confirmarAccion({
+    titulo:"Confirmar entrega",
+    mensaje:`${p.codigo} se marcará como entregado y se registrará automáticamente como venta.`,
+    confirmar:"Marcar entregado",
+    icono:"🛵"
+  })) return;
+
+  const ahora = new Date().toISOString();
+  p.entregadoEn=ahora;
+  const venta = ventaDesdePedido(p);
+
+  try{
+    await guardarVentaDB(venta); // ID determinista: evita ventas duplicadas si se reintenta.
+    await actualizarPedidoDB(id,{estado:"entregado",entregadoEn:ahora});
+    p.estado="entregado";
+    if(!VENTAS.some(v=>v.id===venta.id)) VENTAS.unshift(venta);
+    mostrarConfirmacion(`✓ ${p.codigo} entregado y contabilizado`);
+    renderPedidosAdmin();
+    renderContabilidad();
+  }catch(error){
+    alert("No se pudo completar la entrega: "+error.message);
+  }
+}
+
+async function cancelarPedido(id){
+  const p = PEDIDOS.find(x=>x.id===id);
+  if(!p) return;
+
+  if(!await confirmarAccion({
+    titulo:"Cancelar pedido",
+    mensaje:`${p.codigo} se marcará como cancelado y no contará como venta.`,
+    confirmar:"Cancelar pedido",
+    peligro:true,
+    icono:"!"
+  })) return;
+
+  const ahora=new Date().toISOString();
+  try{
+    await actualizarPedidoDB(id,{estado:"cancelado",canceladoEn:ahora});
+    p.estado="cancelado";
+    p.canceladoEn=ahora;
+    mostrarConfirmacion(`✓ ${p.codigo} cancelado`);
+    renderPedidosAdmin();
+  }catch(error){
+    alert("No se pudo cancelar el pedido: "+error.message);
+  }
 }
 
 /* ============================================================
@@ -4111,6 +4764,59 @@ async function descargarExcelContabilidad(){
       Nota:g.nota
     }));
 
+    const pedidosRows = PEDIDOS.map(p => ({
+      Código:p.codigo,
+      "Fecha pedido":new Date(p.fechaPedido).toLocaleString("es-CR"),
+      Cliente:p.clienteNombre,
+      WhatsApp:"+"+p.clienteTelefono,
+      Estado:estadoPedidoLabel(p.estado),
+      Total:p.total,
+      Dirección:p.direccion,
+      Nota:p.nota,
+      "Inicio preparación":p.preparandoEn ? new Date(p.preparandoEn).toLocaleString("es-CR") : "",
+      "Listo":p.listoEn ? new Date(p.listoEn).toLocaleString("es-CR") : "",
+      "Entregado":p.entregadoEn ? new Date(p.entregadoEn).toLocaleString("es-CR") : "",
+      "Tiempo preparación min":p.listoEn ? Number(((new Date(p.listoEn)-new Date(p.fechaPedido))/60000).toFixed(2)) : "",
+      "Tiempo hasta entrega min":p.entregadoEn ? Number(((new Date(p.entregadoEn)-new Date(p.fechaPedido))/60000).toFixed(2)) : ""
+    }));
+
+    const detallePedidosRows = PEDIDOS.flatMap(p =>
+      p.items.map(it => ({
+        Código:p.codigo,
+        "Fecha pedido":new Date(p.fechaPedido).toLocaleString("es-CR"),
+        Cliente:p.clienteNombre,
+        Producto:it.nombre,
+        Extras:(it.extras||[]).map(e=>e.nombre).join(", "),
+        Cantidad:it.cantidad,
+        "Precio unitario":it.precioUnit,
+        Subtotal:it.subtotal || (it.precioUnit*it.cantidad),
+        Estado:estadoPedidoLabel(p.estado)
+      }))
+    );
+
+    const mesesPedidos = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const metricasPedidosRows = mesesPedidos.map((nombre,mes) => {
+      const lista = PEDIDOS.filter(p => {
+        const f=new Date(p.fechaPedido);
+        return f.getFullYear()===contaAnioSeleccionado && f.getMonth()===mes;
+      });
+      const completados=lista.filter(p=>p.listoEn && p.estado!=="cancelado");
+      const prepMin=completados.map(p=>(new Date(p.listoEn)-new Date(p.fechaPedido))/60000);
+      const entregados=lista.filter(p=>p.estado==="entregado");
+      const cancelados=lista.filter(p=>p.estado==="cancelado");
+      return {
+        Año:contaAnioSeleccionado,
+        Mes:nombre,
+        Pedidos:lista.length,
+        Entregados:entregados.length,
+        Cancelados:cancelados.length,
+        "Tiempo promedio preparación min":prepMin.length ? Number((prepMin.reduce((a,b)=>a+b,0)/prepMin.length).toFixed(2)) : 0,
+        "Tiempo más rápido min":prepMin.length ? Number(Math.min(...prepMin).toFixed(2)) : 0,
+        "Tiempo más lento min":prepMin.length ? Number(Math.max(...prepMin).toFixed(2)) : 0,
+        "Venta pedidos entregados":entregados.reduce((s,p)=>s+(Number(p.total)||0),0)
+      };
+    });
+
     const productosRows = PRODUCTOS.map(p => ({
       Producto:p.nombre,
       Categoría:p.categoria,
@@ -4157,6 +4863,9 @@ async function descargarExcelContabilidad(){
     agregarHoja("Ventas",ventasRows);
     agregarHoja("Detalle ventas",detalleRows);
     agregarHoja("Gastos",gastosRows);
+    agregarHoja("Pedidos",pedidosRows);
+    agregarHoja("Detalle pedidos",detallePedidosRows);
+    agregarHoja("Métricas pedidos",metricasPedidosRows);
     agregarHoja("Productos",productosRows);
 
     const fecha = new Date().toISOString().slice(0,10);
