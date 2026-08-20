@@ -852,43 +852,345 @@ a{color:inherit;}
 :focus-visible{outline:3px solid var(--mustard);outline-offset:3px;}
 
 
+
+
+
 /* ============================================================
-   AJUSTE MÓVIL — evita que el logo cubra el botón "Ver menú"
+   DISEÑO MÓVIL PURA SMASH — referencia aprobada
    ============================================================ */
-@media (max-width:479px){
+.mobile-brandbar{display:none;}
+
+@media (max-width:767px){
+  body{
+    background:#17120f;
+  }
+
+  .mobile-brandbar{
+    height:76px;
+    display:grid;
+    grid-template-columns:64px 1fr 64px;
+    align-items:center;
+    position:relative;
+    z-index:35;
+    padding:8px 18px;
+    background:#0b0a09;
+    border-bottom:1px solid rgba(227,166,47,.2);
+  }
+  .mobile-menu-trigger{
+    width:48px;
+    background:none;
+    border:0;
+    color:var(--cream);
+    padding:2px 0;
+    cursor:pointer;
+  }
+  .mobile-menu-trigger > span{
+    display:block;
+    width:34px;
+    height:2px;
+    margin:6px 0;
+    border-radius:2px;
+    background:var(--cream);
+  }
+  .mobile-menu-trigger small{
+    display:block;
+    width:34px;
+    margin-top:3px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:8px;
+    letter-spacing:.07em;
+    text-align:center;
+    color:rgba(247,241,228,.72);
+  }
+  .mobile-brand-copy{
+    grid-column:2;
+    text-align:center;
+    line-height:1;
+  }
+  .mobile-brand-copy strong{
+    display:block;
+    font-family:'Anton',sans-serif;
+    font-size:27px;
+    font-weight:400;
+    letter-spacing:.03em;
+    color:var(--cream);
+  }
+  .mobile-brand-copy span{
+    display:block;
+    margin-top:4px;
+    font-family:'Anton',sans-serif;
+    font-size:10px;
+    letter-spacing:.04em;
+    color:var(--mustard);
+  }
+
   .hero{
-    min-height:340px;
-    height:92vw;
-    max-height:390px;
+    height:auto;
+    min-height:670px;
+    max-height:none;
+    padding:34px 24px 48px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 88% 47%, rgba(227,166,47,.12), transparent 36%),
+      linear-gradient(145deg,#2e2015 0%,#1d1510 45%,#130f0c 100%);
   }
-  .logo-badge{
-    width:82px;
-    height:82px;
+  .hero .photo{
+    inset:0;
+    opacity:.28;
+    background:
+      repeating-linear-gradient(45deg, rgba(243,232,210,.06) 0 2px, transparent 2px 17px),
+      radial-gradient(circle at 82% 58%,rgba(194,67,43,.18),transparent 35%),
+      linear-gradient(145deg,#4a301d,#17100c);
+  }
+  .hero::after{
+    background:
+      linear-gradient(90deg,rgba(12,9,7,.18) 0%,rgba(12,9,7,.08) 50%,rgba(12,9,7,.2) 100%),
+      linear-gradient(180deg,rgba(14,10,8,.02) 0%,rgba(14,10,8,.12) 58%,#17120f 100%);
+  }
+
+  .hero-content{
+    position:relative;
     left:auto;
-    right:16px;
-    top:16px;
+    right:auto;
     bottom:auto;
-    transform:none;
-    opacity:1;
-    animation:none;
-    border-width:3px;
+    z-index:4;
+    padding:0;
+    max-width:100%;
   }
-  .logo-badge::after{
+  .hero-content > *{
+    animation:none;
+    opacity:1;
+    transform:none;
+  }
+  .stamp{
+    display:flex;
+    width:calc(100% - 86px);
+    min-height:50px;
+    align-items:center;
+    justify-content:flex-start;
+    margin:18px 0 30px;
+    padding:9px 15px;
+    border:2px solid var(--mustard);
+    border-radius:999px;
+    transform:none;
+    background:rgba(20,14,10,.5);
+    font-size:10px;
+    letter-spacing:.16em;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+  .stamp::before{font-size:7px;flex:none;}
+
+  .logo-badge{
+    width:88px;
+    height:88px;
+    left:auto;
+    right:17px;
+    top:19px;
+    bottom:auto;
+    z-index:8;
+    opacity:1;
+    transform:none;
+    animation:none;
+    border:3px solid var(--paper);
+    box-shadow:0 7px 20px rgba(0,0,0,.42);
+  }
+  .logo-badge::after{display:none;}
+
+  .hero h1{
+    max-width:4.3ch;
+    margin:0 0 18px;
+    font-size:clamp(74px,21vw,112px);
+    line-height:.84;
+    letter-spacing:-.015em;
+    text-shadow:0 4px 0 rgba(0,0,0,.25);
+  }
+  .hero p{
+    max-width:22ch;
+    margin:0 0 13px;
+    font-size:18px;
+    line-height:1.52;
+    color:rgba(247,241,228,.9);
+  }
+  .hero-location{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin:0 0 25px;
+    font-size:17px;
+    color:rgba(247,241,228,.92);
+  }
+  .hero-location span{
+    color:var(--mustard);
+  }
+  .hero .btn-primary{
+    min-width:188px;
+    padding:17px 28px;
+    border-radius:999px;
+    font-size:17px;
+    font-weight:700;
+    box-shadow:0 12px 24px rgba(194,67,43,.24);
+  }
+
+  .char-edge{
+    height:14px;
+  }
+  .char-edge svg{
     display:none;
   }
-  .hero-content{
-    bottom:20px;
+
+  .cat-nav{
+    top:0;
+    gap:5px;
+    margin:0;
+    padding:12px 18px;
+    background:#17120f;
+    border-top:1px solid rgba(243,232,210,.09);
+    border-bottom:1px solid rgba(243,232,210,.15);
+  }
+  .cat-btn{
+    min-height:48px;
+    padding:10px 18px;
+    border-color:rgba(243,232,210,.3);
+    font-size:12.5px;
+    letter-spacing:.02em;
+  }
+  .cat-btn.active{
+    background:var(--mustard);
+    border-color:var(--mustard);
+    color:#18110c;
+  }
+
+  .section{
+    padding:34px 20px 8px;
+  }
+  .section-title{
+    margin-bottom:22px;
+  }
+  .section-title h2{
+    font-size:29px;
+    letter-spacing:.01em;
+  }
+  .section-title .count{
+    font-size:13px;
+  }
+
+  .card{
+    border:1px solid rgba(227,166,47,.17);
+    border-radius:22px;
+    background:#251b14;
+    color:var(--cream);
+    box-shadow:none;
+  }
+  .card-body{
+    padding:17px;
+  }
+  .card h3{
+    color:var(--cream);
+    font-size:24px;
+  }
+  .card p.desc{
+    color:rgba(247,241,228,.72);
+    font-size:14px;
+  }
+  .card .price{
+    color:var(--mustard);
+    font-size:21px;
+  }
+  .card-tag{
+    color:var(--mustard);
+    background:rgba(227,166,47,.08);
+    border:1px solid rgba(227,166,47,.36);
+  }
+  .card-tag.promo{
+    color:var(--mustard);
+    background:rgba(227,166,47,.09);
+  }
+  .card .photo{
+    background:
+      repeating-linear-gradient(45deg,rgba(243,232,210,.035) 0 2px,transparent 2px 16px),
+      #18120e;
+  }
+  .add-btn{
+    width:42px;
+    height:42px;
+    padding:0;
+    border-radius:50%;
+    font-size:0;
+    background:var(--ember);
+  }
+  .add-btn::before{
+    content:"+";
+    font-size:28px;
+    line-height:1;
+    font-weight:400;
+  }
+  .extras-box{
+    color:var(--paper-text);
+  }
+}
+
+@media (min-width:390px) and (max-width:767px){
+  .card{
+    display:grid;
+    grid-template-columns:45% 55%;
+    min-height:245px;
+  }
+  .card > .photo{
+    height:100%;
+    min-height:245px;
+    border-radius:20px 0 0 20px;
+  }
+  .card-body{
+    min-width:0;
+    padding:18px 16px;
+    display:flex;
+    flex-direction:column;
+  }
+  .card-footer{
+    margin-top:auto;
+  }
+  .extras-box{
+    display:none;
+  }
+}
+
+@media (max-width:389px){
+  .hero{
+    min-height:650px;
+    padding-left:20px;
     padding-right:20px;
   }
-  .hero-content > .btn-primary{
-    position:relative;
-    z-index:6;
+  .stamp{
+    width:calc(100% - 78px);
+    font-size:9px;
+    letter-spacing:.1em;
+  }
+  .logo-badge{
+    width:78px;
+    height:78px;
+    right:13px;
+  }
+  .hero h1{
+    font-size:72px;
   }
 }
 
 </style>
 </head>
 <body>
+
+
+<div class="mobile-brandbar" aria-label="Cabecera de Pura Smash">
+  <button class="mobile-menu-trigger" type="button" onclick="irAlMenu()" aria-label="Ir al menú">
+    <span></span><span></span><span></span>
+    <small>MENÚ</small>
+  </button>
+  <div class="mobile-brand-copy">
+    <strong>PURA SMASH</strong>
+    <span>SMASH BURGERS ARTESANALES</span>
+  </div>
+</div>
 
 <header class="hero">
   <div class="photo" id="hero-photo">
@@ -898,7 +1200,8 @@ a{color:inherit;}
   <div class="hero-content">
     <span class="stamp">El sabor auténtico a la plancha</span>
     <h1>Pura<br>Smash</h1>
-    <p>Smash burgers artesanales hechas al momento, con costra crujiente y sazón de casa. Juanilama, Esparza.</p>
+    <p>Smash burgers artesanales hechas al momento, con costra crujiente y sazón de casa.</p>
+    <div class="hero-location"><span aria-hidden="true">📍</span> Juanilama, Esparza.</div>
     <button class="btn btn-primary" onclick="irAlMenu()">Ver menú <span class="arrow">→</span></button>
   </div>
 </header>
