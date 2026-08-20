@@ -1419,6 +1419,62 @@ a{color:inherit;}
   .daily-label{font-size:6px;}
 }
 
+
+/* Extras — texto siempre visible y filas completas */
+.extras-box{
+  position:relative;
+  z-index:2;
+}
+.extra-chip{
+  min-height:34px;
+  color:#241A11 !important;
+}
+.extra-chip > span:not(.extra-price){
+  display:block;
+  flex:1 1 auto;
+  min-width:0;
+  color:#241A11 !important;
+  font-weight:600;
+  opacity:1 !important;
+}
+.extra-chip .extra-price{
+  color:#6b5848 !important;
+  opacity:1 !important;
+  white-space:nowrap;
+}
+.extras-label{
+  color:#6b5848 !important;
+  opacity:1 !important;
+}
+
+
+.admin-toast{
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  z-index:120;
+  max-width:min(420px,calc(100% - 32px));
+  transform:translate(-50%,140%);
+  opacity:0;
+  pointer-events:none;
+  background:#f3e8d2;
+  color:#241a11;
+  border:2px solid var(--mustard);
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:700;
+  font-size:13px;
+  box-shadow:0 14px 30px rgba(0,0,0,.4);
+  transition:transform .22s ease,opacity .22s ease;
+}
+.admin-toast.show{
+  transform:translate(-50%,0);
+  opacity:1;
+}
+.admin-toast.error{
+  border-color:var(--ember);
+}
+
 </style>
 </head>
 <body>
@@ -1700,6 +1756,9 @@ a{color:inherit;}
   </div>
 </div>
 
+
+<div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+
 <script>
 /* ============================================================
    1. DATOS BASE DEL MENÚ
@@ -1936,7 +1995,7 @@ async function cargarDatosSupabase(modoAdmin = false){
 
   EXTRAS = (extrasRes.data || []).map(e => ({
     id: String(e.id),
-    nombre: e.nombre,
+    nombre: String(e.nombre || "").trim(),
     precio: Number(e.precio) || 0,
     costo: modoAdmin ? (Number(e.costo) || 0) : 0,
     disponible: e.disponible !== false
@@ -2109,7 +2168,10 @@ function precioVigente(p){
    5. EXTRAS — ayudantes
    ============================================================ */
 function extrasDisponibles(){
-  return EXTRAS.filter(e => e.disponible !== false);
+  return EXTRAS.filter(e =>
+    e.disponible !== false &&
+    String(e.nombre || "").trim().length > 0
+  );
 }
 function extraPorId(id){
   return EXTRAS.find(e => e.id === id);
@@ -2490,6 +2552,18 @@ function enviarPorWhatsapp(){
   window.open(url, "_blank");
 }
 
+
+let adminToastTimer = null;
+function mostrarConfirmacion(mensaje, tipo="ok"){
+  const el = document.getElementById("admin-toast");
+  if(!el) return;
+  clearTimeout(adminToastTimer);
+  el.textContent = mensaje;
+  el.classList.toggle("error", tipo === "error");
+  el.classList.add("show");
+  adminToastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
 /* ============================================================
    10. PANEL ADMIN — acceso
    ============================================================ */
@@ -2731,6 +2805,11 @@ async function subirFotoProducto(id, input){
   const p = PRODUCTOS.find(x => x.id === id);
   if(!p) return;
 
+  if(!confirm(`¿${p.imagenUrl ? "Reemplazar" : "Subir"} la foto de "${p.nombre || "este producto"}"?`)){
+    if(input) input.value = "";
+    return;
+  }
+
   const status = document.getElementById("foto-status-" + id);
   if(status) status.textContent = "Comprimiendo foto…";
 
@@ -2769,6 +2848,7 @@ async function subirFotoProducto(id, input){
 
     renderAdminProductos();
     renderMenu();
+    mostrarConfirmacion("✓ Foto actualizada correctamente");
   }catch(error){
     console.error(error);
     if(status) status.textContent = "Error: " + (error.message || error);
@@ -2794,6 +2874,7 @@ async function eliminarFotoProducto(id){
     }
     renderAdminProductos();
     renderMenu();
+    mostrarConfirmacion("✓ Foto eliminada");
   }catch(error){
     p.imagenUrl = urlAnterior;
     alert("No se pudo eliminar la foto: " + (error.message || error));
@@ -2803,16 +2884,37 @@ async function eliminarFotoProducto(id){
 async function guardarProducto(id){
   const p = PRODUCTOS.find(p => p.id === id);
   if(!p) return;
-  p.nombre = document.getElementById("p-nombre-" + id).value.trim();
-  p.categoria = document.getElementById("p-categoria-" + id).value;
-  p.etiqueta = document.getElementById("p-etiqueta-" + id).value.trim();
-  p.descripcion = document.getElementById("p-desc-" + id).value.trim();
-  p.precio = Number(document.getElementById("p-precio-" + id).value) || 0;
-  p.costo = Number(document.getElementById("p-costo-" + id).value) || 0;
-  p.disponible = document.getElementById("p-switch-" + id).classList.contains("on");
-  p.admiteExtras = document.getElementById("p-extras-switch-" + id).classList.contains("on");
 
-  try{ await guardarProductoDB(p); }catch(error){ alert("No se pudo guardar el producto: " + error.message); return; }
+  const cambios = {
+    nombre: document.getElementById("p-nombre-" + id).value.trim(),
+    categoria: document.getElementById("p-categoria-" + id).value,
+    etiqueta: document.getElementById("p-etiqueta-" + id).value.trim(),
+    descripcion: document.getElementById("p-desc-" + id).value.trim(),
+    precio: Number(document.getElementById("p-precio-" + id).value) || 0,
+    costo: Number(document.getElementById("p-costo-" + id).value) || 0,
+    disponible: document.getElementById("p-switch-" + id).classList.contains("on"),
+    admiteExtras: document.getElementById("p-extras-switch-" + id).classList.contains("on")
+  };
+
+  if(!cambios.nombre){
+    alert("El producto necesita un nombre.");
+    return;
+  }
+
+  if(!confirm(`¿Guardar los cambios de "${cambios.nombre}"?`)) return;
+
+  const anterior = {...p};
+  Object.assign(p, cambios);
+
+  try{
+    await guardarProductoDB(p);
+    mostrarConfirmacion(`✓ ${p.nombre} actualizado correctamente`);
+  }catch(error){
+    Object.assign(p, anterior);
+    alert("No se pudo guardar el producto: " + error.message);
+    return;
+  }
+
   renderAdminProductos();
   renderMenu();
   actualizarBarraCarrito();
@@ -2846,6 +2948,7 @@ async function eliminarProducto(id){
   if(!confirm(`¿Eliminar "${p.nombre || "este producto"}" del menú?`)) return;
   try{ await eliminarFila("productos", id); }catch(error){ alert("No se pudo eliminar el producto: " + error.message); return; }
   PRODUCTOS = PRODUCTOS.filter(p => p.id !== id);
+  mostrarConfirmacion("✓ Producto eliminado");
   renderAdminProductos();
   renderMenu();
   actualizarBarraCarrito();
@@ -2864,7 +2967,7 @@ function renderAdminExtras(){
   cont.innerHTML = EXTRAS.map(e => `
     <div class="admin-card" id="admin-e-${e.id}">
       <div class="admin-card-top">
-        <span class="admin-card-name">${escHtml(e.nombre || "Extra nuevo")}</span>
+        <span class="admin-card-name">${escHtml(e.nombre || "⚠ Extra sin nombre — editar o eliminar")}</span>
         <span class="admin-badge ${e.disponible === false ? "off" : "on"}">${e.disponible === false ? "Oculto" : "Visible"}</span>
       </div>
       <div class="a-field">
@@ -2902,22 +3005,31 @@ async function guardarExtra(id){
   if(!e) return;
 
   const nombre = document.getElementById("e-nombre-" + id).value.trim();
+  const precio = Number(document.getElementById("e-precio-" + id).value) || 0;
+  const costo = Number(document.getElementById("e-costo-" + id).value) || 0;
+  const disponible = document.getElementById("e-switch-" + id).classList.contains("on");
+
   if(!nombre){
     alert("Poné un nombre al extra antes de guardarlo.");
     document.getElementById("e-nombre-" + id).focus();
     return;
   }
 
+  if(!confirm(`¿Guardar el extra "${nombre}" por ${money(precio)}?`)) return;
+
+  const anterior = {...e};
   e.nombre = nombre;
-  e.precio = Number(document.getElementById("e-precio-" + id).value) || 0;
-  e.costo = Number(document.getElementById("e-costo-" + id).value) || 0;
-  e.disponible = document.getElementById("e-switch-" + id).classList.contains("on");
+  e.precio = precio;
+  e.costo = costo;
+  e.disponible = disponible;
+  delete e._nuevo;
 
   try{
     await guardarExtraDB(e);
-    // Recargar desde Supabase evita diferencias entre el panel y el menú público.
     await cargarDatosSupabase(true);
+    mostrarConfirmacion(`✓ Extra "${nombre}" guardado`);
   }catch(error){
+    Object.assign(e, anterior);
     alert("No se pudo guardar el extra: " + error.message);
     return;
   }
@@ -2951,6 +3063,7 @@ async function eliminarExtra(id){
     try{ await eliminarFila("extras", id); }catch(error){ alert("No se pudo eliminar el extra: " + error.message); return; }
   }
   EXTRAS = EXTRAS.filter(e => e.id !== id);
+  mostrarConfirmacion("✓ Extra eliminado");
   Object.keys(seleccionExtras).forEach(productoId => {
     seleccionExtras[productoId] = (seleccionExtras[productoId] || []).filter(extraId => extraId !== id);
   });
@@ -3045,15 +3158,36 @@ function togglePromoActiva(id){
 async function guardarPromo(id){
   const pr = PROMOS.find(pr => pr.id === id);
   if(!pr) return;
-  pr.nombre = document.getElementById("pr-nombre-" + id).value.trim();
-  pr.productoId = document.getElementById("pr-producto-" + id).value;
-  pr.tipo = document.getElementById("pr-tipo-" + id).value;
-  pr.valor = Number(document.getElementById("pr-valor-" + id).value) || 0;
-  pr.inicio = document.getElementById("pr-inicio-" + id).value;
-  pr.fin = document.getElementById("pr-fin-" + id).value;
-  pr.activa = document.getElementById("pr-switch-" + id).classList.contains("on");
 
-  try{ await guardarPromoDB(pr); }catch(error){ alert("No se pudo guardar la promoción: " + error.message); return; }
+  const cambios = {
+    nombre: document.getElementById("pr-nombre-" + id).value.trim(),
+    productoId: document.getElementById("pr-producto-" + id).value,
+    tipo: document.getElementById("pr-tipo-" + id).value,
+    valor: Number(document.getElementById("pr-valor-" + id).value) || 0,
+    inicio: document.getElementById("pr-inicio-" + id).value,
+    fin: document.getElementById("pr-fin-" + id).value,
+    activa: document.getElementById("pr-switch-" + id).classList.contains("on")
+  };
+
+  if(!cambios.nombre){
+    alert("Poné un nombre a la promoción.");
+    return;
+  }
+
+  if(!confirm(`¿Guardar los cambios de la promoción "${cambios.nombre}"?`)) return;
+
+  const anterior = {...pr};
+  Object.assign(pr, cambios);
+
+  try{
+    await guardarPromoDB(pr);
+    mostrarConfirmacion(`✓ Promoción "${pr.nombre}" guardada`);
+  }catch(error){
+    Object.assign(pr, anterior);
+    alert("No se pudo guardar la promoción: " + error.message);
+    return;
+  }
+
   renderAdminPromos();
   renderMenu();
   actualizarBarraCarrito();
@@ -3085,6 +3219,7 @@ async function eliminarPromo(id){
   if(!confirm(`¿Eliminar la promoción "${pr.nombre || "sin nombre"}"?`)) return;
   try{ await eliminarFila("promociones", id); }catch(error){ alert("No se pudo eliminar la promoción: " + error.message); return; }
   PROMOS = PROMOS.filter(pr => pr.id !== id);
+  mostrarConfirmacion("✓ Promoción eliminada");
   renderAdminPromos();
   renderMenu();
   actualizarBarraCarrito();
@@ -3388,6 +3523,8 @@ async function registrarGasto(){
     return;
   }
 
+  if(!confirm(`¿Registrar el gasto "${descripcion}" por ${money(monto)}?`)) return;
+
   const gasto = {
     id:idNuevo("gasto"),
     fecha:new Date(fecha + "T12:00:00").toISOString(),
@@ -3407,6 +3544,7 @@ async function registrarGasto(){
   }
 
   GASTOS.unshift(gasto);
+  mostrarConfirmacion(`✓ Gasto registrado: ${money(gasto.monto)}`);
   document.getElementById("gasto-descripcion").value = "";
   document.getElementById("gasto-monto").value = "";
   document.getElementById("gasto-proveedor").value = "";
@@ -3429,6 +3567,7 @@ async function eliminarGasto(id){
   }
 
   GASTOS = GASTOS.filter(g => g.id !== id);
+  mostrarConfirmacion("✓ Gasto eliminado");
   renderContabilidad();
 }
 
@@ -3642,6 +3781,8 @@ async function registrarVenta(){
   const total = items.reduce((s,it) => s + it.precioUnit*it.cantidad, 0);
   const costoTotal = items.reduce((s,it) => s + it.costoUnit*it.cantidad, 0);
 
+  if(!confirm(`¿Registrar esta venta por ${money(total)}?`)) return;
+
   const venta = {
     id: idNuevo("venta"),
     fecha: new Date().toISOString(),
@@ -3652,6 +3793,7 @@ async function registrarVenta(){
   };
   try{ await guardarVentaDB(venta); }catch(error){ alert("No se pudo registrar la venta: " + error.message); return; }
   VENTAS.unshift(venta);
+  mostrarConfirmacion(`✓ Venta registrada: ${money(venta.total)}`);
   lineasVentaTemp = [];
   renderContabilidad();
 }
@@ -3660,6 +3802,7 @@ async function eliminarVenta(id){
   if(!confirm("¿Eliminar esta venta del registro?")) return;
   try{ await eliminarFila("ventas", id); }catch(error){ alert("No se pudo eliminar la venta: " + error.message); return; }
   VENTAS = VENTAS.filter(v => v.id !== id);
+  mostrarConfirmacion("✓ Venta eliminada");
   renderContabilidad();
 }
 
