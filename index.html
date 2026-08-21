@@ -2454,6 +2454,41 @@ a{color:inherit;}
   font-family:'JetBrains Mono',monospace;
 }
 
+
+/* Estado cerrado — bloquea pedidos públicos sin ocultar el menú */
+.closed-order-banner{
+  width:min(560px,100%);
+  margin:0 0 18px;
+  padding:12px 14px;
+  border:1px solid rgba(194,67,43,.45);
+  border-radius:12px;
+  background:rgba(194,67,43,.10);
+  color:rgba(247,241,228,.82);
+}
+.closed-order-banner strong{
+  display:block;
+  margin-bottom:3px;
+  color:#e78673;
+  font-size:12px;
+}
+.closed-order-banner span{
+  display:block;
+  font-size:11px;
+  line-height:1.45;
+  color:rgba(247,241,228,.58);
+}
+.ordering-closed .add-btn,
+.ordering-closed .stepper button,
+.ordering-closed .cart-bar button,
+.ordering-closed #btn-enviar-whatsapp{
+  opacity:.45 !important;
+  cursor:not-allowed !important;
+  filter:grayscale(.25);
+}
+.ordering-closed .card-footer{
+  pointer-events:none;
+}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -2482,6 +2517,10 @@ a{color:inherit;}
     <p>Smash burgers artesanales hechas al momento, con costra crujiente y sazón de casa.</p>
     <div class="hero-location"><span aria-hidden="true">📍</span> Esparza.</div>
     <div class="hero-business-status open" id="hero-business-status">● Abierto</div>
+    <div class="closed-order-banner hidden" id="closed-order-banner">
+      <strong>Estamos cerrados en este momento</strong>
+      <span>Podés ver el menú, pero los pedidos en línea están pausados hasta que volvamos a abrir.</span>
+    </div>
     <button class="btn btn-primary" onclick="irAlMenu()">Ver menú <span class="arrow">→</span></button>
   </div>
 </header>
@@ -3787,6 +3826,7 @@ function precioLinea(p, extrasIds){
   return precioVigente(p).precio + precioExtras(extrasIds);
 }
 function toggleExtraSeleccion(productoId, extraId, marcado){
+  if(bloquearPedidoSiCerrado()) return;
   if(!seleccionExtras[productoId]) seleccionExtras[productoId] = [];
   if(marcado){
     if(!seleccionExtras[productoId].includes(extraId)) seleccionExtras[productoId].push(extraId);
@@ -3958,6 +3998,9 @@ function renderPrecioFooter(p){
 }
 
 function renderControlCantidad(productoId){
+  if(!pedidosPublicosAbiertos()){
+    return `<button class="add-btn" type="button" disabled aria-disabled="true">Cerrado</button>`;
+  }
   const clave = claveLinea(productoId, seleccionExtras[productoId]);
   const cant = (carrito[clave] && carrito[clave].cantidad) || 0;
   if(cant === 0){
@@ -3986,6 +4029,7 @@ function actualizarControlCantidad(productoId){
    7. LÓGICA DEL CARRITO
    ============================================================ */
 function agregar(productoId){
+  if(bloquearPedidoSiCerrado()) return;
   const p = PRODUCTOS.find(p => String(p.id) === String(productoId));
   if(!p || p.disponible === false) return;
   const extrasIds = (seleccionExtras[productoId] || []).slice();
@@ -4032,6 +4076,10 @@ function actualizarTodo(){
 }
 
 function actualizarBarraCarrito(){
+  const cerrado=!pedidosPublicosAbiertos();
+  const barra=document.getElementById("cart-bar");
+  if(barra) barra.classList.toggle("closed",cerrado);
+
   const bar = document.getElementById("cart-bar");
   const cant = cantidadTotal();
   document.getElementById("cart-count").textContent = cant;
@@ -4381,6 +4429,7 @@ function construirItemsPedido(){
 }
 
 async function enviarPorWhatsapp(){
+  if(bloquearPedidoSiCerrado()) return;
   if(cantidadTotal()===0) return;
 
   const nombre=document.getElementById("input-nombre").value.trim();
@@ -6219,6 +6268,16 @@ async function cargarConfiguracionSitio(){
   }
 }
 
+function pedidosPublicosAbiertos(){
+  return CONFIG_SITIO.abierto !== false;
+}
+
+function bloquearPedidoSiCerrado(){
+  if(pedidosPublicosAbiertos()) return false;
+  mostrarConfirmacion("Estamos cerrados en este momento. El menú sigue disponible, pero los pedidos en línea están pausados.","error");
+  return true;
+}
+
 function aplicarConfiguracionSitio(){
   const hero=document.getElementById("hero-photo");
   if(hero){
@@ -6246,6 +6305,19 @@ function aplicarConfiguracionSitio(){
   const numero=String(CONFIG_SITIO.whatsapp || "").replace(/\D/g,"");
   if(numero){
     NUMERO_WHATSAPP = numero.length===8 ? "506"+numero : numero;
+  }
+
+  const cerrado=!pedidosPublicosAbiertos();
+  document.body.classList.toggle("ordering-closed",cerrado);
+  const banner=document.getElementById("closed-order-banner");
+  if(banner) banner.classList.toggle("hidden",!cerrado);
+
+  // Re-renderiza controles públicos para mostrar correctamente el estado.
+  if(typeof renderMenu==="function" && Array.isArray(PRODUCTOS) && PRODUCTOS.length){
+    try{ renderMenu(); }catch(error){ console.warn("No se pudo refrescar menú por estado:",error); }
+  }
+  if(typeof actualizarBarraCarrito==="function"){
+    try{ actualizarBarraCarrito(); }catch(error){ console.warn("No se pudo refrescar carrito:",error); }
   }
 }
 
