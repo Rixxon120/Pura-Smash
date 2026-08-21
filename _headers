@@ -7,3 +7,7 @@
   Permissions-Policy: geolocation=(self), camera=(self), microphone=(), payment=(), usb=()
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://hofmqfujmtmflcjutjvu.supabase.co wss://hofmqfujmtmflcjutjvu.supabase.co; img-src 'self' data: blob: https://hofmqfujmtmflcjutjvu.supabase.co https://*.tile.openstreetmap.org; upgrade-insecure-requests
   Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
