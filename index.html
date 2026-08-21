@@ -4,28 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Pura Smash | Smash Burgers en Esparza, Costa Rica</title>
-<meta name="description" content="Smash burgers artesanales en Juanilama de Esparza, Costa Rica. Pedí online con entrega express, ubicación por GPS y pedido directo por WhatsApp.">
-<meta name="keywords" content="smash burgers Esparza, hamburguesas Esparza, hamburguesas Juanilama, delivery Esparza, comida express Esparza, Pura Smash">
+<meta name="description" content="Smash burgers artesanales en Esparza, Costa Rica. Pedí online con entrega express, ubicación por GPS y pedido directo por WhatsApp.">
+<meta name="keywords" content="smash burgers Esparza, hamburguesas Esparza, delivery Esparza, comida express Esparza, Pura Smash">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Pura Smash">
 <meta name="theme-color" content="#1E1712">
 <meta name="color-scheme" content="dark">
 <meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="geo.region" content="CR-P">
-<meta name="geo.placename" content="Juanilama, Esparza, Puntarenas, Costa Rica">
+<meta name="geo.placename" content="Esparza, Puntarenas, Costa Rica">
 <meta name="application-name" content="Pura Smash">
 <link rel="canonical" href="https://www.purasmash.com/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Pura Smash | Smash Burgers en Esparza">
-<meta property="og:description" content="Smash burgers artesanales con entrega express en Juanilama de Esparza. Armá tu pedido y envialo directo por WhatsApp.">
+<meta property="og:description" content="Smash burgers artesanales con entrega express en Esparza. Armá tu pedido y envialo directo por WhatsApp.">
 <meta property="og:locale" content="es_CR">
 <meta property="og:site_name" content="Pura Smash">
 <meta property="og:url" content="https://www.purasmash.com/">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pura Smash | Smash Burgers en Esparza">
-<meta name="twitter:description" content="Smash burgers artesanales con entrega express en Juanilama de Esparza, Costa Rica.">
+<meta name="twitter:description" content="Smash burgers artesanales con entrega express en Esparza, Costa Rica.">
 
 <script type="application/ld+json">
 {
@@ -35,13 +36,13 @@
   "name": "Pura Smash",
   "url": "https://www.purasmash.com/",
   "telephone": "+50689810775",
-  "description": "Smash burgers artesanales con entrega express en Juanilama de Esparza, Puntarenas, Costa Rica.",
+  "description": "Smash burgers artesanales con entrega express en Esparza, Puntarenas, Costa Rica.",
   "servesCuisine": ["Smash burgers", "Hamburguesas artesanales"],
   "priceRange": "₡₡",
   "acceptsReservations": false,
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Juanilama, Esparza",
+    "addressLocality": "Esparza",
     "addressRegion": "Puntarenas",
     "addressCountry": "CR"
   },
@@ -1823,7 +1824,104 @@ a{color:inherit;}
   #admin-pedidos-lista .a-empty{grid-column:1/-1;}
 }
 
+
+.location-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px;}
+.location-choice-btn{min-height:43px;padding:8px 10px;border-radius:11px;border:1px solid rgba(247,241,228,.2);background:rgba(247,241,228,.04);color:rgba(247,241,228,.7);font:600 12px 'Work Sans',sans-serif;cursor:pointer;}
+.location-choice-btn.active{border-color:var(--mustard);background:rgba(227,166,47,.12);color:var(--mustard);}
+.location-inline-label{display:block;margin-bottom:6px;color:rgba(247,241,228,.7);font-size:11px;font-weight:700;}
+.location-small{display:block;margin-top:6px;color:rgba(247,241,228,.42);font-size:10.5px;line-height:1.4;}
+
+.order-success-overlay{position:fixed;inset:0;z-index:115;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 25%,rgba(227,166,47,.14),transparent 38%),rgba(12,9,7,.96);overflow-y:auto;}
+.order-success-overlay.hidden{display:none!important;}
+.order-success-card{width:min(460px,100%);text-align:center;padding:32px 22px 26px;border:1px solid rgba(227,166,47,.35);border-radius:24px;background:#1d1611;box-shadow:0 28px 80px rgba(0,0,0,.55);}
+.order-success-icon{width:64px;height:64px;display:grid;place-items:center;margin:0 auto 15px;border-radius:50%;background:var(--mustard);color:#21160e;font-size:31px;font-weight:900;}
+.order-success-eyebrow{color:var(--mustard);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.13em;}
+.order-success-card h2{margin:7px 0 11px;color:var(--cream);font-family:'Anton',sans-serif;font-size:35px;font-weight:400;}
+.order-success-card p{color:rgba(247,241,228,.7);font-size:14px;line-height:1.55;}
+.order-success-code{display:inline-block;margin:7px 0 20px;padding:9px 14px;border:1px dashed rgba(227,166,47,.5);border-radius:10px;color:var(--mustard);font:700 15px 'JetBrains Mono',monospace;}
+.order-success-actions{display:grid;gap:9px;}
+.order-success-actions .btn{width:100%;min-height:47px;}
+.order-success-secondary{background:transparent;border:1px solid rgba(247,241,228,.24);color:var(--cream);}
+.order-success-link{background:transparent;border:0;color:rgba(247,241,228,.55);}
+.order-success-note{margin:17px 0 0!important;font-size:11px!important;color:rgba(247,241,228,.42)!important;}
+@media(max-width:520px){.location-choice{grid-template-columns:1fr}.order-success-overlay{align-items:flex-end;padding:12px}.order-success-card{border-radius:24px 24px 16px 16px}}
+
+
+/* Selector visual de destino en mapa */
+.map-picker-help{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin:4px 0 10px;
+}
+.map-picker-help strong{
+  color:var(--cream);
+  font-size:13px;
+}
+.map-picker-help span{
+  color:rgba(247,241,228,.5);
+  font-size:11px;
+  line-height:1.4;
+}
+.delivery-map{
+  position:relative;
+  width:100%;
+  height:310px;
+  overflow:hidden;
+  border:1px solid rgba(227,166,47,.32);
+  border-radius:14px;
+  background:#17120f;
+  z-index:1;
+}
+.delivery-map .leaflet-control-zoom a{
+  color:#241a11 !important;
+}
+.delivery-map .leaflet-control-attribution{
+  font-size:8px;
+}
+.ps-map-pin{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border:3px solid #f3e8d2;
+  border-radius:50% 50% 50% 0;
+  background:var(--mustard);
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+  transform:rotate(-45deg);
+}
+.ps-map-pin::after{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#241a11;
+}
+.map-picker-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.map-coordinates{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:9px;
+  background:rgba(247,241,228,.04);
+  color:rgba(247,241,228,.55);
+  font:500 10.5px 'JetBrains Mono',monospace;
+}
+.map-coordinates.selected{
+  color:#b8c98a;
+  border:1px solid rgba(184,201,138,.25);
+}
+@media(max-width:520px){
+  .delivery-map{height:290px;}
+  .map-picker-actions{grid-template-columns:1fr;}
+}
+
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
@@ -1848,7 +1946,7 @@ a{color:inherit;}
     <span class="stamp">El sabor auténtico a la plancha</span>
     <h1>Pura<br>Smash</h1>
     <p>Smash burgers artesanales hechas al momento, con costra crujiente y sazón de casa.</p>
-    <div class="hero-location"><span aria-hidden="true">📍</span> Juanilama, Esparza.</div>
+    <div class="hero-location"><span aria-hidden="true">📍</span> Esparza.</div>
     <button class="btn btn-primary" onclick="irAlMenu()">Ver menú <span class="arrow">→</span></button>
   </div>
 </header>
@@ -1863,7 +1961,7 @@ a{color:inherit;}
 
 <main id="menu-root" aria-label="Menú de Pura Smash"></main>
 
-<p class="footer-note">Pura Smash · Juanilama, Esparza · Pedidos por WhatsApp · Precios en colones</p>
+<p class="footer-note">Pura Smash · Esparza · Pedidos por WhatsApp · Precios en colones</p>
 <button class="admin-link" onclick="abrirPinGate()">Panel del negocio</button>
 
 <div class="cart-bar" id="cart-bar" onclick="abrirCarrito()">
@@ -1923,11 +2021,32 @@ a{color:inherit;}
       </div>
 
       <div class="field">
-        <label>Ubicación GPS</label>
+        <label>Ubicación de entrega</label>
         <div class="location-share">
-          <p class="location-help">Es obligatorio compartir tu ubicación para enviar el pedido. La ubicación se enviará como enlace de Google Maps y Waze.</p>
-          <button type="button" class="a-btn add" id="btn-compartir-ubicacion" onclick="compartirUbicacion()">📍 Compartir mi ubicación</button>
-          <div id="ubicacion-estado" class="location-status" aria-live="polite">Aún no has compartido tu ubicación.</div>
+          <p class="location-help">Podés usar tu ubicación actual o elegir cualquier punto de destino directamente en el mapa.</p>
+          <div class="location-choice">
+            <button type="button" class="location-choice-btn active" id="loc-mia" onclick="elegirTipoUbicacion('mia')">📍 Mi ubicación</button>
+            <button type="button" class="location-choice-btn" id="loc-otra" onclick="elegirTipoUbicacion('mapa')">🗺️ Elegir en el mapa</button>
+          </div>
+
+          <div id="ubicacion-mia-box">
+            <button type="button" class="a-btn add" id="btn-compartir-ubicacion" onclick="compartirUbicacion()">📍 Usar mi ubicación actual</button>
+          </div>
+
+          <div id="ubicacion-otra-box" class="hidden">
+            <div class="map-picker-help">
+              <strong>Tocá el punto exacto de entrega</strong>
+              <span>Podés mover y acercar el mapa. El pin dorado será el destino del pedido.</span>
+            </div>
+            <div id="mapa-entrega" class="delivery-map" aria-label="Mapa para seleccionar ubicación de entrega"></div>
+            <div class="map-picker-actions">
+              <button type="button" class="a-btn ghost" onclick="centrarMapaEnMiUbicacion()">📍 Centrar en mí</button>
+              <button type="button" class="a-btn add" id="btn-confirmar-punto" onclick="confirmarPuntoMapa()" disabled>✓ Usar este punto</button>
+            </div>
+            <div id="mapa-coordenadas" class="map-coordinates">Todavía no seleccionaste un punto.</div>
+          </div>
+
+          <div id="ubicacion-estado" class="location-status" aria-live="polite">Aún no has indicado la ubicación de entrega.</div>
         </div>
       </div>
 
@@ -1938,6 +2057,23 @@ a{color:inherit;}
     </div>
 
     <button class="btn btn-primary" id="btn-enviar-whatsapp" onclick="enviarPorWhatsapp()">Enviar pedido por WhatsApp</button>
+  </div>
+</div>
+
+
+<div class="order-success-overlay hidden" id="pedido-exito" aria-hidden="true">
+  <div class="order-success-card">
+    <div class="order-success-icon">✓</div>
+    <span class="order-success-eyebrow">PEDIDO REGISTRADO</span>
+    <h2>¡Ya prendimos la plancha!</h2>
+    <p id="pedido-exito-texto">Tu pedido fue registrado correctamente.</p>
+    <div class="order-success-code" id="pedido-exito-codigo"></div>
+    <div class="order-success-actions">
+      <button class="btn btn-primary" id="pedido-exito-whatsapp" type="button">Abrir WhatsApp</button>
+      <button class="btn order-success-secondary" type="button" onclick="nuevoPedidoDesdeExito()">Hacer otro pedido</button>
+      <button class="btn order-success-link" type="button" onclick="volverMenuDesdeExito()">Volver al menú</button>
+    </div>
+    <p class="order-success-note">Guardá tu código de pedido. Te avisaremos por WhatsApp cuando esté listo para salir.</p>
   </div>
 </div>
 
@@ -2510,6 +2646,7 @@ async function guardarPedidoPublico(pedido){
     direccion: pedido.direccion,
     lat: pedido.lat,
     lng: pedido.lng,
+    ubicacion_url: pedido.ubicacionUrl || null,
     nota: pedido.nota || null,
     items: pedido.items,
     total: pedido.total,
@@ -2530,6 +2667,12 @@ async function actualizarPedidoDB(id, cambios){
   if(error) throw error;
 }
 
+async function eliminarPedidoDB(id){
+  await asegurarSupabase();
+  const { error } = await supabaseClient.from("pedidos").delete().eq("id",id);
+  if(error) throw error;
+}
+
 async function cargarPedidosAdmin(){
   await asegurarSupabase();
   const { data, error } = await supabaseClient
@@ -2546,8 +2689,9 @@ async function cargarPedidosAdmin(){
     clienteNombre:p.cliente_nombre || "",
     clienteTelefono:p.cliente_telefono || "",
     direccion:p.direccion || "",
-    lat:Number(p.lat),
-    lng:Number(p.lng),
+    lat:p.lat === null || p.lat === undefined ? null : Number(p.lat),
+    lng:p.lng === null || p.lng === undefined ? null : Number(p.lng),
+    ubicacionUrl:p.ubicacion_url || "",
     nota:p.nota || "",
     items:Array.isArray(p.items) ? p.items : [],
     total:Number(p.total)||0,
@@ -2705,6 +2849,40 @@ function renderNav(){
   ).join("");
 }
 
+function actualizarSeoMenu(){
+  const schema=document.querySelector('script[type="application/ld+json"]');
+  if(!schema || !PRODUCTOS.length) return;
+  try{
+    const data=JSON.parse(schema.textContent);
+    const grupos={};
+    PRODUCTOS.filter(p=>p.disponible).forEach(p=>{
+      const cat=CATEGORIAS.find(c=>c.id===p.categoria)?.nombre || p.categoria || "Menú";
+      (grupos[cat] ||= []).push({
+        "@type":"MenuItem",
+        "name":p.nombre,
+        "description":p.descripcion || undefined,
+        "offers":{
+          "@type":"Offer",
+          "price":String(precioVigente(p)),
+          "priceCurrency":"CRC",
+          "availability":"https://schema.org/InStock"
+        }
+      });
+    });
+    data.hasMenu={
+      "@type":"Menu",
+      "@id":"https://www.purasmash.com/#menu",
+      "name":"Menú Pura Smash",
+      "hasMenuSection":Object.entries(grupos).map(([name,items])=>({
+        "@type":"MenuSection","name":name,"hasMenuItem":items
+      }))
+    };
+    schema.textContent=JSON.stringify(data);
+  }catch(error){
+    console.warn("No se pudo actualizar el SEO dinámico del menú:",error);
+  }
+}
+
 function renderMenu(){
   const root = document.getElementById("menu-root");
   root.innerHTML = CATEGORIAS.map(cat => {
@@ -2725,6 +2903,7 @@ function renderMenu(){
   if(window.observadorTarjetas){
     document.querySelectorAll(".card").forEach(card => window.observadorTarjetas.observe(card));
   }
+  actualizarSeoMenu();
 }
 
 function renderCard(p){
@@ -2944,6 +3123,179 @@ function elegirEntrega(){
 }
 
 let ubicacionCliente = null;
+let tipoUbicacionEntrega = "mia";
+let ultimoPedidoExito = null;
+let mapaEntrega = null;
+let marcadorEntrega = null;
+let puntoMapaTemporal = null;
+let promesaLeaflet = null;
+
+function asegurarLeaflet(){
+  if(window.L) return Promise.resolve(window.L);
+  if(promesaLeaflet) return promesaLeaflet;
+
+  promesaLeaflet = new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js";
+    script.async=true;
+    script.onload=()=>window.L?resolve(window.L):reject(new Error("No se pudo iniciar el mapa."));
+    script.onerror=()=>reject(new Error("No se pudo cargar el mapa."));
+    document.head.appendChild(script);
+  }).catch(error=>{
+    promesaLeaflet=null;
+    throw error;
+  });
+
+  return promesaLeaflet;
+}
+
+async function elegirTipoUbicacion(tipo){
+  tipoUbicacionEntrega = tipo === "mapa" ? "mapa" : "mia";
+
+  document.getElementById("loc-mia")?.classList.toggle("active", tipoUbicacionEntrega==="mia");
+  document.getElementById("loc-otra")?.classList.toggle("active", tipoUbicacionEntrega==="mapa");
+  document.getElementById("ubicacion-mia-box")?.classList.toggle("hidden", tipoUbicacionEntrega!=="mia");
+  document.getElementById("ubicacion-otra-box")?.classList.toggle("hidden", tipoUbicacionEntrega!=="mapa");
+
+  const estado=document.getElementById("ubicacion-estado");
+
+  if(tipoUbicacionEntrega==="mapa"){
+    ubicacionCliente=null;
+    if(estado){
+      estado.textContent="Seleccioná el destino tocando el mapa y luego confirmá el punto.";
+      estado.className="location-status";
+    }
+
+    try{
+      await iniciarMapaEntrega();
+    }catch(error){
+      console.error(error);
+      if(estado){
+        estado.textContent="No se pudo cargar el mapa. Revisá tu conexión e intentá nuevamente.";
+        estado.className="location-status error";
+      }
+    }
+  }else{
+    ubicacionCliente=null;
+    puntoMapaTemporal=null;
+    if(estado){
+      estado.textContent="Usá tu ubicación actual para indicar el destino.";
+      estado.className="location-status";
+    }
+  }
+}
+
+async function iniciarMapaEntrega(){
+  const L=await asegurarLeaflet();
+  const cont=document.getElementById("mapa-entrega");
+  if(!cont) return;
+
+  if(!mapaEntrega){
+    // Centro aproximado de Esparza para que el mapa abra directamente en la zona.
+    mapaEntrega=L.map(cont,{zoomControl:true}).setView([9.9947,-84.6655],14);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+      maxZoom:19,
+      attribution:'&copy; OpenStreetMap'
+    }).addTo(mapaEntrega);
+
+    mapaEntrega.on("click",e=>{
+      seleccionarPuntoMapa(e.latlng.lat,e.latlng.lng);
+    });
+  }
+
+  setTimeout(()=>mapaEntrega.invalidateSize(),120);
+}
+
+function iconoPuraSmashMapa(){
+  if(!window.L) return undefined;
+  return L.divIcon({
+    className:"",
+    html:'<div class="ps-map-pin"></div>',
+    iconSize:[34,34],
+    iconAnchor:[17,34]
+  });
+}
+
+function seleccionarPuntoMapa(lat,lng){
+  if(!mapaEntrega || !window.L) return;
+
+  const punto={
+    lat:Number(Number(lat).toFixed(6)),
+    lng:Number(Number(lng).toFixed(6))
+  };
+  puntoMapaTemporal=punto;
+  ubicacionCliente=null;
+
+  if(marcadorEntrega){
+    marcadorEntrega.setLatLng([punto.lat,punto.lng]);
+  }else{
+    marcadorEntrega=L.marker([punto.lat,punto.lng],{
+      icon:iconoPuraSmashMapa(),
+      draggable:true
+    }).addTo(mapaEntrega);
+
+    marcadorEntrega.on("dragend",()=>{
+      const pos=marcadorEntrega.getLatLng();
+      seleccionarPuntoMapa(pos.lat,pos.lng);
+    });
+  }
+
+  document.getElementById("btn-confirmar-punto").disabled=false;
+  const info=document.getElementById("mapa-coordenadas");
+  if(info){
+    info.textContent=`Destino seleccionado · ${punto.lat}, ${punto.lng}`;
+    info.classList.add("selected");
+  }
+}
+
+async function centrarMapaEnMiUbicacion(){
+  const estado=document.getElementById("ubicacion-estado");
+
+  if(!navigator.geolocation){
+    if(estado){
+      estado.textContent="Este dispositivo no permite obtener la ubicación.";
+      estado.className="location-status error";
+    }
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async pos=>{
+      await iniciarMapaEntrega();
+      const lat=Number(pos.coords.latitude.toFixed(6));
+      const lng=Number(pos.coords.longitude.toFixed(6));
+      mapaEntrega.setView([lat,lng],17);
+      seleccionarPuntoMapa(lat,lng);
+    },
+    ()=>{
+      if(estado){
+        estado.textContent="No pudimos centrar el mapa en tu ubicación. Podés buscar el punto moviendo el mapa manualmente.";
+        estado.className="location-status error";
+      }
+    },
+    {enableHighAccuracy:true,timeout:12000,maximumAge:30000}
+  );
+}
+
+function confirmarPuntoMapa(){
+  if(!puntoMapaTemporal){
+    mostrarConfirmacion("Seleccioná primero un punto en el mapa","error");
+    return;
+  }
+
+  ubicacionCliente={...puntoMapaTemporal};
+  const maps=`https://www.google.com/maps/search/?api=1&query=${ubicacionCliente.lat},${ubicacionCliente.lng}`;
+  const waze=`https://waze.com/ul?ll=${ubicacionCliente.lat}%2C${ubicacionCliente.lng}&navigate=yes`;
+  const estado=document.getElementById("ubicacion-estado");
+
+  if(estado){
+    estado.innerHTML=`✅ Destino confirmado · <a href="${maps}" target="_blank" rel="noopener">Google Maps</a> · <a href="${waze}" target="_blank" rel="noopener">Waze</a>`;
+    estado.className="location-status ok";
+  }
+
+  mostrarConfirmacion("✓ Punto de entrega seleccionado");
+}
 
 function compartirUbicacion(){
   const estado = document.getElementById("ubicacion-estado");
@@ -3028,44 +3380,28 @@ function construirItemsPedido(){
 }
 
 async function enviarPorWhatsapp(){
-  if(cantidadTotal() === 0) return;
-  if(!entregaSeleccionada){
-    document.getElementById("campos-entrega").classList.remove("hidden");
-    document.getElementById("campos-entrega").scrollIntoView({behavior:"smooth"});
-    return;
-  }
+  if(cantidadTotal()===0) return;
 
+  const nombre=document.getElementById("input-nombre").value.trim();
+  const telefonoRaw=document.getElementById("input-telefono").value.trim();
+  const telefono=normalizarTelefonoCR(telefonoRaw);
+  const direccion=document.getElementById("input-direccion").value.trim();
+  const nota=document.getElementById("input-nota").value.trim();
+
+  if(!nombre){alert("Por favor indicá tu nombre.");document.getElementById("input-nombre").focus();return;}
+  if(!telefono){alert("Ingresá un número de WhatsApp válido de Costa Rica (8 dígitos).");document.getElementById("input-telefono").focus();return;}
+  if(!direccion){alert("Por favor indicá las señas o dirección de entrega.");document.getElementById("input-direccion").focus();return;}
   if(!ubicacionCliente){
-    alert("Por favor compartí tu ubicación antes de realizar el pedido.");
+    alert(tipoUbicacionEntrega==="mapa"
+      ? "Seleccioná y confirmá el punto de entrega en el mapa."
+      : "Usá tu ubicación actual para indicar el destino.");
     return;
   }
 
-  const nombre = document.getElementById("input-nombre").value.trim();
-  const telefonoRaw = document.getElementById("input-telefono").value.trim();
-  const telefono = normalizarTelefonoCR(telefonoRaw);
-  const direccion = document.getElementById("input-direccion").value.trim();
-  const nota = document.getElementById("input-nota").value.trim();
-
-  if(!nombre){
-    alert("Por favor indicá tu nombre.");
-    document.getElementById("input-nombre").focus();
-    return;
-  }
-  if(!telefono){
-    alert("Ingresá un número de WhatsApp válido de Costa Rica (8 dígitos).");
-    document.getElementById("input-telefono").focus();
-    return;
-  }
-  if(entregaSeleccionada === "entrega" && !direccion){
-    alert("Por favor indicá la dirección de entrega.");
-    document.getElementById("input-direccion").focus();
-    return;
-  }
-
-  const items = construirItemsPedido();
-  const codigo = codigoPedido();
-  const pedido = {
-    id:(crypto.randomUUID ? crypto.randomUUID() : idNuevo("pedido")),
+  const items=construirItemsPedido();
+  const codigo=codigoPedido();
+  const pedido={
+    id:(crypto.randomUUID?crypto.randomUUID():idNuevo("pedido")),
     codigo,
     fechaPedido:new Date().toISOString(),
     clienteNombre:nombre,
@@ -3073,135 +3409,78 @@ async function enviarPorWhatsapp(){
     direccion,
     lat:ubicacionCliente.lat,
     lng:ubicacionCliente.lng,
-    nota,
-    items,
-    total:totalCarrito()
+    ubicacionUrl:"",
+    nota,items,total:totalCarrito()
   };
 
-  const boton = document.getElementById("btn-enviar-whatsapp");
-  const textoAnterior = boton.textContent;
-  boton.disabled = true;
-  boton.textContent = "Registrando pedido…";
+  const ventanaWhatsapp=window.open("about:blank","_blank");
+  const boton=document.getElementById("btn-enviar-whatsapp");
+  const textoAnterior=boton.textContent;
+  boton.disabled=true;boton.textContent="Registrando pedido…";
 
-  try{
-    await guardarPedidoPublico(pedido);
-  }catch(error){
-    console.error("Pedido Supabase:", error);
+  try{await guardarPedidoPublico(pedido);}
+  catch(error){
+    if(ventanaWhatsapp) ventanaWhatsapp.close();
+    console.error("Pedido Supabase:",error);
     alert("No se pudo registrar el pedido. Revisá tu conexión e intentá nuevamente.");
-    boton.disabled = false;
-    boton.textContent = textoAnterior;
-    return;
+    boton.disabled=false;boton.textContent=textoAnterior;return;
   }
 
-  const lineas = [];
-  lineas.push(`Hola ${NOMBRE_NEGOCIO}, quiero hacer este pedido:`);
-  lineas.push(`Pedido: ${codigo}`);
+  const lineas=[];
+  lineas.push("🍔 *NUEVO PEDIDO — PURA SMASH*");
+  lineas.push(`Código: *${codigo}*`);
   lineas.push("");
-
-  items.forEach(it => {
-    const extrasTxt = (it.extras || []).map(e => e.nombre).join(", ");
-    lineas.push(`• ${it.nombre}${extrasTxt ? " + " + extrasTxt : ""} x${it.cantidad} — ${money(it.subtotal)}`);
+  lineas.push(`Hola, soy ${nombre}. Quiero pedir:`);
+  items.forEach(it=>{
+    const extrasTxt=(it.extras||[]).map(e=>e.nombre).join(", ");
+    lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} — ${money(it.subtotal)}`);
   });
-
   lineas.push("");
-  lineas.push(`Total: ${money(pedido.total)}`);
-  lineas.push(`Ubicación: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`);
-  lineas.push(`Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`);
+  lineas.push(`💰 *Total: ${money(pedido.total)}*`);
+  lineas.push("🛵 Entrega Express");
+  lineas.push(`📞 WhatsApp: +${telefono}`);
+  lineas.push(`📍 Señas: ${direccion}`);
+  lineas.push(`🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`);
+  lineas.push(`🚗 Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`);
+  if(nota) lineas.push(`📝 Nota: ${nota}`);
   lineas.push("");
-  lineas.push("Modalidad: Entrega Express");
-  lineas.push(`Nombre: ${nombre}`);
-  lineas.push(`WhatsApp: +${telefono}`);
-  lineas.push(`Dirección: ${direccion}`);
-  if(nota) lineas.push(`Nota: ${nota}`);
+  lineas.push("🔥 Pedido registrado. Quedo pendiente de la confirmación de Pura Smash.");
 
-  const msg = encodeURIComponent(lineas.join("\n"));
-  const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${msg}`;
+  const url=`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
+  ultimoPedidoExito={pedido,whatsappUrl:url};
+  mostrarPantallaPedidoExito(pedido,url);
+  if(ventanaWhatsapp) ventanaWhatsapp.location.href=url;
 
-  mostrarConfirmacion(`✓ Pedido ${codigo} registrado`);
-  boton.disabled = false;
-  boton.textContent = textoAnterior;
-  window.open(url, "_blank");
+  boton.disabled=false;boton.textContent=textoAnterior;
+  limpiarPedidoActual();
 }
 
-
-
-let resolverConfirmacionPS = null;
-
-function confirmarAccion({
-  titulo = "Confirmar acción",
-  mensaje = "¿Querés continuar?",
-  confirmar = "Confirmar",
-  cancelar = "Cancelar",
-  peligro = false,
-  icono = "✓"
-} = {}){
-  const overlay = document.getElementById("ps-confirm-overlay");
-  const modal = overlay?.querySelector(".ps-confirm-modal");
-  const titleEl = document.getElementById("ps-confirm-title");
-  const messageEl = document.getElementById("ps-confirm-message");
-  const acceptBtn = document.getElementById("ps-confirm-accept");
-  const cancelBtn = document.getElementById("ps-confirm-cancel");
-  const iconEl = document.getElementById("ps-confirm-icon");
-
-  if(!overlay || !modal || !titleEl || !messageEl || !acceptBtn || !cancelBtn){
-    return Promise.resolve(false);
-  }
-
-  if(resolverConfirmacionPS){
-    resolverConfirmacionPS(false);
-    resolverConfirmacionPS = null;
-  }
-
-  titleEl.textContent = titulo;
-  messageEl.textContent = mensaje;
-  acceptBtn.textContent = confirmar;
-  cancelBtn.textContent = cancelar;
-  iconEl.textContent = icono;
-  modal.classList.toggle("danger", peligro);
-  overlay.classList.remove("hidden");
-  overlay.setAttribute("aria-hidden","false");
-  document.body.classList.add("ps-modal-open");
-
-  return new Promise(resolve => {
-    resolverConfirmacionPS = resolve;
-
-    const cerrar = resultado => {
-      overlay.classList.add("hidden");
-      overlay.setAttribute("aria-hidden","true");
-      document.body.classList.remove("ps-modal-open");
-      resolverConfirmacionPS = null;
-      resolve(resultado);
-    };
-
-    acceptBtn.onclick = () => cerrar(true);
-    cancelBtn.onclick = () => cerrar(false);
-    overlay.onclick = e => {
-      if(e.target === overlay) cerrar(false);
-    };
-
-    const onKey = e => {
-      if(e.key === "Escape"){
-        document.removeEventListener("keydown",onKey);
-        cerrar(false);
-      }else if(e.key === "Enter"){
-        document.removeEventListener("keydown",onKey);
-        cerrar(true);
-      }
-    };
-    document.addEventListener("keydown",onKey,{once:false});
-    setTimeout(() => acceptBtn.focus(),50);
-  });
+function mostrarPantallaPedidoExito(pedido,whatsappUrl){
+  cerrarHoja("sheet-entrega");
+  cerrarHoja("sheet-carrito");
+  const overlay=document.getElementById("pedido-exito");
+  document.getElementById("pedido-exito-codigo").textContent=pedido.codigo;
+  document.getElementById("pedido-exito-texto").textContent=`${pedido.clienteNombre}, recibimos tu pedido por ${money(pedido.total)}. Cuando regresés de WhatsApp vas a ver esta confirmación.`;
+  document.getElementById("pedido-exito-whatsapp").onclick=()=>window.open(whatsappUrl,"_blank");
+  overlay.classList.remove("hidden");overlay.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
 }
-
-let adminToastTimer = null;
-function mostrarConfirmacion(mensaje, tipo="ok"){
-  const el = document.getElementById("admin-toast");
-  if(!el) return;
-  clearTimeout(adminToastTimer);
-  el.textContent = mensaje;
-  el.classList.toggle("error", tipo === "error");
-  el.classList.add("show");
-  adminToastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+function limpiarPedidoActual(){
+  carrito={};seleccionExtras={};ubicacionCliente=null;tipoUbicacionEntrega="mia";puntoMapaTemporal=null;
+  ["input-nombre","input-telefono","input-direccion","input-nota"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  if(marcadorEntrega && mapaEntrega){mapaEntrega.removeLayer(marcadorEntrega);marcadorEntrega=null;}
+  const info=document.getElementById("mapa-coordenadas");
+  if(info){info.textContent="Todavía no seleccionaste un punto.";info.classList.remove("selected");}
+  const confirmBtn=document.getElementById("btn-confirmar-punto");
+  if(confirmBtn) confirmBtn.disabled=true;
+  elegirTipoUbicacion("mia");actualizarBarraCarrito();renderMenu();
+}
+function nuevoPedidoDesdeExito(){
+  const o=document.getElementById("pedido-exito");o.classList.add("hidden");o.setAttribute("aria-hidden","true");document.body.style.overflow="";ultimoPedidoExito=null;
+  document.getElementById("menu-root")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function volverMenuDesdeExito(){
+  const o=document.getElementById("pedido-exito");o.classList.add("hidden");o.setAttribute("aria-hidden","true");document.body.style.overflow="";
+  document.getElementById("menu-root")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 /* ============================================================
@@ -3318,9 +3597,13 @@ function estadoPedidoLabel(estado){
 }
 
 function msPreparacionPedido(p){
-  const inicio = new Date(p.fechaPedido).getTime();
-  const fin = p.listoEn ? new Date(p.listoEn).getTime() : Date.now();
-  return Math.max(0, fin - inicio);
+  const inicio=new Date(p.fechaPedido).getTime();
+  let fin;
+  if(p.listoEn) fin=new Date(p.listoEn).getTime();
+  else if(p.canceladoEn) fin=new Date(p.canceladoEn).getTime();
+  else if(p.entregadoEn) fin=new Date(p.entregadoEn).getTime();
+  else fin=Date.now();
+  return Math.max(0,fin-inicio);
 }
 
 function formatoDuracion(ms){
@@ -3399,13 +3682,16 @@ function metricasPedidos(){
     const f = new Date(p.fechaPedido);
     return f.getFullYear()===ahora.getFullYear() && f.getMonth()===ahora.getMonth();
   });
-  const finalizadosHoy = hoy.filter(p => p.listoEn && p.estado !== "cancelado");
-  const finalizadosMes = mes.filter(p => p.listoEn && p.estado !== "cancelado");
+  const validosHoy=hoy.filter(p=>p.estado!=="cancelado");
+  const validosMes=mes.filter(p=>p.estado!=="cancelado");
+  const finalizadosHoy=validosHoy.filter(p=>p.listoEn);
+  const finalizadosMes=validosMes.filter(p=>p.listoEn);
   return {
-    activos:PEDIDOS.filter(p => ["pendiente","preparando","listo"].includes(p.estado)).length,
-    pendientes:PEDIDOS.filter(p => p.estado==="pendiente").length,
-    listos:PEDIDOS.filter(p => p.estado==="listo").length,
-    pedidosHoy:hoy.length,
+    activos:PEDIDOS.filter(p=>["pendiente","preparando","listo"].includes(p.estado)).length,
+    pendientes:PEDIDOS.filter(p=>p.estado==="pendiente").length,
+    listos:PEDIDOS.filter(p=>p.estado==="listo").length,
+    pedidosHoy:validosHoy.length,
+    canceladosHoy:hoy.filter(p=>p.estado==="cancelado").length,
     promedioHoy:promedio(finalizadosHoy.map(msPreparacionPedido)),
     promedioMes:promedio(finalizadosMes.map(msPreparacionPedido))
   };
@@ -3419,7 +3705,8 @@ function renderKpisPedidos(){
     <div class="kpi"><div class="kpi-label">Activos</div><div class="kpi-value">${m.activos}</div></div>
     <div class="kpi"><div class="kpi-label">Pendientes</div><div class="kpi-value">${m.pendientes}</div></div>
     <div class="kpi accent"><div class="kpi-label">Listos</div><div class="kpi-value">${m.listos}</div></div>
-    <div class="kpi"><div class="kpi-label">Pedidos hoy</div><div class="kpi-value">${m.pedidosHoy}</div></div>
+    <div class="kpi"><div class="kpi-label">Pedidos válidos hoy</div><div class="kpi-value">${m.pedidosHoy}</div></div>
+    <div class="kpi"><div class="kpi-label">Cancelados hoy</div><div class="kpi-value">${m.canceladosHoy}</div></div>
     <div class="kpi"><div class="kpi-label">Prep. promedio hoy</div><div class="kpi-value">${m.promedioHoy ? formatoDuracion(m.promedioHoy) : "—"}</div></div>
     <div class="kpi"><div class="kpi-label">Prep. promedio mes</div><div class="kpi-value">${m.promedioMes ? formatoDuracion(m.promedioMes) : "—"}</div></div>
   `;
@@ -3454,6 +3741,9 @@ function botonesPedido(p){
   if(["pendiente","preparando","listo"].includes(p.estado)){
     b.push(`<button class="a-btn delete" onclick="cancelarPedido('${p.id}')">Cancelar</button>`);
   }
+  if(["cancelado","entregado"].includes(p.estado)){
+    b.push(`<button class="a-btn delete" onclick="eliminarPedidoDefinitivo('${p.id}')">Eliminar registro</button>`);
+  }
   return b.join("");
 }
 
@@ -3476,6 +3766,7 @@ function renderPedidosAdmin(){
       ? `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}` : "";
     const waze = Number.isFinite(p.lat)&&Number.isFinite(p.lng)
       ? `https://waze.com/ul?ll=${p.lat}%2C${p.lng}&navigate=yes` : "";
+
     const items = p.items.map(it => {
       const ex = (it.extras || []).map(e => e.nombre).filter(Boolean).join(", ");
       return `<div class="order-item-row"><span><strong>${escHtml(it.nombre)}</strong> x${Number(it.cantidad)||1}${ex?`<br><small>+ ${escHtml(ex)}</small>`:""}</span><span>${money(it.subtotal || (it.precioUnit*it.cantidad))}</span></div>`;
@@ -3493,7 +3784,7 @@ function renderPedidosAdmin(){
       </div>
 
       <div class="order-time" data-pedido-timer="${escAttr(p.id)}">${formatoDuracion(msPreparacionPedido(p))}</div>
-      <div class="order-time-label">${p.listoEn ? "Tiempo total de preparación" : "Tiempo desde que se pidió"}</div>
+      <div class="order-time-label">${p.estado==="cancelado"?"Tiempo hasta cancelación":p.listoEn?"Tiempo total de preparación":"Tiempo desde que se pidió"}</div>
       ${listoReal ? `<div class="order-metric-note">Listo en ${listoReal}</div>` : ""}
 
       <div class="order-meta">${fechaTxt} · ${hora} · WhatsApp +${escHtml(p.clienteTelefono)}</div>
@@ -3548,8 +3839,8 @@ function urlWhatsAppCliente(p,mensaje){
 }
 
 function mensajePedidoListo(p){
-  const tiempo = p.listoEn ? formatoDuracion(new Date(p.listoEn)-new Date(p.fechaPedido)) : "";
-  return `Hola ${p.clienteNombre} 👋\n\nTu pedido ${p.codigo} de Pura Smash ya está listo para entrega Express. 🍔🔥\n${tiempo ? `Tiempo de preparación: ${tiempo}\n` : ""}Total: ${money(p.total)}\n\n¡Gracias por pedir con nosotros!`;
+  const tiempo=p.listoEn?formatoDuracion(new Date(p.listoEn)-new Date(p.fechaPedido)):"";
+  return `🔥🍔 *¡La espera terminó, ${p.clienteNombre}!*\n\nTu pedido *${p.codigo}* de Pura Smash acaba de salir de la plancha y ya está listo para iniciar la entrega Express.\n${tiempo?`⏱️ Lo preparamos en ${tiempo}.\n`:""}💰 Total: ${money(p.total)}\n\n🛵 En breve va rumbo a vos. Prepará el antojo… lo bueno ya salió de la cocina. 🔥`;
 }
 
 function avisarPedidoListo(id){
@@ -3675,6 +3966,13 @@ async function cancelarPedido(id){
   }catch(error){
     alert("No se pudo cancelar el pedido: "+error.message);
   }
+}
+
+async function eliminarPedidoDefinitivo(id){
+  const p=PEDIDOS.find(x=>x.id===id);if(!p)return;
+  if(!await confirmarAccion({titulo:"Eliminar registro",mensaje:`${p.codigo} se borrará definitivamente y dejará de aparecer en métricas y Excel.`,confirmar:"Eliminar definitivamente",peligro:true,icono:"!"}))return;
+  try{await eliminarPedidoDB(id);PEDIDOS=PEDIDOS.filter(x=>x.id!==id);mostrarConfirmacion(`✓ ${p.codigo} eliminado`);renderPedidosAdmin();}
+  catch(error){alert("No se pudo eliminar el pedido: "+error.message);}
 }
 
 /* ============================================================
@@ -4697,7 +4995,15 @@ function asegurarXLSX(){
     s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
     s.async = true;
     s.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error("No se pudo inicializar Excel."));
-    s.onerror = () => reject(new Error("No se pudo descargar la librería de Excel."));
+    s.onerror = () => {
+      s.remove();
+      const fallback=document.createElement("script");
+      fallback.src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js";
+      fallback.async=true;
+      fallback.onload=()=>window.XLSX ? resolve(window.XLSX) : reject(new Error("No se pudo inicializar Excel."));
+      fallback.onerror=()=>reject(new Error("No se pudo descargar la librería de Excel. Revisá la conexión e intentá de nuevo."));
+      document.head.appendChild(fallback);
+    };
     document.head.appendChild(s);
   }).catch(err => {
     promesaXLSX = null;
@@ -4728,6 +5034,9 @@ function filasResumenMensualExcel(){
 
 async function descargarExcelContabilidad(){
   try{
+    mostrarConfirmacion("Preparando Excel con los datos más recientes…");
+    await cargarDatosSupabase(true);
+    await cargarPedidosAdmin();
     const XLSX = await asegurarXLSX();
     const wb = XLSX.utils.book_new();
 
@@ -4772,10 +5081,15 @@ async function descargarExcelContabilidad(){
       Estado:estadoPedidoLabel(p.estado),
       Total:p.total,
       Dirección:p.direccion,
+      Latitud:Number.isFinite(p.lat) ? p.lat : "",
+      Longitud:Number.isFinite(p.lng) ? p.lng : "",
+      "Google Maps":Number.isFinite(p.lat)&&Number.isFinite(p.lng) ? `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}` : "",
+      Waze:Number.isFinite(p.lat)&&Number.isFinite(p.lng) ? `https://waze.com/ul?ll=${p.lat}%2C${p.lng}&navigate=yes` : "",
       Nota:p.nota,
       "Inicio preparación":p.preparandoEn ? new Date(p.preparandoEn).toLocaleString("es-CR") : "",
       "Listo":p.listoEn ? new Date(p.listoEn).toLocaleString("es-CR") : "",
       "Entregado":p.entregadoEn ? new Date(p.entregadoEn).toLocaleString("es-CR") : "",
+      "Cancelado":p.canceladoEn ? new Date(p.canceladoEn).toLocaleString("es-CR") : "",
       "Tiempo preparación min":p.listoEn ? Number(((new Date(p.listoEn)-new Date(p.fechaPedido))/60000).toFixed(2)) : "",
       "Tiempo hasta entrega min":p.entregadoEn ? Number(((new Date(p.entregadoEn)-new Date(p.fechaPedido))/60000).toFixed(2)) : ""
     }));
@@ -4807,7 +5121,8 @@ async function descargarExcelContabilidad(){
       return {
         Año:contaAnioSeleccionado,
         Mes:nombre,
-        Pedidos:lista.length,
+        "Pedidos recibidos":lista.length,
+        "Pedidos válidos":lista.filter(p=>p.estado!=="cancelado").length,
         Entregados:entregados.length,
         Cancelados:cancelados.length,
         "Tiempo promedio preparación min":prepMin.length ? Number((prepMin.reduce((a,b)=>a+b,0)/prepMin.length).toFixed(2)) : 0,
@@ -4870,6 +5185,7 @@ async function descargarExcelContabilidad(){
 
     const fecha = new Date().toISOString().slice(0,10);
     XLSX.writeFile(wb,`Pura-Smash-Contabilidad-${contaAnioSeleccionado}-${fecha}.xlsx`);
+    mostrarConfirmacion("✓ Excel descargado con ventas, gastos, pedidos y métricas");
   }catch(error){
     console.error(error);
     alert("No se pudo generar el Excel: " + (error.message || error));
