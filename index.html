@@ -1920,6 +1920,37 @@ a{color:inherit;}
   .map-picker-actions{grid-template-columns:1fr;}
 }
 
+
+/* Pedido presencial desde el panel */
+.local-order-overlay{
+  position:fixed;inset:0;z-index:135;display:flex;align-items:center;justify-content:center;
+  padding:18px;background:rgba(10,7,5,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+}
+.local-order-overlay.hidden{display:none!important;}
+.local-order-card{
+  width:min(620px,100%);max-height:92dvh;overflow-y:auto;
+  padding:22px;border:1px solid rgba(227,166,47,.38);border-radius:22px;
+  background:#1d1611;color:var(--cream);box-shadow:0 28px 80px rgba(0,0,0,.55);
+}
+.local-order-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.local-order-head h2{margin:4px 0 0;font-family:'Anton',sans-serif;font-size:28px;font-weight:400;}
+.local-order-line{
+  display:grid;grid-template-columns:minmax(0,1fr) 80px 38px;gap:8px;align-items:center;
+  margin-bottom:8px;
+}
+.local-order-line select,.local-order-line input{width:100%;box-sizing:border-box;}
+.local-order-total{
+  display:flex;justify-content:space-between;align-items:center;margin:16px 0;
+  padding:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.local-order-total span{font-size:12px;color:rgba(247,241,228,.5);text-transform:uppercase;}
+.local-order-total strong{font:700 20px 'JetBrains Mono',monospace;color:var(--mustard);}
+@media(max-width:560px){
+  .local-order-overlay{align-items:flex-end;padding:10px;}
+  .local-order-card{border-radius:24px 24px 14px 14px;max-height:94dvh;}
+  .local-order-line{grid-template-columns:minmax(0,1fr) 70px 36px;}
+}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -2077,6 +2108,51 @@ a{color:inherit;}
   </div>
 </div>
 
+
+<div class="local-order-overlay hidden" id="pedido-local-modal" aria-hidden="true">
+  <div class="local-order-card" role="dialog" aria-modal="true" aria-labelledby="pedido-local-title">
+    <div class="local-order-head">
+      <div>
+        <span class="order-code">VENTA PRESENCIAL</span>
+        <h2 id="pedido-local-title">Nuevo pedido en local</h2>
+      </div>
+      <button class="icon-btn" type="button" onclick="cerrarPedidoLocal()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="a-field">
+      <label for="local-cliente-nombre">Nombre del cliente (opcional)</label>
+      <input type="text" id="local-cliente-nombre" placeholder="Ej: Carlos">
+    </div>
+
+    <div class="a-field">
+      <label for="local-cliente-telefono">WhatsApp (opcional)</label>
+      <input type="tel" id="local-cliente-telefono" placeholder="Ej: 89810775" inputmode="tel">
+    </div>
+
+    <div class="admin-section-title" style="margin-top:14px;">
+      <h3>Productos</h3>
+    </div>
+
+    <div id="pedido-local-lineas"></div>
+    <button class="a-btn ghost" type="button" onclick="agregarLineaPedidoLocal()">+ Agregar producto</button>
+
+    <div class="local-order-total">
+      <span>Total</span>
+      <strong id="pedido-local-total">₡0</strong>
+    </div>
+
+    <div class="a-field">
+      <label for="local-pedido-nota">Nota (opcional)</label>
+      <textarea id="local-pedido-nota" placeholder="Sin cebolla, para llevar, etc."></textarea>
+    </div>
+
+    <div class="a-actions">
+      <button class="a-btn ghost" type="button" onclick="cerrarPedidoLocal()">Cancelar</button>
+      <button class="a-btn save" type="button" onclick="registrarPedidoLocal()">Registrar pedido</button>
+    </div>
+  </div>
+</div>
+
 <!-- PUERTA DE PIN PARA ENTRAR AL PANEL -->
 <div class="pin-gate hidden" id="pin-gate">
   <div class="pin-box">
@@ -2114,7 +2190,10 @@ a{color:inherit;}
     <div id="tab-pedidos">
       <div class="admin-section-title">
         <h3>Pedidos en tiempo real</h3>
-        <button class="a-btn ghost" style="flex:none;padding:7px 12px;" onclick="recargarPedidosAdmin(true)">↻ Actualizar</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+          <button class="a-btn add" style="flex:none;padding:7px 12px;" onclick="abrirPedidoLocal()">+ Nuevo pedido en local</button>
+          <button class="a-btn ghost" style="flex:none;padding:7px 12px;" onclick="recargarPedidosAdmin(true)">↻ Actualizar</button>
+        </div>
       </div>
 
       <div class="kpi-grid" id="kpi-pedidos"></div>
@@ -2635,6 +2714,25 @@ async function guardarVentaDB(v){
 }
 
 
+async function guardarPedidoAdmin(pedido){
+  await asegurarSupabase();
+  const { error } = await supabaseClient.from("pedidos").insert({
+    id:pedido.id,
+    codigo:pedido.codigo,
+    fecha_pedido:pedido.fechaPedido,
+    cliente_nombre:pedido.clienteNombre || "Cliente local",
+    cliente_telefono:pedido.clienteTelefono || "",
+    direccion:pedido.direccion || "Pedido en local",
+    lat:null,
+    lng:null,
+    nota:pedido.nota || null,
+    items:pedido.items,
+    total:pedido.total,
+    estado:"pendiente"
+  });
+  if(error) throw error;
+}
+
 async function guardarPedidoPublico(pedido){
   await asegurarSupabase();
   const { error } = await supabaseClient.from("pedidos").insert({
@@ -2663,14 +2761,27 @@ async function actualizarPedidoDB(id, cambios){
   if("listoEn" in cambios) db.listo_en = cambios.listoEn;
   if("entregadoEn" in cambios) db.entregado_en = cambios.entregadoEn;
   if("canceladoEn" in cambios) db.cancelado_en = cambios.canceladoEn;
+  if("excluirMetricas" in cambios) db.excluir_metricas = !!cambios.excluirMetricas;
   const { error } = await supabaseClient.from("pedidos").update(db).eq("id", id);
   if(error) throw error;
 }
 
 async function eliminarPedidoDB(id){
   await asegurarSupabase();
-  const { error } = await supabaseClient.from("pedidos").delete().eq("id",id);
+
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .delete()
+    .eq("id",id)
+    .select("id");
+
   if(error) throw error;
+
+  if(!data || data.length === 0){
+    throw new Error("Supabase no eliminó el registro. Revisá los permisos RLS de la tabla pedidos.");
+  }
+
+  return data[0];
 }
 
 async function cargarPedidosAdmin(){
@@ -2699,7 +2810,8 @@ async function cargarPedidosAdmin(){
     preparandoEn:p.preparando_en,
     listoEn:p.listo_en,
     entregadoEn:p.entregado_en,
-    canceladoEn:p.cancelado_en
+    canceladoEn:p.cancelado_en,
+    excluirMetricas:!!p.excluir_metricas
   }));
 }
 
@@ -3579,6 +3691,227 @@ function cambiarTabAdmin(tab){
 }
 
 
+
+/* ============================================================
+   UI ADMIN — confirmaciones y avisos
+   ============================================================ */
+let resolverConfirmacionPS = null;
+let adminToastTimer = null;
+
+function mostrarConfirmacion(mensaje, tipo="ok"){
+  const el=document.getElementById("admin-toast");
+  if(!el){
+    console.info(mensaje);
+    return;
+  }
+  clearTimeout(adminToastTimer);
+  el.textContent=mensaje;
+  el.classList.toggle("error",tipo==="error");
+  el.classList.add("show");
+  adminToastTimer=setTimeout(()=>el.classList.remove("show"),2800);
+}
+
+function confirmarAccion({
+  titulo="Confirmar acción",
+  mensaje="¿Querés continuar?",
+  confirmar="Confirmar",
+  cancelar="Cancelar",
+  peligro=false,
+  icono="✓"
+}={}){
+  const overlay=document.getElementById("ps-confirm-overlay");
+  const modal=overlay?.querySelector(".ps-confirm-modal");
+  const tituloEl=document.getElementById("ps-confirm-title");
+  const mensajeEl=document.getElementById("ps-confirm-message");
+  const aceptar=document.getElementById("ps-confirm-accept");
+  const cancelarBtn=document.getElementById("ps-confirm-cancel");
+  const iconoEl=document.getElementById("ps-confirm-icon");
+
+  if(!overlay||!modal||!tituloEl||!mensajeEl||!aceptar||!cancelarBtn){
+    console.error("No se encontró el modal de confirmación.");
+    return Promise.resolve(window.confirm(`${titulo}\n\n${mensaje}`));
+  }
+
+  // Cierra de forma segura cualquier confirmación anterior.
+  if(resolverConfirmacionPS){
+    resolverConfirmacionPS(false);
+    resolverConfirmacionPS=null;
+  }
+
+  tituloEl.textContent=titulo;
+  mensajeEl.textContent=mensaje;
+  aceptar.textContent=confirmar;
+  cancelarBtn.textContent=cancelar;
+  iconoEl.textContent=icono;
+  modal.classList.toggle("danger",!!peligro);
+  overlay.classList.remove("hidden");
+  overlay.setAttribute("aria-hidden","false");
+
+  return new Promise(resolve=>{
+    let cerrado=false;
+
+    const finalizar=resultado=>{
+      if(cerrado) return;
+      cerrado=true;
+      document.removeEventListener("keydown",tecla);
+      overlay.classList.add("hidden");
+      overlay.setAttribute("aria-hidden","true");
+      aceptar.onclick=null;
+      cancelarBtn.onclick=null;
+      overlay.onclick=null;
+      resolverConfirmacionPS=null;
+      resolve(resultado);
+    };
+
+    const tecla=e=>{
+      if(e.key==="Escape") finalizar(false);
+      if(e.key==="Enter") finalizar(true);
+    };
+
+    resolverConfirmacionPS=finalizar;
+    aceptar.onclick=()=>finalizar(true);
+    cancelarBtn.onclick=()=>finalizar(false);
+    overlay.onclick=e=>{if(e.target===overlay) finalizar(false);};
+    document.addEventListener("keydown",tecla);
+    setTimeout(()=>aceptar.focus(),60);
+  });
+}
+
+
+let lineasPedidoLocal=[];
+
+function abrirPedidoLocal(){
+  lineasPedidoLocal=[];
+  document.getElementById("local-cliente-nombre").value="";
+  document.getElementById("local-cliente-telefono").value="";
+  document.getElementById("local-pedido-nota").value="";
+  agregarLineaPedidoLocal();
+  const modal=document.getElementById("pedido-local-modal");
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function cerrarPedidoLocal(){
+  const modal=document.getElementById("pedido-local-modal");
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden","true");
+}
+
+function agregarLineaPedidoLocal(){
+  if(!PRODUCTOS.length){
+    mostrarConfirmacion("No hay productos disponibles para registrar.","error");
+    return;
+  }
+  const primero=PRODUCTOS.find(p=>p.disponible!==false) || PRODUCTOS[0];
+  lineasPedidoLocal.push({productoId:primero.id,cantidad:1});
+  renderLineasPedidoLocal();
+}
+
+function renderLineasPedidoLocal(){
+  const root=document.getElementById("pedido-local-lineas");
+  if(!root) return;
+
+  if(!lineasPedidoLocal.length){
+    root.innerHTML='<div class="a-empty">Agregá al menos un producto.</div>';
+  }else{
+    root.innerHTML=lineasPedidoLocal.map((l,i)=>`
+      <div class="local-order-line">
+        <select onchange="actualizarLineaPedidoLocal(${i},'productoId',this.value)">
+          ${PRODUCTOS.filter(p=>p.disponible!==false).map(p=>`
+            <option value="${escAttr(p.id)}" ${String(p.id)===String(l.productoId)?"selected":""}>${escHtml(p.nombre)} · ${money(precioVigente(p).precio)}</option>
+          `).join("")}
+        </select>
+        <input type="number" min="1" step="1" value="${l.cantidad}" onchange="actualizarLineaPedidoLocal(${i},'cantidad',this.value)" aria-label="Cantidad">
+        <button class="a-btn delete" type="button" style="padding:8px;" onclick="quitarLineaPedidoLocal(${i})">✕</button>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("pedido-local-total").textContent=money(totalPedidoLocal());
+}
+
+function actualizarLineaPedidoLocal(i,campo,valor){
+  if(!lineasPedidoLocal[i]) return;
+  lineasPedidoLocal[i][campo]=campo==="cantidad" ? Math.max(1,Number(valor)||1) : valor;
+  renderLineasPedidoLocal();
+}
+
+function quitarLineaPedidoLocal(i){
+  lineasPedidoLocal.splice(i,1);
+  renderLineasPedidoLocal();
+}
+
+function itemsPedidoLocal(){
+  return lineasPedidoLocal.map(l=>{
+    const p=PRODUCTOS.find(x=>String(x.id)===String(l.productoId));
+    if(!p) return null;
+    const precioUnit=precioVigente(p).precio;
+    return {
+      productoId:p.id,
+      nombre:p.nombre,
+      cantidad:Number(l.cantidad)||1,
+      precioUnit,
+      extrasIds:[],
+      extras:[],
+      subtotal:precioUnit*(Number(l.cantidad)||1)
+    };
+  }).filter(Boolean);
+}
+
+function totalPedidoLocal(){
+  return itemsPedidoLocal().reduce((s,it)=>s+it.subtotal,0);
+}
+
+async function registrarPedidoLocal(){
+  const items=itemsPedidoLocal();
+  if(!items.length){
+    mostrarConfirmacion("Agregá al menos un producto.","error");
+    return;
+  }
+
+  const nombre=document.getElementById("local-cliente-nombre").value.trim() || "Cliente local";
+  const telefonoRaw=document.getElementById("local-cliente-telefono").value.trim();
+  const telefono=telefonoRaw ? normalizarTelefonoCR(telefonoRaw) : "";
+  const nota=document.getElementById("local-pedido-nota").value.trim();
+
+  if(telefonoRaw && !telefono){
+    mostrarConfirmacion("El WhatsApp debe tener 8 dígitos de Costa Rica.","error");
+    return;
+  }
+
+  const total=items.reduce((s,it)=>s+it.subtotal,0);
+
+  if(!await confirmarAccion({
+    titulo:"Registrar pedido en local",
+    mensaje:`${nombre} · ${money(total)}. El pedido entrará como Pendiente y seguirá el mismo flujo de cocina.`,
+    confirmar:"Registrar pedido",
+    icono:"+"
+  })) return;
+
+  const pedido={
+    id:(crypto.randomUUID?crypto.randomUUID():idNuevo("pedido")),
+    codigo:codigoPedido(),
+    fechaPedido:new Date().toISOString(),
+    clienteNombre:nombre,
+    clienteTelefono:telefono,
+    direccion:"Pedido en local",
+    nota,
+    items,
+    total
+  };
+
+  try{
+    await guardarPedidoAdmin(pedido);
+    cerrarPedidoLocal();
+    await cargarPedidosAdmin();
+    renderPedidosAdmin();
+    mostrarConfirmacion(`✓ ${pedido.codigo} registrado en local`);
+  }catch(error){
+    console.error("Pedido local:",error);
+    mostrarConfirmacion("No se pudo registrar el pedido: "+(error.message||error),"error");
+  }
+}
+
 /* ============================================================
    11. PANEL ADMIN — PEDIDOS Y TIEMPOS
    ============================================================ */
@@ -3674,11 +4007,12 @@ function configurarRealtimePedidos(){
 
 function metricasPedidos(){
   const ahora = new Date();
-  const hoy = PEDIDOS.filter(p => {
+  const pedidosContables = PEDIDOS.filter(p => !p.excluirMetricas);
+  const hoy = pedidosContables.filter(p => {
     const f = new Date(p.fechaPedido);
     return f.getFullYear()===ahora.getFullYear() && f.getMonth()===ahora.getMonth() && f.getDate()===ahora.getDate();
   });
-  const mes = PEDIDOS.filter(p => {
+  const mes = pedidosContables.filter(p => {
     const f = new Date(p.fechaPedido);
     return f.getFullYear()===ahora.getFullYear() && f.getMonth()===ahora.getMonth();
   });
@@ -3687,9 +4021,9 @@ function metricasPedidos(){
   const finalizadosHoy=validosHoy.filter(p=>p.listoEn);
   const finalizadosMes=validosMes.filter(p=>p.listoEn);
   return {
-    activos:PEDIDOS.filter(p=>["pendiente","preparando","listo"].includes(p.estado)).length,
-    pendientes:PEDIDOS.filter(p=>p.estado==="pendiente").length,
-    listos:PEDIDOS.filter(p=>p.estado==="listo").length,
+    activos:pedidosContables.filter(p=>["pendiente","preparando","listo"].includes(p.estado)).length,
+    pendientes:pedidosContables.filter(p=>p.estado==="pendiente").length,
+    listos:pedidosContables.filter(p=>p.estado==="listo").length,
     pedidosHoy:validosHoy.length,
     canceladosHoy:hoy.filter(p=>p.estado==="cancelado").length,
     promedioHoy:promedio(finalizadosHoy.map(msPreparacionPedido)),
@@ -3735,11 +4069,16 @@ function botonesPedido(p){
     b.push(`<button class="a-btn ready-btn" onclick="marcarPedidoListo('${p.id}')">✓ Marcar listo</button>`);
   }
   if(p.estado==="listo"){
-    b.push(`<button class="a-btn save" onclick="avisarPedidoListo('${p.id}')">WhatsApp cliente</button>`);
+    if(p.clienteTelefono){
+      b.push(`<button class="a-btn save" onclick="avisarPedidoListo('${p.id}')">WhatsApp cliente</button>`);
+    }
     b.push(`<button class="a-btn delivered-btn" onclick="marcarPedidoEntregado('${p.id}')">🛵 Entregado</button>`);
   }
   if(["pendiente","preparando","listo"].includes(p.estado)){
     b.push(`<button class="a-btn delete" onclick="cancelarPedido('${p.id}')">Cancelar</button>`);
+  }
+  if(p.excluirMetricas){
+    b.push(`<button class="a-btn ghost" onclick="reincluirPedidoMetricas('${p.id}')">Reincluir en métricas</button>`);
   }
   if(["cancelado","entregado"].includes(p.estado)){
     b.push(`<button class="a-btn delete" onclick="eliminarPedidoDefinitivo('${p.id}')">Eliminar registro</button>`);
@@ -3781,13 +4120,15 @@ function renderPedidosAdmin(){
           <div class="order-customer">${escHtml(p.clienteNombre)}</div>
         </div>
         <span class="order-status ${p.estado}">${estadoPedidoLabel(p.estado)}</span>
+        ${p.excluirMetricas ? `<span class="order-status cancelado" title="No cuenta en métricas ni reportes">Excluido</span>` : ""}
       </div>
 
+      ${p.excluirMetricas ? `<div class="order-metric-note" style="color:#e7a873;">Este pedido está excluido de métricas y reportes.</div>` : ""}
       <div class="order-time" data-pedido-timer="${escAttr(p.id)}">${formatoDuracion(msPreparacionPedido(p))}</div>
       <div class="order-time-label">${p.estado==="cancelado"?"Tiempo hasta cancelación":p.listoEn?"Tiempo total de preparación":"Tiempo desde que se pidió"}</div>
       ${listoReal ? `<div class="order-metric-note">Listo en ${listoReal}</div>` : ""}
 
-      <div class="order-meta">${fechaTxt} · ${hora} · WhatsApp +${escHtml(p.clienteTelefono)}</div>
+      <div class="order-meta">${fechaTxt} · ${hora}${p.clienteTelefono ? ` · WhatsApp +${escHtml(p.clienteTelefono)}` : " · Pedido presencial"}</div>
       <div class="order-meta">${escHtml(p.direccion)}</div>
       ${p.nota ? `<div class="order-meta">Nota: ${escHtml(p.nota)}</div>` : ""}
 
@@ -3933,8 +4274,9 @@ async function marcarPedidoEntregado(id){
 
   try{
     await guardarVentaDB(venta); // ID determinista: evita ventas duplicadas si se reintenta.
-    await actualizarPedidoDB(id,{estado:"entregado",entregadoEn:ahora});
+    await actualizarPedidoDB(id,{estado:"entregado",entregadoEn:ahora,excluirMetricas:false});
     p.estado="entregado";
+    p.excluirMetricas=false;
     if(!VENTAS.some(v=>v.id===venta.id)) VENTAS.unshift(venta);
     mostrarConfirmacion(`✓ ${p.codigo} entregado y contabilizado`);
     renderPedidosAdmin();
@@ -3968,11 +4310,56 @@ async function cancelarPedido(id){
   }
 }
 
+async function reincluirPedidoMetricas(id){
+  const p=PEDIDOS.find(x=>x.id===id);
+  if(!p) return;
+
+  if(!await confirmarAccion({
+    titulo:"Reincluir pedido",
+    mensaje:`${p.codigo} volverá a contar en las métricas y reportes de pedidos.`,
+    confirmar:"Reincluir",
+    icono:"✓"
+  })) return;
+
+  try{
+    await actualizarPedidoDB(id,{excluirMetricas:false});
+    p.excluirMetricas=false;
+    mostrarConfirmacion(`✓ ${p.codigo} reincluido en métricas`);
+    renderPedidosAdmin();
+  }catch(error){
+    alert("No se pudo reincluir el pedido: "+error.message);
+  }
+}
+
 async function eliminarPedidoDefinitivo(id){
-  const p=PEDIDOS.find(x=>x.id===id);if(!p)return;
-  if(!await confirmarAccion({titulo:"Eliminar registro",mensaje:`${p.codigo} se borrará definitivamente y dejará de aparecer en métricas y Excel.`,confirmar:"Eliminar definitivamente",peligro:true,icono:"!"}))return;
-  try{await eliminarPedidoDB(id);PEDIDOS=PEDIDOS.filter(x=>x.id!==id);mostrarConfirmacion(`✓ ${p.codigo} eliminado`);renderPedidosAdmin();}
-  catch(error){alert("No se pudo eliminar el pedido: "+error.message);}
+  const p=PEDIDOS.find(x=>String(x.id)===String(id));
+  if(!p){
+    mostrarConfirmacion("El pedido ya no existe o la lista está desactualizada.","error");
+    await recargarPedidosAdmin(false);
+    return;
+  }
+
+  const confirmado=await confirmarAccion({
+    titulo:"Eliminar registro",
+    mensaje:`${p.codigo} se borrará definitivamente de Pedidos, métricas y Excel. Esta acción no se puede deshacer.`,
+    confirmar:"Eliminar definitivamente",
+    cancelar:"Conservar",
+    peligro:true,
+    icono:"!"
+  });
+
+  if(!confirmado) return;
+
+  try{
+    mostrarConfirmacion(`Eliminando ${p.codigo}…`);
+    await eliminarPedidoDB(id);
+    await cargarPedidosAdmin();
+    renderPedidosAdmin();
+    mostrarConfirmacion(`✓ ${p.codigo} eliminado definitivamente`);
+  }catch(error){
+    console.error("Eliminar pedido:",error);
+    mostrarConfirmacion("No se pudo eliminar el pedido: "+(error.message||error),"error");
+  }
 }
 
 /* ============================================================
@@ -5079,6 +5466,7 @@ async function descargarExcelContabilidad(){
       Cliente:p.clienteNombre,
       WhatsApp:"+"+p.clienteTelefono,
       Estado:estadoPedidoLabel(p.estado),
+      "Incluido en métricas":p.excluirMetricas ? "No" : "Sí",
       Total:p.total,
       Dirección:p.direccion,
       Latitud:Number.isFinite(p.lat) ? p.lat : "",
@@ -5111,6 +5499,7 @@ async function descargarExcelContabilidad(){
     const mesesPedidos = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
     const metricasPedidosRows = mesesPedidos.map((nombre,mes) => {
       const lista = PEDIDOS.filter(p => {
+        if(p.excluirMetricas) return false;
         const f=new Date(p.fechaPedido);
         return f.getFullYear()===contaAnioSeleccionado && f.getMonth()===mes;
       });
@@ -5265,17 +5654,40 @@ async function registrarVenta(){
 }
 
 async function eliminarVenta(id){
+  const esVentaPedido = String(id).startsWith("pedido-");
+  const pedidoId = esVentaPedido ? String(id).slice("pedido-".length) : null;
+
   if(!await confirmarAccion({
     titulo:"Eliminar venta",
-    mensaje:"La venta se quitará de los reportes y cálculos contables.",
+    mensaje:esVentaPedido
+      ? "La venta se quitará de Contabilidad y el pedido relacionado dejará de contar en las métricas y reportes."
+      : "La venta se quitará de los reportes y cálculos contables.",
     confirmar:"Eliminar venta",
     peligro:true,
     icono:"!"
   })) return;
-  try{ await eliminarFila("ventas", id); }catch(error){ alert("No se pudo eliminar la venta: " + error.message); return; }
+
+  try{
+    await eliminarFila("ventas", id);
+
+    if(pedidoId){
+      await actualizarPedidoDB(pedidoId,{excluirMetricas:true});
+      const pedido=PEDIDOS.find(p=>String(p.id)===String(pedidoId));
+      if(pedido) pedido.excluirMetricas=true;
+    }
+  }catch(error){
+    alert("No se pudo eliminar la venta: " + error.message);
+    return;
+  }
+
   VENTAS = VENTAS.filter(v => v.id !== id);
-  mostrarConfirmacion("✓ Venta eliminada");
+  mostrarConfirmacion(
+    esVentaPedido
+      ? "✓ Venta eliminada y pedido excluido de métricas"
+      : "✓ Venta eliminada"
+  );
   renderContabilidad();
+  renderPedidosAdmin();
 }
 
 async function borrarTodasLasVentas(){
