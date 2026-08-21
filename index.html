@@ -3178,11 +3178,9 @@ async function guardarPedidoPublico(pedido){
     estado:"pendiente"
   };
 
-  const { data, error } = await supabaseClient
+  const { error } = await supabaseClient
     .from("pedidos")
-    .insert(payload)
-    .select("id,codigo")
-    .single();
+    .insert(payload);
 
   if(error){
     console.error("Supabase pedidos INSERT:", {
@@ -3196,7 +3194,7 @@ async function guardarPedidoPublico(pedido){
     );
   }
 
-  return data;
+  return { id:payload.id, codigo:payload.codigo };
 }
 
 async function actualizarPedidoDB(id, cambios){
