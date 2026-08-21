@@ -1951,6 +1951,205 @@ a{color:inherit;}
   .local-order-line{grid-template-columns:minmax(0,1fr) 70px 36px;}
 }
 
+
+.local-order-item-card{
+  padding:12px;
+  margin-bottom:10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(247,241,228,.025);
+}
+.local-order-extras{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px dashed rgba(247,241,228,.12);
+}
+.local-order-extras-title{
+  margin-bottom:7px;
+  color:rgba(247,241,228,.55);
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.local-extra-chip{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:4px 0;
+  color:var(--cream);
+  font-size:12px;
+  cursor:pointer;
+}
+.local-extra-chip input{
+  width:17px;
+  height:17px;
+  margin:0;
+}
+.local-extra-chip strong{
+  color:var(--mustard);
+  font:700 11px 'JetBrains Mono',monospace;
+}
+
+
+/* Prioridad automática por tiempo de espera */
+.order-card{
+  transition:border-color .25s ease,box-shadow .25s ease,background .25s ease,transform .25s ease;
+}
+.order-card.atencion{
+  border-color:rgba(227,166,47,.55);
+  box-shadow:0 0 0 1px rgba(227,166,47,.14),0 14px 30px rgba(0,0,0,.2);
+  background:
+    linear-gradient(180deg,rgba(227,166,47,.055),rgba(227,166,47,.015)),
+    var(--ink-2);
+}
+.order-card.urgente{
+  border-color:rgba(194,67,43,.8);
+  box-shadow:0 0 0 1px rgba(194,67,43,.22),0 16px 34px rgba(194,67,43,.18);
+  background:
+    linear-gradient(180deg,rgba(194,67,43,.11),rgba(194,67,43,.025)),
+    var(--ink-2);
+  animation:pedidoUrgentePulse 1.8s ease-in-out infinite;
+}
+@keyframes pedidoUrgentePulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(194,67,43,.2),0 16px 34px rgba(194,67,43,.16);}
+  50%{box-shadow:0 0 0 3px rgba(194,67,43,.18),0 18px 40px rgba(194,67,43,.28);}
+}
+.order-urgency-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.order-urgency-badge.atencion{
+  color:#1f150d;
+  background:var(--mustard);
+  border:1px solid var(--mustard);
+}
+.order-urgency-badge.urgente{
+  color:#fff5ef;
+  background:var(--ember);
+  border:1px solid #df745f;
+}
+.order-urgency-badge.hidden{display:none!important;}
+.order-card.urgente .order-time{
+  color:#f08a72;
+}
+.order-card.atencion .order-time{
+  color:var(--mustard);
+}
+
+
+.order-priority-legend{
+  display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 14px;
+  color:rgba(247,241,228,.48);font-size:10px;
+}
+.order-priority-legend span{display:flex;align-items:center;gap:5px;}
+.priority-dot{display:inline-block;width:8px;height:8px;border-radius:50%;}
+.priority-dot.normal{background:rgba(247,241,228,.32);}
+.priority-dot.atencion{background:var(--mustard);}
+.priority-dot.urgente{background:var(--ember);}
+
+
+/* Promociones visibles para clientes */
+.card-promo{
+  position:relative;
+  border-color:rgba(227,166,47,.52) !important;
+  box-shadow:0 0 0 1px rgba(227,166,47,.12),0 16px 34px rgba(0,0,0,.2);
+  overflow:hidden;
+}
+.promo-ribbon{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:8;
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--ember),#8f2f22);
+  color:#fff7ef;
+  box-shadow:0 8px 18px rgba(194,67,43,.28);
+  pointer-events:none;
+}
+.promo-ribbon span{
+  font:900 11px 'JetBrains Mono',monospace;
+  letter-spacing:.05em;
+}
+.promo-ribbon small{
+  max-width:145px;
+  font-size:9px;
+  line-height:1.2;
+  color:rgba(255,247,239,.82);
+}
+.card-tag-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.promo-badge-client{
+  display:inline-flex;
+  align-items:center;
+  min-height:23px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:rgba(227,166,47,.13);
+  border:1px solid rgba(227,166,47,.46);
+  color:var(--mustard);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+.promo-price-block{
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:8px;
+}
+.old-price{
+  color:rgba(247,241,228,.38);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  text-decoration:line-through;
+  text-decoration-thickness:1.5px;
+}
+.promo-price{
+  color:var(--mustard);
+  font-family:'JetBrains Mono',monospace;
+  font-size:24px;
+  font-weight:800;
+}
+.promo-saving{
+  display:inline-flex;
+  padding:4px 7px;
+  border-radius:999px;
+  background:rgba(184,201,138,.12);
+  border:1px solid rgba(184,201,138,.32);
+  color:#b8c98a;
+  font-size:9px;
+  font-weight:800;
+}
+@media(max-width:767px){
+  .promo-ribbon{
+    top:10px;
+    left:10px;
+    padding:7px 9px;
+  }
+  .promo-ribbon small{max-width:120px;}
+  .promo-price{font-size:21px;}
+}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -2197,6 +2396,11 @@ a{color:inherit;}
       </div>
 
       <div class="kpi-grid" id="kpi-pedidos"></div>
+      <div class="order-priority-legend">
+        <span><i class="priority-dot normal"></i> Normal</span>
+        <span><i class="priority-dot atencion"></i> Atención desde 12 min</span>
+        <span><i class="priority-dot urgente"></i> Urgente desde 18 min</span>
+      </div>
 
       <div class="admin-card order-filter-card">
         <div class="a-row">
@@ -3018,40 +3222,83 @@ function renderMenu(){
   actualizarSeoMenu();
 }
 
+
+function promoActivaParaProducto(p){
+  const ahora=new Date();
+  return PROMOS.find(pr=>{
+    if(!pr || !pr.activa) return false;
+    if(pr.productoId!=="todos" && String(pr.productoId)!==String(p.id)) return false;
+    if(pr.inicio){
+      const ini=new Date(pr.inicio);
+      if(Number.isFinite(ini.getTime()) && ahora<ini) return false;
+    }
+    if(pr.fin){
+      const fin=new Date(pr.fin);
+      if(Number.isFinite(fin.getTime()) && ahora>fin) return false;
+    }
+    return true;
+  }) || null;
+}
+
 function renderCard(p){
-  const agotado = p.disponible === false;
-  const { precio, original, promo } = precioVigente(p);
-  const extrasDisp = p.admiteExtras ? extrasDisponibles() : [];
-  const seleccion = seleccionExtras[p.id] || [];
+  const promo=promoActivaParaProducto(p);
+  const precioBase=Number(p.precio)||0;
+  const vigente=precioVigente(p);
+  const precioActual=Number(vigente.precio)||precioBase;
+  const tienePromo=!!promo && precioActual < precioBase;
+
+  const extrasDisp=p.admiteExtras ? extrasDisponibles() : [];
+  const seleccion=seleccionExtras[p.id] || [];
 
   return `
-    <article class="card${agotado ? " agotado" : ""}" id="card-${p.id}">
+    <article class="card ${tienePromo ? "card-promo" : ""}" data-id="${p.id}">
+      ${tienePromo ? `
+        <div class="promo-ribbon">
+          <span>🔥 PROMO</span>
+          <small>${escHtml(promo.nombre || "Precio especial")}</small>
+        </div>
+      ` : ""}
+
       <div class="photo">
-        ${p.imagenUrl ? `<img src="${escAttr(p.imagenUrl)}" alt="${escAttr(p.nombre)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : `<span class="ph-icon">Foto</span>`}
+        ${p.imagenUrl ? `<img src="${escAttr(p.imagenUrl)}" alt="${escAttr(p.nombre)}" loading="lazy" decoding="async">` : ""}
       </div>
+
       <div class="card-body">
-        ${p.etiqueta ? `<span class="card-tag">${escHtml(p.etiqueta)}</span>` : ""}
-        ${promo ? `<span class="card-tag promo">🔥 ${escHtml(promo.nombre)}</span>` : ""}
+        <div class="card-tag-row">
+          <span class="card-tag">${escHtml(p.etiqueta || "")}</span>
+          ${tienePromo ? `<span class="promo-badge-client">OFERTA ACTIVA</span>` : ""}
+        </div>
+
         <h3>${escHtml(p.nombre)}</h3>
-        <p class="desc">${escHtml(p.descripcion)}</p>
+        <p class="desc">${escHtml(p.descripcion || "")}</p>
 
-        ${(!agotado && extrasDisp.length > 0) ? `
-        <div class="extras-box">
-          <span class="extras-label">Agregale extras</span>
-          ${extrasDisp.map(e => {
-            const nombreExtra = String(e.nombre || "").trim() || "Extra";
-            return `
-            <label class="extra-chip" data-extra-id="${escAttr(e.id)}">
-              <input type="checkbox" ${seleccion.includes(e.id) ? "checked" : ""} onchange="toggleExtraSeleccion('${p.id}','${e.id}', this.checked)">
-              <span class="extra-name">${escHtml(nombreExtra)}</span>
-              <span class="extra-price">+${money(e.precio)}</span>
-            </label>`;
-          }).join("")}
-        </div>` : ""}
+        ${tienePromo ? `
+          <div class="promo-price-block">
+            <span class="old-price">${money(precioBase)}</span>
+            <span class="promo-price">${money(precioActual)}</span>
+            <span class="promo-saving">Ahorrás ${money(precioBase-precioActual)}</span>
+          </div>
+        ` : `
+          <div class="price">${money(precioActual)}</div>
+        `}
 
-        <div class="card-footer" id="footer-${p.id}">
-          ${renderPrecioFooter(p)}
-          ${agotado ? `<span class="sold-out-label">Agotado</span>` : renderControlCantidad(p.id)}
+        ${extrasDisp.length ? `
+          <div class="extras-box">
+            <div class="extras-label">Extras</div>
+            ${extrasDisp.map(e => {
+              const nombreExtra=String(e.nombre||"").trim()||"Extra";
+              return `
+              <label class="extra-chip" data-extra-id="${escAttr(e.id)}">
+                <input type="checkbox" ${seleccion.includes(e.id) ? "checked" : ""} onchange="toggleExtraSeleccion('${p.id}','${e.id}', this.checked)">
+                <span class="extra-name">${escHtml(nombreExtra)}</span>
+                <span class="extra-price">+${money(e.precio)}</span>
+              </label>`;
+            }).join("")}
+          </div>
+        ` : ""}
+
+        <div class="card-footer">
+          <button class="add-btn" onclick="agregarAlCarrito('${p.id}')" aria-label="Agregar ${escAttr(p.nombre)} al pedido">Agregar</button>
         </div>
       </div>
     </article>`;
@@ -3803,7 +4050,7 @@ function agregarLineaPedidoLocal(){
     return;
   }
   const primero=PRODUCTOS.find(p=>p.disponible!==false) || PRODUCTOS[0];
-  lineasPedidoLocal.push({productoId:primero.id,cantidad:1});
+  lineasPedidoLocal.push({productoId:primero.id,cantidad:1,extrasIds:[]});
   renderLineasPedidoLocal();
 }
 
@@ -3814,17 +4061,39 @@ function renderLineasPedidoLocal(){
   if(!lineasPedidoLocal.length){
     root.innerHTML='<div class="a-empty">Agregá al menos un producto.</div>';
   }else{
-    root.innerHTML=lineasPedidoLocal.map((l,i)=>`
-      <div class="local-order-line">
-        <select onchange="actualizarLineaPedidoLocal(${i},'productoId',this.value)">
-          ${PRODUCTOS.filter(p=>p.disponible!==false).map(p=>`
-            <option value="${escAttr(p.id)}" ${String(p.id)===String(l.productoId)?"selected":""}>${escHtml(p.nombre)} · ${money(precioVigente(p).precio)}</option>
-          `).join("")}
-        </select>
-        <input type="number" min="1" step="1" value="${l.cantidad}" onchange="actualizarLineaPedidoLocal(${i},'cantidad',this.value)" aria-label="Cantidad">
-        <button class="a-btn delete" type="button" style="padding:8px;" onclick="quitarLineaPedidoLocal(${i})">✕</button>
-      </div>
-    `).join("");
+    root.innerHTML=lineasPedidoLocal.map((l,i)=>{
+      const producto=PRODUCTOS.find(p=>String(p.id)===String(l.productoId));
+      const extrasDisp=producto?.admiteExtras ? extrasDisponibles() : [];
+      const seleccion=(l.extrasIds||[]).map(String);
+
+      return `
+      <div class="local-order-item-card">
+        <div class="local-order-line">
+          <select onchange="actualizarLineaPedidoLocal(${i},'productoId',this.value)">
+            ${PRODUCTOS.filter(p=>p.disponible!==false).map(p=>`
+              <option value="${escAttr(p.id)}" ${String(p.id)===String(l.productoId)?"selected":""}>${escHtml(p.nombre)} · ${money(precioVigente(p).precio)}</option>
+            `).join("")}
+          </select>
+          <input type="number" min="1" step="1" value="${l.cantidad}" onchange="actualizarLineaPedidoLocal(${i},'cantidad',this.value)" aria-label="Cantidad">
+          <button class="a-btn delete" type="button" style="padding:8px;" onclick="quitarLineaPedidoLocal(${i})">✕</button>
+        </div>
+
+        ${extrasDisp.length ? `
+          <div class="local-order-extras">
+            <div class="local-order-extras-title">Extras</div>
+            ${extrasDisp.map(e=>`
+              <label class="local-extra-chip">
+                <input type="checkbox"
+                  ${seleccion.includes(String(e.id)) ? "checked" : ""}
+                  onchange="toggleExtraPedidoLocal(${i},'${escAttr(e.id)}',this.checked)">
+                <span>${escHtml(e.nombre)}</span>
+                <strong>+${money(e.precio)}</strong>
+              </label>
+            `).join("")}
+          </div>
+        ` : ""}
+      </div>`;
+    }).join("");
   }
 
   document.getElementById("pedido-local-total").textContent=money(totalPedidoLocal());
@@ -3832,7 +4101,26 @@ function renderLineasPedidoLocal(){
 
 function actualizarLineaPedidoLocal(i,campo,valor){
   if(!lineasPedidoLocal[i]) return;
-  lineasPedidoLocal[i][campo]=campo==="cantidad" ? Math.max(1,Number(valor)||1) : valor;
+  if(campo==="cantidad"){
+    lineasPedidoLocal[i].cantidad=Math.max(1,Number(valor)||1);
+  }else{
+    lineasPedidoLocal[i].productoId=valor;
+    lineasPedidoLocal[i].extrasIds=[];
+  }
+  renderLineasPedidoLocal();
+}
+
+function toggleExtraPedidoLocal(i,extraId,checked){
+  const linea=lineasPedidoLocal[i];
+  if(!linea) return;
+  linea.extrasIds=(linea.extrasIds||[]).map(String);
+
+  if(checked){
+    if(!linea.extrasIds.includes(String(extraId))) linea.extrasIds.push(String(extraId));
+  }else{
+    linea.extrasIds=linea.extrasIds.filter(id=>id!==String(extraId));
+  }
+
   renderLineasPedidoLocal();
 }
 
@@ -3845,14 +4133,26 @@ function itemsPedidoLocal(){
   return lineasPedidoLocal.map(l=>{
     const p=PRODUCTOS.find(x=>String(x.id)===String(l.productoId));
     if(!p) return null;
-    const precioUnit=precioVigente(p).precio;
+
+    const extrasIds=(l.extrasIds||[]).map(String);
+    const extras=extrasIds.map(id=>{
+      const e=extraPorId(id);
+      return e ? {
+        id:String(e.id),
+        nombre:e.nombre,
+        precio:Number(e.precio)||0
+      } : null;
+    }).filter(Boolean);
+
+    const precioUnit=precioVigente(p).precio + precioExtras(extrasIds);
+
     return {
       productoId:p.id,
       nombre:p.nombre,
       cantidad:Number(l.cantidad)||1,
       precioUnit,
-      extrasIds:[],
-      extras:[],
+      extrasIds,
+      extras,
       subtotal:precioUnit*(Number(l.cantidad)||1)
     };
   }).filter(Boolean);
@@ -3902,10 +4202,39 @@ async function registrarPedidoLocal(){
 
   try{
     await guardarPedidoAdmin(pedido);
+
+    // Reflejar inmediatamente el pedido local en memoria para que el cronómetro
+    // empiece a correr sin esperar a una nueva consulta de Supabase.
+    PEDIDOS.unshift({
+      id:String(pedido.id),
+      codigo:pedido.codigo,
+      fechaPedido:pedido.fechaPedido,
+      clienteNombre:pedido.clienteNombre,
+      clienteTelefono:pedido.clienteTelefono || "",
+      direccion:pedido.direccion || "Pedido en local",
+      lat:null,
+      lng:null,
+      ubicacionUrl:"",
+      nota:pedido.nota || "",
+      items:Array.isArray(pedido.items) ? pedido.items : [],
+      total:Number(pedido.total)||0,
+      estado:"pendiente",
+      preparandoEn:null,
+      listoEn:null,
+      entregadoEn:null,
+      canceladoEn:null,
+      excluirMetricas:false
+    });
+
     cerrarPedidoLocal();
-    await cargarPedidosAdmin();
     renderPedidosAdmin();
+    actualizarRelojesPedidos();
+
+    // Confirmación visual inmediata.
     mostrarConfirmacion(`✓ ${pedido.codigo} registrado en local`);
+
+    // Sincronización posterior con Supabase para confirmar el estado real.
+    setTimeout(() => recargarPedidosAdmin(false), 600);
   }catch(error){
     console.error("Pedido local:",error);
     mostrarConfirmacion("No se pudo registrar el pedido: "+(error.message||error),"error");
@@ -3919,6 +4248,25 @@ let pedidosRealtimeChannel = null;
 let pedidosPollTimer = null;
 let pedidosClockTimer = null;
 
+
+const MINUTOS_ATENCION_PEDIDO = 12;
+const MINUTOS_URGENTE_PEDIDO = 18;
+
+function nivelUrgenciaPedido(p){
+  if(!p || !["pendiente","preparando"].includes(p.estado)) return "normal";
+  const minutos=msPreparacionPedido(p)/60000;
+  if(minutos >= MINUTOS_URGENTE_PEDIDO) return "urgente";
+  if(minutos >= MINUTOS_ATENCION_PEDIDO) return "atencion";
+  return "normal";
+}
+
+function etiquetaUrgenciaPedido(p){
+  const nivel=nivelUrgenciaPedido(p);
+  if(nivel==="urgente") return "🔥 URGENTE";
+  if(nivel==="atencion") return "⚠ ATENCIÓN";
+  return "";
+}
+
 function estadoPedidoLabel(estado){
   return ({
     pendiente:"Pendiente",
@@ -3931,11 +4279,15 @@ function estadoPedidoLabel(estado){
 
 function msPreparacionPedido(p){
   const inicio=new Date(p.fechaPedido).getTime();
+  if(!Number.isFinite(inicio)) return 0;
+
   let fin;
   if(p.listoEn) fin=new Date(p.listoEn).getTime();
   else if(p.canceladoEn) fin=new Date(p.canceladoEn).getTime();
   else if(p.entregadoEn) fin=new Date(p.entregadoEn).getTime();
   else fin=Date.now();
+
+  if(!Number.isFinite(fin)) fin=Date.now();
   return Math.max(0,fin-inicio);
 }
 
@@ -3958,10 +4310,27 @@ function promedio(arr){
 
 function actualizarRelojesPedidos(){
   document.querySelectorAll("[data-pedido-timer]").forEach(el => {
-    const id = el.dataset.pedidoTimer;
-    const p = PEDIDOS.find(x => x.id === id);
+    const id=el.dataset.pedidoTimer;
+    const p=PEDIDOS.find(x=>String(x.id)===String(id));
     if(!p) return;
-    el.textContent = formatoDuracion(msPreparacionPedido(p));
+
+    el.textContent=formatoDuracion(msPreparacionPedido(p));
+
+    const nivel=nivelUrgenciaPedido(p);
+    const card=document.querySelector(`[data-order-card="${CSS.escape(String(id))}"]`);
+    if(card){
+      card.classList.remove("normal","atencion","urgente");
+      card.classList.add(nivel);
+    }
+
+    const badge=document.querySelector(`[data-urgency-badge="${CSS.escape(String(id))}"]`);
+    if(badge){
+      badge.classList.remove("normal","atencion","urgente","hidden");
+      badge.classList.add(nivel);
+      const etiqueta=etiquetaUrgenciaPedido(p);
+      badge.textContent=etiqueta;
+      if(!etiqueta) badge.classList.add("hidden");
+    }
   });
 }
 
@@ -4001,7 +4370,17 @@ function configurarRealtimePedidos(){
   }
 
   if(!pedidosClockTimer){
-    pedidosClockTimer = setInterval(actualizarRelojesPedidos,1000);
+    pedidosClockTimer = setInterval(() => {
+      actualizarRelojesPedidos();
+
+      // Mantiene visibles las métricas de tiempo mientras hay pedidos activos,
+      // incluyendo pedidos creados directamente en el local.
+      const vista=document.getElementById("vista-admin");
+      const tabPedidos=document.getElementById("tab-pedidos");
+      if(vista && !vista.classList.contains("hidden") && tabPedidos && !tabPedidos.classList.contains("hidden")){
+        renderKpisPedidos();
+      }
+    },1000);
   }
 }
 
@@ -4020,14 +4399,19 @@ function metricasPedidos(){
   const validosMes=mes.filter(p=>p.estado!=="cancelado");
   const finalizadosHoy=validosHoy.filter(p=>p.listoEn);
   const finalizadosMes=validosMes.filter(p=>p.listoEn);
+  const activosLista=pedidosContables.filter(p=>["pendiente","preparando","listo"].includes(p.estado));
+  const tiemposActivos=activosLista.map(msPreparacionPedido);
+
   return {
-    activos:pedidosContables.filter(p=>["pendiente","preparando","listo"].includes(p.estado)).length,
+    activos:activosLista.length,
     pendientes:pedidosContables.filter(p=>p.estado==="pendiente").length,
     listos:pedidosContables.filter(p=>p.estado==="listo").length,
     pedidosHoy:validosHoy.length,
     canceladosHoy:hoy.filter(p=>p.estado==="cancelado").length,
     promedioHoy:promedio(finalizadosHoy.map(msPreparacionPedido)),
-    promedioMes:promedio(finalizadosMes.map(msPreparacionPedido))
+    promedioMes:promedio(finalizadosMes.map(msPreparacionPedido)),
+    tiempoActivoPromedio:promedio(tiemposActivos),
+    pedidoActivoMasAntiguo:tiemposActivos.length ? Math.max(...tiemposActivos) : 0
   };
 }
 
@@ -4041,6 +4425,8 @@ function renderKpisPedidos(){
     <div class="kpi accent"><div class="kpi-label">Listos</div><div class="kpi-value">${m.listos}</div></div>
     <div class="kpi"><div class="kpi-label">Pedidos válidos hoy</div><div class="kpi-value">${m.pedidosHoy}</div></div>
     <div class="kpi"><div class="kpi-label">Cancelados hoy</div><div class="kpi-value">${m.canceladosHoy}</div></div>
+    <div class="kpi"><div class="kpi-label">Tiempo activo promedio</div><div class="kpi-value">${m.tiempoActivoPromedio ? formatoDuracion(m.tiempoActivoPromedio) : "0:00"}</div></div>
+    <div class="kpi"><div class="kpi-label">Activo más antiguo</div><div class="kpi-value">${m.pedidoActivoMasAntiguo ? formatoDuracion(m.pedidoActivoMasAntiguo) : "0:00"}</div></div>
     <div class="kpi"><div class="kpi-label">Prep. promedio hoy</div><div class="kpi-value">${m.promedioHoy ? formatoDuracion(m.promedioHoy) : "—"}</div></div>
     <div class="kpi"><div class="kpi-label">Prep. promedio mes</div><div class="kpi-value">${m.promedioMes ? formatoDuracion(m.promedioMes) : "—"}</div></div>
   `;
@@ -4113,14 +4499,20 @@ function renderPedidosAdmin(){
 
     const listoReal = p.listoEn ? formatoDuracion(new Date(p.listoEn)-new Date(p.fechaPedido)) : null;
 
-    return `<div class="admin-card order-card ${p.estado}">
+    const urgencia=nivelUrgenciaPedido(p);
+    const etiquetaUrgencia=etiquetaUrgenciaPedido(p);
+
+    return `<div class="admin-card order-card ${p.estado} ${urgencia}" data-order-card="${escAttr(p.id)}">
       <div class="admin-card-top">
         <div>
           <div class="order-code">${escHtml(p.codigo)}</div>
           <div class="order-customer">${escHtml(p.clienteNombre)}</div>
         </div>
-        <span class="order-status ${p.estado}">${estadoPedidoLabel(p.estado)}</span>
-        ${p.excluirMetricas ? `<span class="order-status cancelado" title="No cuenta en métricas ni reportes">Excluido</span>` : ""}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+          <span class="order-status ${p.estado}">${estadoPedidoLabel(p.estado)}</span>
+          ${etiquetaUrgencia ? `<span class="order-urgency-badge ${urgencia}" data-urgency-badge="${escAttr(p.id)}">${etiquetaUrgencia}</span>` : `<span class="order-urgency-badge normal hidden" data-urgency-badge="${escAttr(p.id)}"></span>`}
+          ${p.excluirMetricas ? `<span class="order-status cancelado" title="No cuenta en métricas ni reportes">Excluido</span>` : ""}
+        </div>
       </div>
 
       ${p.excluirMetricas ? `<div class="order-metric-note" style="color:#e7a873;">Este pedido está excluido de métricas y reportes.</div>` : ""}
