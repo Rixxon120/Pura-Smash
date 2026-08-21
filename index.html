@@ -3162,22 +3162,41 @@ async function guardarPedidoAdmin(pedido){
 
 async function guardarPedidoPublico(pedido){
   await asegurarSupabase();
-  const { error } = await supabaseClient.from("pedidos").insert({
-    id: pedido.id,
-    codigo: pedido.codigo,
-    fecha_pedido: pedido.fechaPedido,
-    cliente_nombre: pedido.clienteNombre,
-    cliente_telefono: pedido.clienteTelefono,
-    direccion: pedido.direccion,
-    lat: pedido.lat,
-    lng: pedido.lng,
-    ubicacion_url: pedido.ubicacionUrl || null,
-    nota: pedido.nota || null,
-    items: pedido.items,
-    total: pedido.total,
-    estado: "pendiente"
-  });
-  if(error) throw error;
+
+  const payload = {
+    id:String(pedido.id),
+    codigo:String(pedido.codigo),
+    fecha_pedido:pedido.fechaPedido,
+    cliente_nombre:String(pedido.clienteNombre || "").trim(),
+    cliente_telefono:String(pedido.clienteTelefono || "").trim(),
+    direccion:String(pedido.direccion || "").trim(),
+    lat:Number(pedido.lat),
+    lng:Number(pedido.lng),
+    nota:pedido.nota ? String(pedido.nota) : null,
+    items:Array.isArray(pedido.items) ? pedido.items : [],
+    total:Number(pedido.total) || 0,
+    estado:"pendiente"
+  };
+
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .insert(payload)
+    .select("id,codigo")
+    .single();
+
+  if(error){
+    console.error("Supabase pedidos INSERT:", {
+      message:error.message,
+      details:error.details,
+      hint:error.hint,
+      code:error.code
+    });
+    throw new Error(
+      [error.message, error.details, error.hint].filter(Boolean).join(" · ")
+    );
+  }
+
+  return data;
 }
 
 async function actualizarPedidoDB(id, cambios){
@@ -4049,7 +4068,23 @@ async function enviarPorWhatsapp(){
     console.error("Pedido Supabase:",error);
     boton.disabled=false;
     boton.textContent=textoAnterior;
-    mostrarConfirmacion("No se pudo registrar el pedido. Revisá tu conexión e intentá nuevamente.","error");
+
+    const msg=String(error?.message || error || "");
+    let visible="No se pudo registrar el pedido.";
+
+    if(/row-level security|policy|permission|42501/i.test(msg)){
+      visible="Supabase bloqueó el pedido por permisos RLS. Ejecutá el SQL de reparación de pedidos que te preparé.";
+    }else if(/column .* does not exist|42703/i.test(msg)){
+      visible="La tabla pedidos no tiene todas las columnas esperadas. Ejecutá el SQL de reparación de pedidos.";
+    }else if(/duplicate key|23505/i.test(msg)){
+      visible="Se generó un código de pedido repetido. Intentá enviarlo nuevamente.";
+    }else if(/Failed to fetch|NetworkError|fetch/i.test(msg)){
+      visible="No se pudo conectar con Supabase. Revisá internet e intentá nuevamente.";
+    }else if(msg){
+      visible=`No se pudo registrar: ${msg}`;
+    }
+
+    mostrarConfirmacion(visible,"error");
     return;
   }
 
