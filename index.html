@@ -4234,6 +4234,18 @@ async function abrirAdmin(){
     abrirPinGate();
     return;
   }
+
+  // Estar autenticado NO significa ser administrador.
+  // La autorización real se valida en PostgreSQL mediante public.es_admin().
+  const { data:esAdmin, error:adminError } = await supabaseClient.rpc("es_admin");
+  if(adminError || esAdmin !== true){
+    console.warn("Acceso administrativo rechazado", adminError || "usuario no autorizado");
+    await supabaseClient.auth.signOut();
+    cerrarAdmin();
+    mostrarConfirmacion("Esta cuenta no está autorizada para administrar Pura Smash.","error");
+    return;
+  }
+
   const vistaAdmin = document.getElementById("vista-admin");
   vistaAdmin.classList.remove("hidden");
   vistaAdmin.scrollTop = 0;
