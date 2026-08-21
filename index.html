@@ -2438,7 +2438,7 @@ a{color:inherit;}
       <button class="btn order-success-secondary" type="button" onclick="nuevoPedidoDesdeExito()">Hacer otro pedido</button>
       <button class="btn order-success-link" type="button" onclick="volverMenuDesdeExito()">Volver al menú</button>
     </div>
-    <p class="order-success-note">Guardá tu código de pedido. Te avisaremos por WhatsApp cuando esté listo para salir.</p>
+    <p class="order-success-note">Guardá tu código de pedido. Si WhatsApp no se abrió, tocá “Abrir WhatsApp”. Te avisaremos ahí cuando esté listo para salir.</p>
   </div>
 </div>
 
@@ -3974,13 +3974,25 @@ async function enviarPorWhatsapp(){
   const direccion=document.getElementById("input-direccion").value.trim();
   const nota=document.getElementById("input-nota").value.trim();
 
-  if(!nombre){alert("Por favor indicá tu nombre.");document.getElementById("input-nombre").focus();return;}
-  if(!telefono){alert("Ingresá un número de WhatsApp válido de Costa Rica (8 dígitos).");document.getElementById("input-telefono").focus();return;}
-  if(!direccion){alert("Por favor indicá las señas o dirección de entrega.");document.getElementById("input-direccion").focus();return;}
+  if(!nombre){
+    mostrarConfirmacion("Indicá tu nombre para continuar.","error");
+    document.getElementById("input-nombre").focus();
+    return;
+  }
+  if(!telefono){
+    mostrarConfirmacion("Ingresá un WhatsApp válido de Costa Rica (8 dígitos).","error");
+    document.getElementById("input-telefono").focus();
+    return;
+  }
+  if(!direccion){
+    mostrarConfirmacion("Indicá las señas o dirección de entrega.","error");
+    document.getElementById("input-direccion").focus();
+    return;
+  }
   if(!ubicacionCliente){
-    alert(tipoUbicacionEntrega==="mapa"
+    mostrarConfirmacion(tipoUbicacionEntrega==="mapa"
       ? "Seleccioná y confirmá el punto de entrega en el mapa."
-      : "Usá tu ubicación actual para indicar el destino.");
+      : "Usá tu ubicación actual para indicar el destino.","error");
     return;
   }
 
@@ -3996,59 +4008,116 @@ async function enviarPorWhatsapp(){
     lat:ubicacionCliente.lat,
     lng:ubicacionCliente.lng,
     ubicacionUrl:"",
-    nota,items,total:totalCarrito()
+    nota,
+    items,
+    total:totalCarrito()
   };
 
-  const ventanaWhatsapp=window.open("about:blank","_blank");
-  const boton=document.getElementById("btn-enviar-whatsapp");
-  const textoAnterior=boton.textContent;
-  boton.disabled=true;boton.textContent="Registrando pedido…";
+  const lineas=[
+    "🍔 *NUEVO PEDIDO — PURA SMASH*",
+    `Código: *${codigo}*`,
+    "",
+    `Hola, soy ${nombre}. Quiero pedir:`
+  ];
 
-  try{await guardarPedidoPublico(pedido);}
-  catch(error){
-    if(ventanaWhatsapp) ventanaWhatsapp.close();
-    console.error("Pedido Supabase:",error);
-    alert("No se pudo registrar el pedido. Revisá tu conexión e intentá nuevamente.");
-    boton.disabled=false;boton.textContent=textoAnterior;return;
-  }
-
-  const lineas=[];
-  lineas.push("🍔 *NUEVO PEDIDO — PURA SMASH*");
-  lineas.push(`Código: *${codigo}*`);
-  lineas.push("");
-  lineas.push(`Hola, soy ${nombre}. Quiero pedir:`);
   items.forEach(it=>{
     const extrasTxt=(it.extras||[]).map(e=>e.nombre).join(", ");
     lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} — ${money(it.subtotal)}`);
   });
-  lineas.push("");
-  lineas.push(`💰 *Total: ${money(pedido.total)}*`);
-  lineas.push("🛵 Entrega Express");
-  lineas.push(`📞 WhatsApp: +${telefono}`);
-  lineas.push(`📍 Señas: ${direccion}`);
-  lineas.push(`🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`);
-  lineas.push(`🚗 Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`);
+
+  lineas.push(
+    "",
+    `💰 *Total: ${money(pedido.total)}*`,
+    "🛵 Entrega Express",
+    `📞 WhatsApp: +${telefono}`,
+    `📍 Señas: ${direccion}`,
+    `🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`,
+    `🚗 Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`
+  );
   if(nota) lineas.push(`📝 Nota: ${nota}`);
-  lineas.push("");
-  lineas.push("🔥 Pedido registrado. Quedo pendiente de la confirmación de Pura Smash.");
+  lineas.push("","🔥 Pedido registrado. Quedo pendiente de la confirmación de Pura Smash.");
 
-  const url=`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
-  ultimoPedidoExito={pedido,whatsappUrl:url};
-  mostrarPantallaPedidoExito(pedido,url);
-  if(ventanaWhatsapp) ventanaWhatsapp.location.href=url;
+  const whatsappUrl=`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
+  const boton=document.getElementById("btn-enviar-whatsapp");
+  const textoAnterior=boton.textContent;
+  boton.disabled=true;
+  boton.textContent="Registrando pedido…";
 
-  boton.disabled=false;boton.textContent=textoAnterior;
+  try{
+    await guardarPedidoPublico(pedido);
+  }catch(error){
+    console.error("Pedido Supabase:",error);
+    boton.disabled=false;
+    boton.textContent=textoAnterior;
+    mostrarConfirmacion("No se pudo registrar el pedido. Revisá tu conexión e intentá nuevamente.","error");
+    return;
+  }
+
+  ultimoPedidoExito={pedido,whatsappUrl};
+
+  try{
+    sessionStorage.setItem("puraSmashPedidoExito",JSON.stringify({
+      codigo:pedido.codigo,
+      clienteNombre:pedido.clienteNombre,
+      total:pedido.total,
+      whatsappUrl,
+      fecha:Date.now()
+    }));
+  }catch(error){
+    console.warn("No se pudo guardar confirmación temporal:",error);
+  }
+
   limpiarPedidoActual();
+  boton.disabled=false;
+  boton.textContent=textoAnterior;
+
+  // Mismo tab: evita bloqueo de popups en navegadores móviles.
+  window.location.assign(whatsappUrl);
+}
+
+function restaurarConfirmacionPedido(){
+  try{
+    const raw=sessionStorage.getItem("puraSmashPedidoExito");
+    if(!raw) return;
+    const data=JSON.parse(raw);
+
+    if(!data?.codigo || !data?.fecha || Date.now()-Number(data.fecha)>2*60*60*1000){
+      sessionStorage.removeItem("puraSmashPedidoExito");
+      return;
+    }
+
+    const pedido={
+      codigo:data.codigo,
+      clienteNombre:data.clienteNombre || "Cliente",
+      total:Number(data.total)||0
+    };
+
+    ultimoPedidoExito={pedido,whatsappUrl:data.whatsappUrl || ""};
+    mostrarPantallaPedidoExito(pedido,data.whatsappUrl || "");
+  }catch(error){
+    console.warn("No se pudo restaurar la confirmación:",error);
+  }
 }
 
 function mostrarPantallaPedidoExito(pedido,whatsappUrl){
   cerrarHoja("sheet-entrega");
   cerrarHoja("sheet-carrito");
+
   const overlay=document.getElementById("pedido-exito");
   document.getElementById("pedido-exito-codigo").textContent=pedido.codigo;
-  document.getElementById("pedido-exito-texto").textContent=`${pedido.clienteNombre}, recibimos tu pedido por ${money(pedido.total)}. Cuando regresés de WhatsApp vas a ver esta confirmación.`;
-  document.getElementById("pedido-exito-whatsapp").onclick=()=>window.open(whatsappUrl,"_blank");
-  overlay.classList.remove("hidden");overlay.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+  document.getElementById("pedido-exito-texto").textContent=`${pedido.clienteNombre}, recibimos tu pedido por ${money(pedido.total)}. Tu pedido ya quedó registrado.`;
+
+  const btn=document.getElementById("pedido-exito-whatsapp");
+  if(btn){
+    btn.disabled=!whatsappUrl;
+    btn.onclick=()=>{
+      if(whatsappUrl) window.location.assign(whatsappUrl);
+    };
+  }
+
+  overlay.classList.remove("hidden");
+  overlay.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
 }
 function limpiarPedidoActual(){
   carrito={};seleccionExtras={};ubicacionCliente=null;tipoUbicacionEntrega="mia";puntoMapaTemporal=null;
@@ -4065,7 +4134,12 @@ function nuevoPedidoDesdeExito(){
   document.getElementById("menu-root")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function volverMenuDesdeExito(){
-  const o=document.getElementById("pedido-exito");o.classList.add("hidden");o.setAttribute("aria-hidden","true");document.body.style.overflow="";
+  const o=document.getElementById("pedido-exito");
+  o.classList.add("hidden");
+  o.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+  ultimoPedidoExito=null;
+  try{sessionStorage.removeItem("puraSmashPedidoExito");}catch{}
   document.getElementById("menu-root")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -6706,6 +6780,10 @@ function renderListaVentas(){
   }).join("");
 }
 
+window.addEventListener("pageshow",()=>{
+  setTimeout(restaurarConfirmacionPedido,100);
+});
+
 /* ============================================================
    15. INICIO
    ============================================================ */
@@ -6740,6 +6818,7 @@ async function iniciarAplicacion(){
     });
   }, {threshold: 0.15});
   document.querySelectorAll(".card").forEach(card => window.observadorTarjetas.observe(card));
+  setTimeout(restaurarConfirmacionPedido,120);
 }
 
 iniciarAplicacion();
