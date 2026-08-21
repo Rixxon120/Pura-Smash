@@ -2258,6 +2258,32 @@ a{color:inherit;}
   .config-cover-preview{aspect-ratio:4/3;}
 }
 
+
+/* Corrección táctil del carrito en móvil */
+.card-footer{
+  position:relative;
+  z-index:6;
+}
+.add-btn,
+.stepper button{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  pointer-events:auto !important;
+}
+@media(max-width:767px){
+  .card-footer{
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .add-btn{
+    position:relative;
+    z-index:10;
+  }
+}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -3277,7 +3303,10 @@ function estadoPromo(promo){
   return "vigente";
 }
 function promoParaProducto(id){
-  return PROMOS.find(pr => (pr.productoId === id || pr.productoId === "todos") && estadoPromo(pr) === "vigente");
+  return PROMOS.find(pr =>
+    (String(pr.productoId) === String(id) || pr.productoId === "todos") &&
+    estadoPromo(pr) === "vigente"
+  );
 }
 function precioVigente(p){
   const promo = promoParaProducto(p.id);
@@ -3368,7 +3397,7 @@ function actualizarSeoMenu(){
   try{
     const data=JSON.parse(schema.textContent);
     const grupos={};
-    PRODUCTOS.filter(p=>p.disponible).forEach(p=>{
+    PRODUCTOS.filter(p=>p.disponible !== false).forEach(p=>{
       const cat=CATEGORIAS.find(c=>c.id===p.categoria)?.nombre || p.categoria || "Menú";
       (grupos[cat] ||= []).push({
         "@type":"MenuItem",
@@ -3376,7 +3405,7 @@ function actualizarSeoMenu(){
         "description":p.descripcion || undefined,
         "offers":{
           "@type":"Offer",
-          "price":String(precioVigente(p)),
+          "price":String(precioVigente(p).precio),
           "priceCurrency":"CRC",
           "availability":"https://schema.org/InStock"
         }
@@ -3475,9 +3504,7 @@ function renderCard(p){
             <span class="promo-price">${money(precioActual)}</span>
             <span class="promo-saving">Ahorrás ${money(precioBase-precioActual)}</span>
           </div>
-        ` : `
-          <div class="price">${money(precioActual)}</div>
-        `}
+        ` : ""}
 
         ${extrasDisp.length ? `
           <div class="extras-box">
@@ -3494,8 +3521,11 @@ function renderCard(p){
           </div>
         ` : ""}
 
-        <div class="card-footer">
-          <button class="add-btn" onclick="agregarAlCarrito('${p.id}')" aria-label="Agregar ${escAttr(p.nombre)} al pedido">Agregar</button>
+        <div class="card-footer" id="footer-${p.id}">
+          ${renderPrecioFooter(p)}
+          ${p.disponible === false
+            ? `<span class="sold-out-label">Agotado</span>`
+            : renderControlCantidad(p.id)}
         </div>
       </div>
     </article>`;
@@ -3529,7 +3559,7 @@ function renderControlCantidad(productoId){
 function actualizarControlCantidad(productoId){
   const footer = document.getElementById("footer-" + productoId);
   if(!footer) return;
-  const p = PRODUCTOS.find(p => p.id === productoId);
+  const p = PRODUCTOS.find(p => String(p.id) === String(productoId));
   if(!p) return;
   const agotado = p.disponible === false;
   footer.innerHTML = `
@@ -3541,7 +3571,7 @@ function actualizarControlCantidad(productoId){
    7. LÓGICA DEL CARRITO
    ============================================================ */
 function agregar(productoId){
-  const p = PRODUCTOS.find(p => p.id === productoId);
+  const p = PRODUCTOS.find(p => String(p.id) === String(productoId));
   if(!p || p.disponible === false) return;
   const extrasIds = (seleccionExtras[productoId] || []).slice();
   const clave = claveLinea(productoId, extrasIds);
@@ -4339,7 +4369,8 @@ function itemsPedidoLocal(){
       return e ? {
         id:String(e.id),
         nombre:e.nombre,
-        precio:Number(e.precio)||0
+        precio:Number(e.precio)||0,
+        costo:Number(e.costo)||0
       } : null;
     }).filter(Boolean);
 
@@ -4827,7 +4858,10 @@ function ventaDesdePedido(p){
   const items = p.items.map(it => {
     const prod = PRODUCTOS.find(x => String(x.id)===String(it.productoId));
     const extrasIds = (it.extrasIds || (it.extras||[]).map(e=>e.id) || []).map(String);
-    const costoUnit = (prod ? Number(prod.costo)||0 : 0) + costoExtras(extrasIds);
+    const costoExtrasSnapshot = Array.isArray(it.extras) && it.extras.some(e => Number(e.costo) > 0)
+      ? it.extras.reduce((s,e) => s + (Number(e.costo)||0), 0)
+      : costoExtras(extrasIds);
+    const costoUnit = (prod ? Number(prod.costo)||0 : 0) + costoExtrasSnapshot;
     return {
       productoId:it.productoId,
       nombre:it.nombre,
@@ -6348,6 +6382,7 @@ async function descargarExcelContabilidad(){
         "ID venta":v.id,
         Fecha:new Date(v.fecha).toLocaleString("es-CR"),
         Producto:it.nombre,
+        Extras:(it.extras||[]).map(e=>e.nombre).filter(Boolean).join(", "),
         Cantidad:it.cantidad,
         "Precio unitario":it.precioUnit,
         "Costo unitario":it.costoUnit,
