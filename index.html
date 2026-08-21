@@ -2150,6 +2150,114 @@ a{color:inherit;}
   .promo-price{font-size:21px;}
 }
 
+
+/* ============================================================
+   CONFIGURACIÓN DEL SITIO
+   ============================================================ */
+.hero > .photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.hero-business-status{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  margin:0 0 17px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.hero-business-status.open{
+  background:rgba(184,201,138,.12);
+  border:1px solid rgba(184,201,138,.42);
+  color:#c9d99c;
+}
+.hero-business-status.closed{
+  background:rgba(194,67,43,.12);
+  border:1px solid rgba(194,67,43,.45);
+  color:#e58a78;
+}
+.config-card{margin-bottom:14px;}
+.config-help{
+  margin:5px 0 0;
+  color:rgba(247,241,228,.48);
+  font-size:11px;
+  line-height:1.45;
+}
+.config-help-inline{
+  display:block;
+  margin-top:3px;
+  color:rgba(247,241,228,.42);
+  font-size:10px;
+}
+.config-cover-preview{
+  width:100%;
+  aspect-ratio:16/7;
+  margin:14px 0 12px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px dashed rgba(227,166,47,.32);
+  border-radius:14px;
+  background:#15100d;
+  color:rgba(247,241,228,.38);
+  font-size:11px;
+}
+.config-cover-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.config-logo-preview{
+  width:120px;
+  height:120px;
+  margin:14px 0 12px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px dashed rgba(227,166,47,.32);
+  border-radius:50%;
+  background:#15100d;
+  color:rgba(247,241,228,.38);
+  font-size:10px;
+  text-align:center;
+}
+.config-logo-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.config-upload-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.config-file-btn{
+  position:relative;
+  overflow:hidden;
+}
+.config-file-btn input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+.config-status{
+  min-height:16px;
+  margin-top:9px;
+  color:rgba(247,241,228,.52);
+  font-size:10.5px;
+}
+@media(max-width:560px){
+  .config-upload-row .a-btn{flex:1 1 100%;}
+  .config-cover-preview{aspect-ratio:4/3;}
+}
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -2177,6 +2285,7 @@ a{color:inherit;}
     <h1>Pura<br>Smash</h1>
     <p>Smash burgers artesanales hechas al momento, con costra crujiente y sazón de casa.</p>
     <div class="hero-location"><span aria-hidden="true">📍</span> Esparza.</div>
+    <div class="hero-business-status open" id="hero-business-status">● Abierto</div>
     <button class="btn btn-primary" onclick="irAlMenu()">Ver menú <span class="arrow">→</span></button>
   </div>
 </header>
@@ -2380,6 +2489,7 @@ a{color:inherit;}
       <button class="admin-tab" data-tab="extras" onclick="cambiarTabAdmin('extras')">Extras</button>
       <button class="admin-tab" data-tab="promos" onclick="cambiarTabAdmin('promos')">Promociones</button>
       <button class="admin-tab" data-tab="contabilidad" onclick="cambiarTabAdmin('contabilidad')">Contabilidad</button>
+      <button class="admin-tab" data-tab="configuracion" onclick="cambiarTabAdmin('configuracion')">Configuración</button>
     </div>
   </div>
 
@@ -2560,6 +2670,81 @@ a{color:inherit;}
 
     </div>
 
+    <!-- TAB CONFIGURACIÓN -->
+    <div id="tab-configuracion" class="hidden">
+      <div class="admin-section-title">
+        <h3>Apariencia y negocio</h3>
+      </div>
+
+      <div class="admin-card config-card">
+        <div class="admin-card-top">
+          <div>
+            <div class="admin-card-name">Foto de portada</div>
+            <p class="config-help">Es la imagen grande que aparece al entrar a Pura Smash. Podés subirla directamente desde el celular.</p>
+          </div>
+        </div>
+
+        <div class="config-cover-preview" id="config-cover-preview">
+          <span>Sin portada personalizada</span>
+        </div>
+
+        <div class="config-upload-row">
+          <label class="a-btn ghost config-file-btn">
+            Elegir foto
+            <input type="file" id="config-portada-file" accept="image/*" capture="environment" onchange="previsualizarPortadaConfig(this)">
+          </label>
+          <button class="a-btn save" id="btn-subir-portada" onclick="subirPortadaConfig()" disabled>Guardar portada</button>
+          <button class="a-btn delete" onclick="eliminarPortadaConfig()">Eliminar</button>
+        </div>
+        <div class="config-status" id="config-portada-status"></div>
+      </div>
+
+      <div class="admin-card config-card">
+        <div class="admin-card-name">Logo</div>
+        <p class="config-help">Podés reemplazar el logo que aparece en la portada sin editar el HTML.</p>
+
+        <div class="config-logo-preview" id="config-logo-preview">
+          <span>Logo actual</span>
+        </div>
+
+        <div class="config-upload-row">
+          <label class="a-btn ghost config-file-btn">
+            Elegir logo
+            <input type="file" id="config-logo-file" accept="image/*" onchange="previsualizarLogoConfig(this)">
+          </label>
+          <button class="a-btn save" id="btn-subir-logo" onclick="subirLogoConfig()" disabled>Guardar logo</button>
+          <button class="a-btn delete" onclick="eliminarLogoConfig()">Restaurar</button>
+        </div>
+        <div class="config-status" id="config-logo-status"></div>
+      </div>
+
+      <div class="admin-card config-card">
+        <div class="admin-card-name">Datos del negocio</div>
+
+        <div class="a-field">
+          <label for="config-whatsapp">WhatsApp del negocio</label>
+          <input type="tel" id="config-whatsapp" inputmode="tel" placeholder="89810775">
+        </div>
+
+        <div class="a-field">
+          <label for="config-horario">Horario visible</label>
+          <input type="text" id="config-horario" placeholder="Ej: Mar–Dom · 5:00 p.m. – 10:00 p.m.">
+        </div>
+
+        <div class="a-toggle-row">
+          <div>
+            <span>Estado del negocio</span>
+            <small class="config-help-inline">Se mostrará como Abierto o Cerrado en la portada.</small>
+          </div>
+          <button class="switch on" id="config-abierto-switch" onclick="this.classList.toggle('on')" aria-label="Cambiar estado abierto/cerrado"></button>
+        </div>
+
+        <div class="a-actions">
+          <button class="a-btn save" onclick="guardarConfiguracionNegocio()">Guardar configuración</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2590,9 +2775,21 @@ a{color:inherit;}
    información interna para reportes de ventas y márgenes, y NUNCA
    se muestra al cliente.
    ============================================================ */
-const NUMERO_WHATSAPP = "50689810775"; // +506 8981-0775 (wa.me usa solo dígitos)
+let NUMERO_WHATSAPP = "50689810775"; // +506 8981-0775 (wa.me usa solo dígitos)
 const NOMBRE_NEGOCIO = "Pura Smash";
 // Acceso administrativo mediante Supabase Auth.
+
+const CONFIG_DEFAULT = {
+  id:"principal",
+  portadaUrl:"",
+  logoUrl:"",
+  whatsapp:"50689810775",
+  horario:"Horario por confirmar",
+  abierto:true
+};
+let CONFIG_SITIO = {...CONFIG_DEFAULT};
+let archivoPortadaPendiente = null;
+let archivoLogoPendiente = null;
 
 const CATEGORIAS = [
   { id: "burgers", nombre: "Smash Burgers" },
@@ -3906,6 +4103,7 @@ async function abrirAdmin(){
   document.body.style.overflow = "hidden";
   try{
     await cargarDatosSupabase(true);
+    await cargarConfiguracionSitio();
     renderAdminProductos();
     renderAdminExtras();
     renderAdminPromos();
@@ -3927,10 +4125,11 @@ function cerrarAdmin(){
 }
 function cambiarTabAdmin(tab){
   document.querySelectorAll(".admin-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-  ["pedidos","productos","extras","promos","contabilidad"].forEach(t => {
+  ["pedidos","productos","extras","promos","contabilidad","configuracion"].forEach(t => {
     document.getElementById("tab-" + t).classList.toggle("hidden", t !== tab);
   });
   if(tab === "contabilidad") renderContabilidad();
+  if(tab === "configuracion") renderConfiguracionAdmin();
   if(tab === "pedidos"){
     renderPedidosAdmin();
     recargarPedidosAdmin(false);
@@ -4848,6 +5047,322 @@ function toggleDisponible(id){
 }
 function toggleAdmiteExtras(id){
   document.getElementById("p-extras-switch-" + id).classList.toggle("on");
+}
+
+
+const STORAGE_BUCKET_SITIO = "sitio";
+
+async function cargarConfiguracionSitio(){
+  try{
+    await asegurarSupabase();
+    const { data, error } = await supabaseClient
+      .from("configuracion")
+      .select("id,portada_url,logo_url,whatsapp,horario,abierto")
+      .eq("id","principal")
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(data){
+      CONFIG_SITIO = {
+        id:"principal",
+        portadaUrl:data.portada_url || "",
+        logoUrl:data.logo_url || "",
+        whatsapp:String(data.whatsapp || CONFIG_DEFAULT.whatsapp).replace(/\D/g,""),
+        horario:data.horario || CONFIG_DEFAULT.horario,
+        abierto:data.abierto !== false
+      };
+    }else{
+      CONFIG_SITIO = {...CONFIG_DEFAULT};
+    }
+
+    aplicarConfiguracionSitio();
+    return CONFIG_SITIO;
+  }catch(error){
+    console.warn("Configuración del sitio no disponible:",error);
+    CONFIG_SITIO = {...CONFIG_DEFAULT};
+    aplicarConfiguracionSitio();
+    return CONFIG_SITIO;
+  }
+}
+
+function aplicarConfiguracionSitio(){
+  const hero=document.getElementById("hero-photo");
+  if(hero){
+    if(CONFIG_SITIO.portadaUrl){
+      hero.innerHTML=`<img src="${escAttr(CONFIG_SITIO.portadaUrl)}" alt="Pura Smash en Esparza" fetchpriority="high">`;
+    }else if(!hero.querySelector(".ph-icon")){
+      hero.innerHTML='<span class="ph-icon">Foto de portada aquí</span>';
+    }
+  }
+
+  const logo=document.querySelector(".logo-badge img");
+  if(logo){
+    if(!logo.dataset.originalSrc) logo.dataset.originalSrc=logo.src;
+    logo.src=CONFIG_SITIO.logoUrl || logo.dataset.originalSrc;
+  }
+
+  const status=document.getElementById("hero-business-status");
+  if(status){
+    status.classList.toggle("open",CONFIG_SITIO.abierto);
+    status.classList.toggle("closed",!CONFIG_SITIO.abierto);
+    status.textContent=CONFIG_SITIO.abierto ? "● Abierto" : "● Cerrado";
+    status.title=CONFIG_SITIO.horario || "";
+  }
+
+  const numero=String(CONFIG_SITIO.whatsapp || "").replace(/\D/g,"");
+  if(numero){
+    NUMERO_WHATSAPP = numero.length===8 ? "506"+numero : numero;
+  }
+}
+
+function renderConfiguracionAdmin(){
+  const w=document.getElementById("config-whatsapp");
+  const h=document.getElementById("config-horario");
+  const sw=document.getElementById("config-abierto-switch");
+  if(w) w.value=String(CONFIG_SITIO.whatsapp || "").replace(/^506(?=\d{8}$)/,"");
+  if(h) h.value=CONFIG_SITIO.horario || "";
+  if(sw) sw.classList.toggle("on",CONFIG_SITIO.abierto !== false);
+
+  const cover=document.getElementById("config-cover-preview");
+  if(cover){
+    cover.innerHTML=CONFIG_SITIO.portadaUrl
+      ? `<img src="${escAttr(CONFIG_SITIO.portadaUrl)}" alt="Vista previa de portada">`
+      : "<span>Sin portada personalizada</span>";
+  }
+
+  const logoPreview=document.getElementById("config-logo-preview");
+  const logoActual=document.querySelector(".logo-badge img");
+  if(logoPreview){
+    const src=CONFIG_SITIO.logoUrl || logoActual?.dataset.originalSrc || logoActual?.src || "";
+    logoPreview.innerHTML=src
+      ? `<img src="${escAttr(src)}" alt="Vista previa del logo">`
+      : "<span>Sin logo</span>";
+  }
+}
+
+async function guardarConfigDB(cambios){
+  await asegurarSupabase();
+  const payload={id:"principal",updated_at:new Date().toISOString()};
+  if("portadaUrl" in cambios) payload.portada_url=cambios.portadaUrl || null;
+  if("logoUrl" in cambios) payload.logo_url=cambios.logoUrl || null;
+  if("whatsapp" in cambios) payload.whatsapp=cambios.whatsapp;
+  if("horario" in cambios) payload.horario=cambios.horario;
+  if("abierto" in cambios) payload.abierto=!!cambios.abierto;
+
+  const { data, error }=await supabaseClient
+    .from("configuracion")
+    .upsert(payload,{onConflict:"id"})
+    .select()
+    .single();
+
+  if(error) throw error;
+  return data;
+}
+
+async function guardarConfiguracionNegocio(){
+  const whatsappRaw=String(document.getElementById("config-whatsapp")?.value || "").replace(/\D/g,"");
+  const horario=String(document.getElementById("config-horario")?.value || "").trim();
+  const abierto=document.getElementById("config-abierto-switch")?.classList.contains("on");
+
+  if(whatsappRaw && whatsappRaw.length!==8 && !(whatsappRaw.length===11 && whatsappRaw.startsWith("506"))){
+    mostrarConfirmacion("Ingresá un WhatsApp válido de Costa Rica.","error");
+    return;
+  }
+
+  if(!await confirmarAccion({
+    titulo:"Guardar configuración",
+    mensaje:"Se actualizarán los datos visibles del negocio en la página.",
+    confirmar:"Guardar",
+    icono:"✓"
+  })) return;
+
+  try{
+    const numero=whatsappRaw.length===8 ? "506"+whatsappRaw : whatsappRaw;
+    await guardarConfigDB({whatsapp:numero||CONFIG_DEFAULT.whatsapp,horario,abierto});
+    CONFIG_SITIO.whatsapp=numero||CONFIG_DEFAULT.whatsapp;
+    CONFIG_SITIO.horario=horario;
+    CONFIG_SITIO.abierto=abierto;
+    aplicarConfiguracionSitio();
+    renderConfiguracionAdmin();
+    mostrarConfirmacion("✓ Configuración actualizada");
+  }catch(error){
+    mostrarConfirmacion("No se pudo guardar: "+(error.message||error),"error");
+  }
+}
+
+function previsualizarPortadaConfig(input){
+  const file=input?.files?.[0];
+  if(!file) return;
+  if(!file.type.startsWith("image/")){
+    mostrarConfirmacion("Seleccioná una imagen válida.","error");
+    return;
+  }
+  archivoPortadaPendiente=file;
+  const url=URL.createObjectURL(file);
+  const preview=document.getElementById("config-cover-preview");
+  preview.innerHTML=`<img src="${url}" alt="Nueva portada">`;
+  document.getElementById("btn-subir-portada").disabled=false;
+  document.getElementById("config-portada-status").textContent="Foto lista para subir.";
+}
+
+function previsualizarLogoConfig(input){
+  const file=input?.files?.[0];
+  if(!file) return;
+  if(!file.type.startsWith("image/")){
+    mostrarConfirmacion("Seleccioná una imagen válida.","error");
+    return;
+  }
+  archivoLogoPendiente=file;
+  const url=URL.createObjectURL(file);
+  document.getElementById("config-logo-preview").innerHTML=`<img src="${url}" alt="Nuevo logo">`;
+  document.getElementById("btn-subir-logo").disabled=false;
+  document.getElementById("config-logo-status").textContent="Logo listo para subir.";
+}
+
+async function subirImagenSitio(file,tipo,maxLado=1800,calidad=.84){
+  await asegurarSupabase();
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session) throw new Error("Tu sesión administrativa expiró.");
+
+  const blob=await comprimirImagen(file,maxLado,calidad);
+  const ruta=`${tipo}/${Date.now()}.jpg`;
+
+  const {error}=await supabaseClient.storage
+    .from(STORAGE_BUCKET_SITIO)
+    .upload(ruta,blob,{contentType:"image/jpeg",cacheControl:"31536000",upsert:false});
+  if(error) throw error;
+
+  const {data}=supabaseClient.storage.from(STORAGE_BUCKET_SITIO).getPublicUrl(ruta);
+  if(!data?.publicUrl) throw new Error("No se obtuvo la URL pública de la imagen.");
+  return {url:data.publicUrl,ruta};
+}
+
+async function borrarImagenSitioAnterior(url){
+  if(!url) return;
+  try{
+    const marker=`/storage/v1/object/public/${STORAGE_BUCKET_SITIO}/`;
+    const pos=url.indexOf(marker);
+    if(pos<0) return;
+    const ruta=decodeURIComponent(url.slice(pos+marker.length));
+    await supabaseClient.storage.from(STORAGE_BUCKET_SITIO).remove([ruta]);
+  }catch(error){
+    console.warn("No se pudo borrar imagen anterior:",error);
+  }
+}
+
+async function subirPortadaConfig(){
+  if(!archivoPortadaPendiente) return;
+  if(!await confirmarAccion({
+    titulo:"Cambiar portada",
+    mensaje:"La nueva foto aparecerá en la parte superior de la página.",
+    confirmar:"Subir portada",
+    icono:"📷"
+  })) return;
+
+  const status=document.getElementById("config-portada-status");
+  status.textContent="Comprimiendo y subiendo…";
+
+  try{
+    const anterior=CONFIG_SITIO.portadaUrl;
+    const nueva=await subirImagenSitio(archivoPortadaPendiente,"portada",1800,.85);
+    await guardarConfigDB({portadaUrl:nueva.url});
+    CONFIG_SITIO.portadaUrl=nueva.url;
+    aplicarConfiguracionSitio();
+    renderConfiguracionAdmin();
+    archivoPortadaPendiente=null;
+    document.getElementById("config-portada-file").value="";
+    document.getElementById("btn-subir-portada").disabled=true;
+    status.textContent="Portada actualizada.";
+    await borrarImagenSitioAnterior(anterior);
+    mostrarConfirmacion("✓ Nueva portada publicada");
+  }catch(error){
+    status.textContent="No se pudo subir la portada.";
+    mostrarConfirmacion("Error: "+(error.message||error),"error");
+  }
+}
+
+async function eliminarPortadaConfig(){
+  if(!CONFIG_SITIO.portadaUrl){
+    mostrarConfirmacion("No hay una portada personalizada para eliminar.","error");
+    return;
+  }
+  if(!await confirmarAccion({
+    titulo:"Eliminar portada",
+    mensaje:"La portada personalizada se quitará de la página.",
+    confirmar:"Eliminar",
+    peligro:true,
+    icono:"!"
+  })) return;
+
+  try{
+    const anterior=CONFIG_SITIO.portadaUrl;
+    await guardarConfigDB({portadaUrl:""});
+    CONFIG_SITIO.portadaUrl="";
+    aplicarConfiguracionSitio();
+    renderConfiguracionAdmin();
+    await borrarImagenSitioAnterior(anterior);
+    mostrarConfirmacion("✓ Portada eliminada");
+  }catch(error){
+    mostrarConfirmacion("No se pudo eliminar: "+(error.message||error),"error");
+  }
+}
+
+async function subirLogoConfig(){
+  if(!archivoLogoPendiente) return;
+  if(!await confirmarAccion({
+    titulo:"Cambiar logo",
+    mensaje:"El nuevo logo aparecerá en la portada.",
+    confirmar:"Subir logo",
+    icono:"📷"
+  })) return;
+
+  const status=document.getElementById("config-logo-status");
+  status.textContent="Comprimiendo y subiendo…";
+
+  try{
+    const anterior=CONFIG_SITIO.logoUrl;
+    const nueva=await subirImagenSitio(archivoLogoPendiente,"logo",800,.9);
+    await guardarConfigDB({logoUrl:nueva.url});
+    CONFIG_SITIO.logoUrl=nueva.url;
+    aplicarConfiguracionSitio();
+    renderConfiguracionAdmin();
+    archivoLogoPendiente=null;
+    document.getElementById("config-logo-file").value="";
+    document.getElementById("btn-subir-logo").disabled=true;
+    status.textContent="Logo actualizado.";
+    await borrarImagenSitioAnterior(anterior);
+    mostrarConfirmacion("✓ Nuevo logo publicado");
+  }catch(error){
+    status.textContent="No se pudo subir el logo.";
+    mostrarConfirmacion("Error: "+(error.message||error),"error");
+  }
+}
+
+async function eliminarLogoConfig(){
+  if(!CONFIG_SITIO.logoUrl){
+    mostrarConfirmacion("Ya estás usando el logo original.","error");
+    return;
+  }
+  if(!await confirmarAccion({
+    titulo:"Restaurar logo",
+    mensaje:"Se volverá a mostrar el logo original incluido en la página.",
+    confirmar:"Restaurar",
+    peligro:true,
+    icono:"↺"
+  })) return;
+
+  try{
+    const anterior=CONFIG_SITIO.logoUrl;
+    await guardarConfigDB({logoUrl:""});
+    CONFIG_SITIO.logoUrl="";
+    aplicarConfiguracionSitio();
+    renderConfiguracionAdmin();
+    await borrarImagenSitioAnterior(anterior);
+    mostrarConfirmacion("✓ Logo original restaurado");
+  }catch(error){
+    mostrarConfirmacion("No se pudo restaurar: "+(error.message||error),"error");
+  }
 }
 
 const STORAGE_BUCKET_PRODUCTOS = "productos";
@@ -6169,7 +6684,10 @@ async function iniciarAplicacion(){
 
   try{
     await Promise.race([
-      cargarDatosSupabase(false),
+      Promise.all([
+        cargarDatosSupabase(false),
+        cargarConfiguracionSitio()
+      ]),
       new Promise((_, reject) => setTimeout(() => reject(new Error("Tiempo de conexión agotado")), 5000))
     ]);
     renderMenu();
