@@ -2667,7 +2667,10 @@ b.push(`<button class="a-btn delete" onclick="cancelarPedido('${p.id}')">Cancela
 if(p.excluirMetricas){
 b.push(`<button class="a-btn ghost" onclick="reincluirPedidoMetricas('${p.id}')">Reincluir en métricas</button>`);
 }
-if(["cancelado","entregado"].includes(p.estado)){
+if(p.estado==="entregado"){
+b.push(`<button class="a-btn delete" onclick="anularPedidoEntregado('${p.id}')">↩ Anular venta</button>`);
+}
+if(p.estado==="cancelado"){
 b.push(`<button class="a-btn delete" onclick="eliminarPedidoDefinitivo('${p.id}')">Eliminar registro</button>`);
 }
 return b.join("");
@@ -3043,6 +3046,61 @@ mostrarConfirmacion(msg+" · Ajustá el inventario y volvé a marcar el pedido c
 mostrarConfirmacion("El módulo de inventario automático no está disponible en Supabase. Revisá la migración de inventario.","error");
 }else{
 mostrarConfirmacion("No se pudo completar la entrega: "+msg,"error");
+}
+}
+}
+async function anularPedidoEntregado(id){
+const p=PEDIDOS.find(x=>String(x.id)===String(id));
+if(!p)return;
+if(p.estado!=="entregado"){mostrarConfirmacion("Solo se pueden anular ventas ya entregadas.","error");return;}
+const ok=await confirmarAccion({
+titulo:"Anular venta entregada",
+mensaje:`Se anulará ${p.codigo}. Esto eliminará la venta de Contabilidad, devolverá al Inventario los insumos descontados y revertirá la mordida de Fidelidad de este pedido. Esta acción es para pedidos de prueba, errores o devoluciones reales.`,
+confirmar:"Sí, anular y revertir todo",
+cancelar:"Conservar venta",
+peligro:true,
+icono:"↩"
+});
+if(!ok)return;
+try{
+const {data,error}=await supabaseClient.rpc("anular_pedido_entregado",{p_pedido_id:String(id)});
+if(error)throw error;
+const f=Array.isArray(data)?data[0]:data;
+p.estado="cancelado";
+p.canceladoEn=new Date().toISOString();
+p.excluirMetricas=true;
+
+/* Eliminar la venta local determinista y refrescar todos los módulos afectados. */
+const ventaId=`pedido-${id}`;
+const idx=VENTAS.findIndex(v=>String(v.id)===ventaId);
+if(idx>=0)VENTAS.splice(idx,1);
+
+if(f?.telefono){
+FIDELIDAD_ADMIN.set(String(f.telefono),{
+mordidas:Number(f.mordidas)||0,
+premios_disponibles:Number(f.premios_disponibles)||0,
+pedidos_entregados:Number(f.pedidos_entregados)||0
+});
+}
+
+await Promise.allSettled([
+cargarPedidosAdmin(),
+cargarInventarioAdmin(),
+cargarFidelidadAdmin(),
+cargarVentasDB().then(v=>{if(Array.isArray(v))VENTAS.splice(0,VENTAS.length,...v);})
+]);
+renderPedidosAdmin();
+renderInventario();
+renderFidelidadAdmin();
+renderContabilidad();
+mostrarConfirmacion(`✓ ${p.codigo} anulado: venta, inventario y fidelidad revertidos`);
+}catch(error){
+console.error("Anular pedido entregado:",error);
+const msg=String(error?.message||error||"");
+if(/premio.*canje|canjeó un premio/i.test(msg)){
+mostrarConfirmacion("No se puede anular automáticamente porque un premio de fidelidad relacionado ya fue canjeado. Revisá Fidelidad antes de modificar este pedido.","error");
+}else{
+mostrarConfirmacion("No se pudo anular la venta: "+msg,"error");
 }
 }
 }
