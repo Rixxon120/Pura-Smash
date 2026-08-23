@@ -1,5 +1,5 @@
-const CACHE_NAME="pura-smash-shell-v12";
-const APP_SHELL=["/","/index.html","/manifest.webmanifest","/assets/app.0efccfa35b.min.js","/assets/styles.eb314dab60.min.css","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/assets/icons/icon-maskable-192.png","/assets/icons/icon-maskable-512.png","/assets/icons/apple-touch-icon.png"];
+const CACHE_NAME="pura-smash-shell-v13";
+const APP_SHELL=["/","/index.html","/manifest.webmanifest","/assets/app.ae96eeca1c.min.js","/assets/styles.eb314dab60.min.css","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/assets/icons/icon-maskable-192.png","/assets/icons/icon-maskable-512.png","/assets/icons/apple-touch-icon.png"];
 
 self.addEventListener("install",event=>{
   event.waitUntil(
