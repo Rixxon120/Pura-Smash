@@ -1288,7 +1288,10 @@ totales.innerHTML = `
 8. NAVEGACIÓN ENTRE PANTALLAS
 ============================================================ */
 function irAlMenu(){
-document.getElementById("sec-burgers").scrollIntoView({behavior:"smooth", block:"start"});
+const destino=document.getElementById("loyalty-fixed") || document.getElementById("menu-root") || document.querySelector("main");
+if(!destino){console.warn("No se encontró el destino del menú.");return;}
+try{destino.scrollIntoView({behavior:"smooth",block:"start"});}
+catch(error){window.scrollTo({top:destino.offsetTop||0,behavior:"smooth"});}
 }
 function irACategoria(id){
 document.querySelectorAll(".cat-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === id));
