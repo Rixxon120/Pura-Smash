@@ -880,6 +880,14 @@ if(!datos.length) return '<div class="recipe-empty">Todavía no hay datos.</div>
 const max=Math.max(1,...datos.map(d=>d[campo]));
 return `<div class="horizontal-bars">${datos.map(d=>`<div class="hbar-row"><div class="hbar-name">${escHtml(d.nombre)}</div><div class="hbar-track"><div class="hbar-fill ${clase}" style="width:${Math.max(2,d[campo]/max*100)}%"></div></div><div class="hbar-value">${d[campo]}</div></div>`).join("")}</div>`;
 }
+
+function pedidoCuentaEnMetricas(p){
+return !!p && p.estado==="entregado" && p.excluirMetricas!==true && p.excluir_metricas!==true;
+}
+function pedidosParaMetricas(){
+return PEDIDOS.filter(pedidoCuentaEnMetricas);
+}
+
 function renderEstadisticas(){
 const kpi=document.getElementById("stats-kpis");
 if(!kpi) return;
