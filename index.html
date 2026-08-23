@@ -687,7 +687,7 @@ distancia_km:Number(pedido.distanciaKm) || 0,
 distancia_ruta_km:pedido.distanciaRutaKm===null?null:Number(pedido.distanciaRutaKm),
 distancia_linea_km:Number(pedido.distanciaLineaKm) || 0,
 loyalty_token:pedido.loyaltyToken || null,
-total:Number(pedido.total) || 0,
+total:(Number(pedido.subtotalProductos)||0)+(Number(pedido.envioCosto)||0),
 estado:"pendiente"
 };
 const { error } = await supabaseClient
@@ -757,7 +757,7 @@ distanciaKm:p.distancia_km===null?null:Number(p.distancia_km),
 distanciaRutaKm:p.distancia_ruta_km===null?null:Number(p.distancia_ruta_km),
 distanciaLineaKm:p.distancia_linea_km===null?null:Number(p.distancia_linea_km),
 loyaltyToken:p.loyalty_token||"",
-total:Number(p.total)||0,
+total:((Number(p.subtotal_productos)||0)+(Number(p.envio_costo)||0)) || Number(p.total)||0,
 estado:p.estado || "pendiente",
 preparandoEn:p.preparando_en,
 listoEn:p.listo_en,
@@ -1743,6 +1743,7 @@ distanciaLineaKm:q.distanciaLineaKm,
 loyaltyToken:loyaltyToken(),
 total:totalCarrito()+q.costo
 };
+pedido.total=(Number(pedido.subtotalProductos)||0)+(Number(pedido.envioCosto)||0);
 const lineas=[
 "🍔 *NUEVO PEDIDO — PURA SMASH*",
 `Código: *${codigo}*`,
@@ -1758,7 +1759,6 @@ lineas.push(
 `🍔 Subtotal: ${money(pedido.subtotalProductos)}`,
 `🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${money(pedido.envioCosto)}`,
 `💰 *Total: ${money(pedido.total)}*`,
-"💳 Pago: SINPE Móvil al 8981-0775 o efectivo contra entrega.",
 `📞 WhatsApp: +${telefono}`,
 `📍 Señas: ${direccion}`,
 `🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`,
@@ -2982,13 +2982,21 @@ const ahora = new Date().toISOString();
 try{
 await actualizarPedidoDB(id,{estado:"preparando",preparandoEn:ahora});
 p.estado="preparando";
-const confirmacion=`🔥🍔 *¡Pedido aceptado, ${p.clienteNombre}!*
+const subtotalConfirmacion=Number(p.subtotalProductos)||0;
+const envioConfirmacion=Number(p.envioCosto)||0;
+const totalConfirmacion=subtotalConfirmacion+envioConfirmacion;
+const detalleProductos=(Array.isArray(p.items)?p.items:[]).map(it=>`• ${Number(it.cantidad)||1}x ${it.nombre||"Producto"}${Array.isArray(it.extras)&&it.extras.length?` + ${it.extras.map(e=>e.nombre).filter(Boolean).join(", ")}`:""}`).join("\n");
+const confirmacion=`🍔 *¡Pedido aceptado, ${p.clienteNombre}!*
 
-Tu pedido *${p.codigo}* ya entró a la plancha en Pura Smash.
+Tu pedido *${p.codigo}* ya está en preparación en Pura Smash.
+
+🔥 *Estamos preparando:*
+${detalleProductos||"• Tu pedido"}
+
 ${p.distanciaKm!==null&&p.distanciaKm!==undefined?`🛵 Distancia de reparto: ${Number(p.distanciaKm).toFixed(1)} km
-🚚 Envío Express: ${money(p.envioCosto||0)}
-`:""}🍔 Subtotal: ${money(p.subtotalProductos||Math.max(0,p.total-(p.envioCosto||0)))}
-💰 *Total a pagar: ${money(p.total)}*
+🚚 Envío Express: ${money(envioConfirmacion)}
+`:""}🍔 Subtotal: ${money(subtotalConfirmacion)}
+💰 *Total a pagar: ${money(totalConfirmacion)}*
 
 💳 Podés pagar por *SINPE Móvil al 8981-0775* o en *efectivo contra entrega*.
 
