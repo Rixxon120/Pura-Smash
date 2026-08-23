@@ -1,0 +1,4 @@
+Pura Smash — auditoría final 2026-08-23
+La validación reforzada de pedidos públicos ya fue aplicada directamente en Supabase.
+El servidor recalcula producto, promoción, extras, subtotales y total, fuerza estado pendiente
+y rechaza productos/extras inválidos o no disponibles. No hay que ejecutar este archivo.
