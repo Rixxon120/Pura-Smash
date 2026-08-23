@@ -2565,7 +2565,10 @@ lng:p.lng===null||p.lng===undefined?null:Number(p.lng),
 ubicacionUrl:p.ubicacion_url||"",
 nota:p.nota||"",
 items:Array.isArray(p.items)?p.items:[],
-total:Number(p.total)||0,
+subtotalProductos:Number(p.subtotal_productos)||0,
+envioCosto:Number(p.envio_costo)||0,
+distanciaKm:p.distancia_km===null||p.distancia_km===undefined?null:Number(p.distancia_km),
+total:((Number(p.subtotal_productos)||0)+(Number(p.envio_costo)||0))||Number(p.total)||0,
 estado:p.estado||"pendiente",
 preparandoEn:p.preparando_en,
 listoEn:p.listo_en,
@@ -5381,36 +5384,38 @@ lineasVentaTemp = [];
 renderContabilidad();
 }
 async function eliminarVenta(id){
-const esVentaPedido = String(id).startsWith("pedido-");
-const pedidoId = esVentaPedido ? String(id).slice("pedido-".length) : null;
+const esVentaPedido=String(id).startsWith("pedido-");
+const pedidoId=esVentaPedido?String(id).slice("pedido-".length):null;
+
+if(esVentaPedido){
+const pedido=PEDIDOS.find(p=>String(p.id)===String(pedidoId));
+if(!pedido){
+mostrarConfirmacion("No se encontró el pedido relacionado. Actualizá Pedidos e intentá nuevamente.","error");
+return;
+}
+if(pedido.estado==="entregado"){
+await anularPedidoEntregado(pedidoId);
+return;
+}
+mostrarConfirmacion("Esta venta está vinculada a un pedido. Gestioná su cancelación desde la pestaña Pedidos para mantener inventario, fidelidad y contabilidad sincronizados.","error");
+return;
+}
+
 if(!await confirmarAccion({
-titulo:"Eliminar venta",
-mensaje:esVentaPedido
-? "La venta se quitará de Contabilidad y el pedido relacionado dejará de contar en las métricas y reportes."
-: "La venta se quitará de los reportes y cálculos contables.",
+titulo:"Eliminar venta manual",
+mensaje:"La venta manual se quitará de los reportes y cálculos contables.",
 confirmar:"Eliminar venta",
 peligro:true,
 icono:"!"
 })) return;
 try{
-await eliminarFila("ventas", id);
-if(pedidoId){
-await actualizarPedidoDB(pedidoId,{excluirMetricas:true});
-const pedido=PEDIDOS.find(p=>String(p.id)===String(pedidoId));
-if(pedido) pedido.excluirMetricas=true;
-}
-}catch(error){
-alertaError("No se pudo eliminar la venta: " + error.message);
-return;
-}
-VENTAS = VENTAS.filter(v => v.id !== id);
-mostrarConfirmacion(
-esVentaPedido
-? "✓ Venta eliminada y pedido excluido de métricas"
-: "✓ Venta eliminada"
-);
+await eliminarFila("ventas",id);
+VENTAS=VENTAS.filter(v=>String(v.id)!==String(id));
+mostrarConfirmacion("✓ Venta manual eliminada");
 renderContabilidad();
-renderPedidosAdmin();
+}catch(error){
+alertaError("No se pudo eliminar la venta: "+error.message);
+}
 }
 async function borrarTodasLasVentas(){
 if(VENTAS.length === 0) return;
@@ -5475,7 +5480,7 @@ return `
 <p style="font-size:12.5px;color:rgba(247,241,228,0.6);margin:0 0 8px;">${escHtml(resumenItems)}</p>
 <p style="font-size:12px;color:rgba(247,241,228,0.4);margin:0 0 10px;">Costo ${money(v.costoTotal)} · Utilidad ${money(v.utilidad)}</p>
 <div class="a-actions" style="margin-top:0;">
-<button class="a-btn delete" onclick="eliminarVenta('${v.id}')">Eliminar</button>
+<button class="a-btn delete" onclick="eliminarVenta('${v.id}')">${String(v.id).startsWith("pedido-")?"↩ Anular venta":"Eliminar"}</button>
 </div>
 </div>`;
 }).join("");
