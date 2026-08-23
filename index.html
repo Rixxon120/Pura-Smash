@@ -865,7 +865,7 @@ ESTADISTICAS_EVENTOS=data||[];
 }
 async function recargarEstadisticas(mostrar=false){
 try{
-await cargarEstadisticasAdmin();
+await Promise.all([cargarEstadisticasAdmin(),cargarPedidosAdmin()]);
 renderEstadisticas();
 if(mostrar) mostrarConfirmacion("✓ Estadísticas actualizadas");
 }catch(error){
@@ -894,16 +894,18 @@ if(!kpi) return;
 const visitas=eventosStats("page_view");
 const add=eventosStats("add_to_cart");
 const checkout=eventosStats("checkout_start");
-const pedidos=eventosStats("order_submitted");
+const intentosPedido=eventosStats("order_submitted");
+const pedidosReales=PEDIDOS.filter(p=>p.estado!=="cancelado" && p.excluirMetricas!==true && p.excluir_metricas!==true);
+const pedidosEntregados=PEDIDOS.filter(pedidoCuentaEnMetricas);
 const visitantes=sesionesUnicas(visitas);
-const conv=visitantes?pedidos.length/visitantes*100:0;
-kpi.innerHTML=`<div class="kpi"><div class="kpi-label">Visitas</div><div class="kpi-value">${visitas.length}</div></div><div class="kpi"><div class="kpi-label">Visitantes únicos aprox.</div><div class="kpi-value">${visitantes}</div></div><div class="kpi accent"><div class="kpi-label">Pedidos enviados</div><div class="kpi-value">${pedidos.length}</div></div><div class="kpi"><div class="kpi-label">Conversión</div><div class="kpi-value">${conv.toFixed(1)}%</div></div>`;
+const conv=visitantes?pedidosReales.length/visitantes*100:0;
+kpi.innerHTML=`<div class="kpi"><div class="kpi-label">Visitas</div><div class="kpi-value">${visitas.length}</div></div><div class="kpi"><div class="kpi-label">Visitantes únicos aprox.</div><div class="kpi-value">${visitantes}</div></div><div class="kpi accent"><div class="kpi-label">Pedidos reales</div><div class="kpi-value">${pedidosReales.length}</div></div><div class="kpi"><div class="kpi-label">Conversión</div><div class="kpi-value">${conv.toFixed(1)}%</div></div>`;
 
 const porDia=new Map();
 visitas.forEach(e=>{const d=new Date(e.created_at).toLocaleDateString("es-CR",{day:"2-digit",month:"2-digit"});porDia.set(d,(porDia.get(d)||0)+1);});
 document.getElementById("stats-visitas-diarias").innerHTML=renderBarrasStats([...porDia.entries()].slice(-14).map(([nombre,valor])=>({nombre,valor})));
 
-const pasos=[["Visitas",visitas.length],["Agregaron al carrito",add.length],["Iniciaron checkout",checkout.length],["Pedido enviado",pedidos.length]];
+const pasos=[["Visitas",visitas.length],["Agregaron al carrito",add.length],["Iniciaron checkout",checkout.length],["Pedidos reales",pedidosReales.length]];
 const max=Math.max(1,pasos[0][1]);
 document.getElementById("stats-funnel").innerHTML=`<div class="stats-funnel">${pasos.map(([nombre,valor])=>`<div class="stats-funnel-row"><div class="stats-funnel-label">${nombre}</div><div class="stats-funnel-track"><div class="stats-funnel-fill" style="width:${Math.max(2,valor/max*100)}%"></div></div><div class="stats-funnel-value">${valor}</div></div>`).join("")}</div>`;
 
@@ -918,7 +920,7 @@ document.getElementById("stats-horas").innerHTML=renderBarrasStats(horas.filter(
 const mejorHora=[...horas].sort((a,b)=>b.valor-a.valor)[0];
 const movil=visitas.filter(e=>e.dispositivo==="movil").length;
 const pctMovil=visitas.length?movil/visitas.length*100:0;
-document.getElementById("stats-resumen").innerHTML=`<div class="stats-summary-grid"><div class="stats-summary-item"><span>Mejor hora</span><strong>${mejorHora&&mejorHora.valor?mejorHora.nombre:"—"}</strong></div><div class="stats-summary-item"><span>Tráfico móvil</span><strong>${pctMovil.toFixed(1)}%</strong></div><div class="stats-summary-item"><span>Carritos iniciados</span><strong>${add.length}</strong></div><div class="stats-summary-item"><span>Checkouts</span><strong>${checkout.length}</strong></div><div class="stats-summary-item"><span>Pedidos</span><strong>${pedidos.length}</strong></div><div class="stats-summary-item"><span>Conversión</span><strong>${conv.toFixed(1)}%</strong></div></div>`;
+document.getElementById("stats-resumen").innerHTML=`<div class="stats-summary-grid"><div class="stats-summary-item"><span>Mejor hora</span><strong>${mejorHora&&mejorHora.valor?mejorHora.nombre:"—"}</strong></div><div class="stats-summary-item"><span>Tráfico móvil</span><strong>${pctMovil.toFixed(1)}%</strong></div><div class="stats-summary-item"><span>Carritos iniciados</span><strong>${add.length}</strong></div><div class="stats-summary-item"><span>Checkouts</span><strong>${checkout.length}</strong></div><div class="stats-summary-item"><span>Pedidos reales</span><strong>${pedidosReales.length}</strong></div><div class="stats-summary-item"><span>Entregados</span><strong>${pedidosEntregados.length}</strong></div><div class="stats-summary-item"><span>Conversión</span><strong>${conv.toFixed(1)}%</strong></div></div>`;
 }
 let carrito = {};
 let entregaSeleccionada = "entrega";
