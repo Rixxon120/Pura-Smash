@@ -1376,32 +1376,75 @@ return t;
 }
 
 async function distanciaRutaReal(lat,lng){
-const url=`https://router.project-osrm.org/route/v1/driving/${PURA_SMASH_LOCAL.lng},${PURA_SMASH_LOCAL.lat};${Number(lng)},${Number(lat)}?overview=false&alternatives=false&steps=false`;
-const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6500);
+const url=`${SUPABASE_URL}/functions/v1/google-route-distance`;
+const ctl=new AbortController();
+const timer=setTimeout(()=>ctl.abort(),9000);
 try{
-const r=await fetch(url,{signal:ctl.signal});
-if(!r.ok) throw new Error("routing");
-const j=await r.json();
-const metros=Number(j?.routes?.[0]?.distance);
-if(!Number.isFinite(metros)) throw new Error("routing");
-return Math.round((metros/1000)*100)/100;
-}finally{clearTimeout(timer);}
+const r=await fetch(url,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"apikey":SUPABASE_PUBLISHABLE_KEY
+},
+body:JSON.stringify({lat:Number(lat),lng:Number(lng)}),
+signal:ctl.signal
+});
+const j=await r.json().catch(()=>({}));
+if(!r.ok) throw new Error(j?.error||`Google Routes HTTP ${r.status}`);
+if(j?.source!=="google_routes" || !Number.isFinite(Number(j.distanceKm))) throw new Error("Respuesta de Google Routes inválida");
+return {
+km:Number(j.distanceKm),
+costo:j.shippingCost===null?null:Number(j.shippingCost),
+permitido:!!j.allowed,
+duracion:j.duration||null,
+source:"google"
+};
+}finally{
+clearTimeout(timer);
+}
 }
 function costoExpressPorKm(km){
 if(km<=2)return 1000;if(km<=4)return 1500;if(km<=6)return 2000;if(km<=8)return 2500;return null;
 }
 async function cotizarEnvio(lat,lng){
 await asegurarSupabase();
+
+/* Respaldo geográfico del servidor para no dejar sin pedidos si Google falla. */
 const {data,error}=await supabaseClient.rpc("calcular_envio_pura_smash",{p_lat:Number(lat),p_lng:Number(lng)});
 if(error) throw error;
 const base=Array.isArray(data)?data[0]:data;
-if(!base){cotizacionEnvio=null;renderCotizacionEnvio();return null;}
+if(!base){
+cotizacionEnvio=null;
+renderCotizacionEnvio();
+return null;
+}
 const linea=Number(base.distancia_km);
-let ruta=null;
-try{ruta=await distanciaRutaReal(lat,lng);}catch(e){console.warn("No se pudo calcular ruta vial; se usa distancia geográfica.",e);}
-const km=Number.isFinite(ruta)?ruta:linea;
+
+try{
+const google=await distanciaRutaReal(lat,lng);
+cotizacionEnvio={
+distanciaKm:google.km,
+distanciaRutaKm:google.km,
+distanciaLineaKm:linea,
+costo:google.costo,
+permitido:google.permitido,
+metodo:"google",
+duracion:google.duracion
+};
+}catch(e){
+console.warn("Google Routes no disponible; se usa respaldo geográfico.",e);
+const km=linea;
 const costo=costoExpressPorKm(km);
-cotizacionEnvio={distanciaKm:km,distanciaRutaKm:Number.isFinite(ruta)?ruta:null,distanciaLineaKm:linea,costo,permitido:km<=8,metodo:Number.isFinite(ruta)?"ruta":"aproximada"};
+cotizacionEnvio={
+distanciaKm:km,
+distanciaRutaKm:null,
+distanciaLineaKm:linea,
+costo,
+permitido:km<=8,
+metodo:"aproximada",
+duracion:null
+};
+}
 renderCotizacionEnvio();
 return cotizacionEnvio;
 }
@@ -1410,12 +1453,18 @@ const box=document.getElementById("delivery-quote"); if(!box)return;
 if(!cotizacionEnvio){box.className="delivery-quote";box.innerHTML="";return;}
 if(!cotizacionEnvio.permitido){
 box.className="delivery-quote show error";
-box.innerHTML=`<strong>🚫 Fuera de nuestra zona Express</strong><div>Este punto está a ${cotizacionEnvio.distanciaKm.toFixed(1)} km. Actualmente entregamos hasta 8 km desde Pura Smash.</div>`;
+box.innerHTML=`<strong>🚫 Fuera de nuestra zona Express</strong><div>Este punto está a ${cotizacionEnvio.distanciaKm.toFixed(1)} km. Actualmente entregamos hasta 8 km de recorrido vehicular desde Pura Smash.</div>`;
 return;
 }
 const subtotal=totalCarrito(), total=subtotal+cotizacionEnvio.costo;
 box.className="delivery-quote show";
-box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia ${cotizacionEnvio.metodo==="ruta"?"por carretera":"aproximada"}</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div><div class="dq-row"><span>Costo de envío</span><b>${money(cotizacionEnvio.costo)}</b></div><div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div>`;
+const fuente=cotizacionEnvio.metodo==="google"?"Google Maps · ruta vehicular":"Estimación geográfica de respaldo";
+let duracionTxt="";
+if(cotizacionEnvio.duracion){
+const seg=Number(String(cotizacionEnvio.duracion).replace("s",""));
+if(Number.isFinite(seg)) duracionTxt=`<div class="dq-row"><span>Tiempo estimado en ruta</span><b>${Math.max(1,Math.round(seg/60))} min</b></div>`;
+}
+box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia por carretera</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div>${duracionTxt}<div class="dq-row"><span>Costo de envío</span><b>${money(cotizacionEnvio.costo)}</b></div><div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div><div style="font-size:10px;opacity:.62;margin-top:8px">📍 ${fuente}</div>`;
 }
 async function mostrarFidelidad(){
 try{
@@ -1612,7 +1661,7 @@ lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} �
 lineas.push(
 "",
 `🍔 Subtotal: ${money(pedido.subtotalProductos)}`,
-`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km): ${money(pedido.envioCosto)}`,
+`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${money(pedido.envioCosto)}`,
 `💰 *Total: ${money(pedido.total)}*`,
 "💳 Pago: SINPE Móvil al 8981-0775 o efectivo contra entrega.",
 `📞 WhatsApp: +${telefono}`,
@@ -2808,7 +2857,7 @@ p.estado="preparando";
 const confirmacion=`🔥🍔 *¡Pedido aceptado, ${p.clienteNombre}!*
 
 Tu pedido *${p.codigo}* ya entró a la plancha en Pura Smash.
-${p.distanciaKm!==null&&p.distanciaKm!==undefined?`🛵 Distancia aproximada: ${Number(p.distanciaKm).toFixed(1)} km
+${p.distanciaKm!==null&&p.distanciaKm!==undefined?`🛵 Distancia de reparto: ${Number(p.distanciaKm).toFixed(1)} km
 🚚 Envío Express: ${money(p.envioCosto||0)}
 `:""}🍔 Subtotal: ${money(p.subtotalProductos||Math.max(0,p.total-(p.envioCosto||0)))}
 💰 *Total a pagar: ${money(p.total)}*
