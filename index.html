@@ -191,7 +191,7 @@
             Elegir foto
             <input type="file" id="config-portada-file" accept="image/*" capture="environment" onchange="previsualizarPortadaConfig(this)"></label><button class="a-btn save" id="btn-subir-portada" onclick="subirPortadaConfig()" disabled>Guardar portada</button><button class="a-btn delete" onclick="eliminarPortadaConfig()">Eliminar</button></div><div class="config-status" id="config-portada-status"></div></div><div class="admin-card config-card"><div class="admin-card-name">Logo</div><p class="config-help">Podés reemplazar el logo que aparece en la portada sin editar el HTML.</p><div class="config-logo-preview" id="config-logo-preview"><span>Logo actual</span></div><div class="config-upload-row"><label class="a-btn ghost config-file-btn">
             Elegir logo
-            <input type="file" id="config-logo-file" accept="image/*" onchange="previsualizarLogoConfig(this)"></label><button class="a-btn save" id="btn-subir-logo" onclick="subirLogoConfig()" disabled>Guardar logo</button><button class="a-btn delete" onclick="eliminarLogoConfig()">Restaurar</button></div><div class="config-status" id="config-logo-status"></div></div><div class="admin-card config-card"><div class="admin-card-name">Datos del negocio</div><div class="a-field"><label for="config-whatsapp">WhatsApp del negocio</label><input type="tel" id="config-whatsapp" inputmode="tel" placeholder="89810775"></div><div class="a-field"><label for="config-horario">Horario visible</label><input type="text" id="config-horario" placeholder="Ej: Mar–Dom · 5:00 p.m. – 10:00 p.m."></div><div class="a-toggle-row"><div><span>Estado del negocio</span><small class="config-help-inline">Se mostrará como Abierto o Cerrado en la portada.</small></div><button class="switch on" id="config-abierto-switch" onclick="this.classList.toggle('on')" aria-label="Cambiar estado abierto/cerrado"></button></div><div class="a-actions"><button class="a-btn save" onclick="guardarConfiguracionNegocio()">Guardar configuración</button></div></div></div></div></div><div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div><div class="ps-confirm-overlay hidden" id="ps-confirm-overlay" aria-hidden="true"><div class="ps-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ps-confirm-title" aria-describedby="ps-confirm-message"><div class="ps-confirm-icon" id="ps-confirm-icon">✓</div><div class="ps-confirm-content"><h3 id="ps-confirm-title">Confirmar acción</h3><p id="ps-confirm-message">¿Querés continuar?</p></div><div class="ps-confirm-actions"><button type="button" class="ps-confirm-btn cancel" id="ps-confirm-cancel">Cancelar</button><button type="button" class="ps-confirm-btn accept" id="ps-confirm-accept">Confirmar</button></div></div></div><script defer>
+            <input type="file" id="config-logo-file" accept="image/*" onchange="previsualizarLogoConfig(this)"></label><button class="a-btn save" id="btn-subir-logo" onclick="subirLogoConfig()" disabled>Guardar logo</button><button class="a-btn delete" onclick="eliminarLogoConfig()">Restaurar</button></div><div class="config-status" id="config-logo-status"></div></div><div class="admin-card config-card"><div class="admin-card-name">📍 Punto exacto de Pura Smash</div><p class="config-help">Este punto es el origen de Google Routes. Marcá exactamente la cocina/local. Si el destino es este mismo punto, la distancia debe quedar prácticamente en 0 km.</p><div class="a-row"><div class="a-field"><label>Latitud</label><input id="config-local-lat" type="number" step="0.000001" placeholder="9.xxxxxx"></div><div class="a-field"><label>Longitud</label><input id="config-local-lng" type="number" step="0.000001" placeholder="-84.xxxxxx"></div></div><div class="a-actions"><button class="a-btn ghost" onclick="usarMiUbicacionComoLocal()">📍 Usar mi ubicación actual</button><button class="a-btn save" onclick="guardarUbicacionLocal()">Guardar punto exacto</button></div><div class="config-status" id="config-local-status">Abrí el panel estando físicamente en Pura Smash y usá “Mi ubicación actual” para máxima precisión.</div></div><div class="admin-card config-card"><div class="admin-card-name">Datos del negocio</div><div class="a-field"><label for="config-whatsapp">WhatsApp del negocio</label><input type="tel" id="config-whatsapp" inputmode="tel" placeholder="89810775"></div><div class="a-field"><label for="config-horario">Horario visible</label><input type="text" id="config-horario" placeholder="Ej: Mar–Dom · 5:00 p.m. – 10:00 p.m."></div><div class="a-toggle-row"><div><span>Estado del negocio</span><small class="config-help-inline">Se mostrará como Abierto o Cerrado en la portada.</small></div><button class="switch on" id="config-abierto-switch" onclick="this.classList.toggle('on')" aria-label="Cambiar estado abierto/cerrado"></button></div><div class="a-actions"><button class="a-btn save" onclick="guardarConfiguracionNegocio()">Guardar configuración</button></div></div></div></div></div><div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div><div class="ps-confirm-overlay hidden" id="ps-confirm-overlay" aria-hidden="true"><div class="ps-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ps-confirm-title" aria-describedby="ps-confirm-message"><div class="ps-confirm-icon" id="ps-confirm-icon">✓</div><div class="ps-confirm-content"><h3 id="ps-confirm-title">Confirmar acción</h3><p id="ps-confirm-message">¿Querés continuar?</p></div><div class="ps-confirm-actions"><button type="button" class="ps-confirm-btn cancel" id="ps-confirm-cancel">Cancelar</button><button type="button" class="ps-confirm-btn accept" id="ps-confirm-accept">Confirmar</button></div></div></div><script defer>
 function productoVisibleEnMenu(p){ return p && p.disponible !== false; }
 const PURA_SMASH_BUILD="2026.08.23-final-v12";
 function alertaError(mensaje){
@@ -270,7 +270,9 @@ portadaUrl:"",
 logoUrl:"",
 whatsapp:"50689810775",
 horario:"Horario por confirmar",
-abierto:true
+abierto:true,
+localLat:9.969,
+localLng:-84.662
 };
 let CONFIG_SITIO = {...CONFIG_DEFAULT};
 let archivoPortadaPendiente = null;
@@ -1367,7 +1369,7 @@ estado.className="location-status error";
 );
 }
 
-const PURA_SMASH_LOCAL={lat:9.969,lng:-84.662};
+const PURA_SMASH_LOCAL={lat:Number(CONFIG_SITIO.localLat||9.969),lng:Number(CONFIG_SITIO.localLng||-84.662)};
 let cotizacionEnvio=null;
 function loyaltyToken(){
 let t=localStorage.getItem("puraSmashLoyaltyToken");
@@ -3675,6 +3677,7 @@ abierto:data.abierto !== false
 }else{
 CONFIG_SITIO = {...CONFIG_DEFAULT};
 }
+PURA_SMASH_LOCAL.lat=Number(CONFIG_SITIO.localLat||CONFIG_DEFAULT.localLat);PURA_SMASH_LOCAL.lng=Number(CONFIG_SITIO.localLng||CONFIG_DEFAULT.localLng);
 aplicarConfiguracionSitio();
 return CONFIG_SITIO;
 }catch(error){
@@ -3735,6 +3738,9 @@ const sw=document.getElementById("config-abierto-switch");
 if(w) w.value=String(CONFIG_SITIO.whatsapp || "").replace(/^506(?=\d{8}$)/,"");
 if(h) h.value=CONFIG_SITIO.horario || "";
 if(sw) sw.classList.toggle("on",CONFIG_SITIO.abierto !== false);
+const localLat=document.getElementById("config-local-lat"),localLng=document.getElementById("config-local-lng");
+if(localLat)localLat.value=Number(CONFIG_SITIO.localLat||CONFIG_DEFAULT.localLat).toFixed(6);
+if(localLng)localLng.value=Number(CONFIG_SITIO.localLng||CONFIG_DEFAULT.localLng).toFixed(6);
 const cover=document.getElementById("config-cover-preview");
 if(cover){
 cover.innerHTML=CONFIG_SITIO.portadaUrl
@@ -3758,6 +3764,8 @@ if("logoUrl" in cambios) payload.logo_url=cambios.logoUrl || null;
 if("whatsapp" in cambios) payload.whatsapp=cambios.whatsapp;
 if("horario" in cambios) payload.horario=cambios.horario;
 if("abierto" in cambios) payload.abierto=!!cambios.abierto;
+if("localLat" in cambios) payload.local_lat=Number(cambios.localLat);
+if("localLng" in cambios) payload.local_lng=Number(cambios.localLng);
 const { data, error }=await supabaseClient
 .from("configuracion")
 .upsert(payload,{onConflict:"id"})
@@ -3765,6 +3773,29 @@ const { data, error }=await supabaseClient
 .single();
 if(error) throw error;
 return data;
+}
+
+function usarMiUbicacionComoLocal(){
+const status=document.getElementById("config-local-status");
+if(!navigator.geolocation){status.textContent="Este dispositivo no permite obtener ubicación.";return;}
+status.textContent="Obteniendo ubicación GPS…";
+navigator.geolocation.getCurrentPosition(pos=>{
+document.getElementById("config-local-lat").value=Number(pos.coords.latitude).toFixed(6);
+document.getElementById("config-local-lng").value=Number(pos.coords.longitude).toFixed(6);
+status.textContent=`Ubicación capturada con precisión aproximada de ${Math.round(pos.coords.accuracy||0)} m. Ahora presioná “Guardar punto exacto”.`;
+},err=>{status.textContent="No se pudo obtener la ubicación. Permití el acceso GPS e intentá nuevamente.";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+async function guardarUbicacionLocal(){
+const lat=Number(document.getElementById("config-local-lat")?.value),lng=Number(document.getElementById("config-local-lng")?.value);
+if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat<-90||lat>90||lng<-180||lng>180){mostrarConfirmacion("Coordenadas inválidas.","error");return;}
+if(!await confirmarAccion({titulo:"Guardar punto exacto",mensaje:`Google Routes calculará todos los Express desde ${lat.toFixed(6)}, ${lng.toFixed(6)}.`,confirmar:"Guardar ubicación",icono:"📍"}))return;
+try{
+await guardarConfigDB({localLat:lat,localLng:lng});
+CONFIG_SITIO.localLat=lat;CONFIG_SITIO.localLng=lng;
+PURA_SMASH_LOCAL.lat=lat;PURA_SMASH_LOCAL.lng=lng;
+document.getElementById("config-local-status").textContent="✓ Punto exacto guardado. Google Routes ya usará esta ubicación.";
+mostrarConfirmacion("✓ Punto de Pura Smash actualizado");
+}catch(e){mostrarConfirmacion("No se pudo guardar la ubicación: "+(e.message||e),"error");}
 }
 async function guardarConfiguracionNegocio(){
 const whatsappRaw=String(document.getElementById("config-whatsapp")?.value || "").replace(/\D/g,"");
