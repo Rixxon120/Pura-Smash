@@ -3220,9 +3220,18 @@ mostrarConfirmacion("No se pudo completar la entrega: "+msg,"error");
 }
 }
 async function anularPedidoEntregado(id){
-const p=PEDIDOS.find(x=>String(x.id)===String(id));
-if(!p)return;
-if(p.estado!=="entregado"){mostrarConfirmacion("Solo se pueden anular ventas ya entregadas.","error");return;}
+let p=PEDIDOS.find(x=>String(x.id)===String(id));
+/* Refrescar desde Supabase antes de decidir: Contabilidad puede tener un estado local desactualizado. */
+if(!p || p.estado!=="entregado"){
+try{
+await cargarPedidosAdmin();
+p=PEDIDOS.find(x=>String(x.id)===String(id));
+}catch(error){
+console.warn("No se pudo refrescar el pedido antes de anular:",error);
+}
+}
+if(!p){mostrarConfirmacion("No se encontró el pedido relacionado.","error");return;}
+if(p.estado!=="entregado"){mostrarConfirmacion(`Este pedido está en estado ${p.estado||"desconocido"}. Solo se puede anular una venta entregada.`,"error");return;}
 const ok=await confirmarAccion({
 titulo:"Anular venta entregada",
 mensaje:`Se anulará ${p.codigo}. Esto eliminará la venta de Contabilidad, devolverá al Inventario los insumos descontados y revertirá la mordida de Fidelidad de este pedido. Esta acción es para pedidos de prueba, errores o devoluciones reales.`,
@@ -5580,16 +5589,8 @@ const esVentaPedido=String(id).startsWith("pedido-");
 const pedidoId=esVentaPedido?String(id).slice("pedido-".length):null;
 
 if(esVentaPedido){
-const pedido=PEDIDOS.find(p=>String(p.id)===String(pedidoId));
-if(!pedido){
-mostrarConfirmacion("No se encontró el pedido relacionado. Actualizá Pedidos e intentá nuevamente.","error");
-return;
-}
-if(pedido.estado==="entregado"){
+/* La anulación vinculada se resuelve completa desde Contabilidad usando el mismo RPC seguro. */
 await anularPedidoEntregado(pedidoId);
-return;
-}
-mostrarConfirmacion("Esta venta está vinculada a un pedido. Gestioná su cancelación desde la pestaña Pedidos para mantener inventario, fidelidad y contabilidad sincronizados.","error");
 return;
 }
 
