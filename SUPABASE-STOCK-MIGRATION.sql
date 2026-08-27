@@ -1,0 +1,5 @@
+-- Pura Smash v38
+-- La migración de stock inteligente ya fue aplicada directamente al proyecto Supabase.
+-- No es necesario ejecutar este archivo.
+-- Funciones activas: stock_requerimientos_items, menu_disponibilidad_stock, crear_pedido_publico_stock
+-- Trigger activo: zz_validar_stock_pedido_publico_trigger
