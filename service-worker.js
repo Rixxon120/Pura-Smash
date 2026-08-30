@@ -1,4 +1,4 @@
-const CACHE_NAME="pura-smash-shell-v45";
+const CACHE_NAME="pura-smash-shell-v46";
 const APP_SHELL=["/","/index.html","/manifest.webmanifest","/assets/styles.eb314dab60.min.css","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/assets/icons/icon-maskable-192.png","/assets/icons/icon-maskable-512.png","/assets/icons/apple-touch-icon.png"];
 
 self.addEventListener("install",event=>{

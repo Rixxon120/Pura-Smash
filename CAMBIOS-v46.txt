@@ -1,0 +1,6 @@
+Pura Smash v46 — Uso interno / Pruebas
+- Descuento automático por receta o insumo
+- Marketing, pruebas, consumo interno y merma
+- Reversión de stock al eliminar
+- KPI mensual informativo
+- Excel: Uso interno + Detalle uso interno
