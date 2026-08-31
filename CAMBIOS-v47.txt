@@ -1,0 +1,12 @@
+Pura Smash v47 — Modo Pantalla
+
+- Botón 📺 Modo pantalla al lado de Panel del negocio.
+- Nueva página /pantalla.html para TV, monitor o pantalla horizontal.
+- Slides automáticos de hamburguesas y combo con foto, nombre, descripción y precio.
+- Slide resumen con las principales hamburguesas.
+- Datos dinámicos desde Supabase: cambios de precio/foto se reflejan automáticamente.
+- Oculta productos manualmente no disponibles y respeta disponibilidad de stock cuando el RPC responde.
+- Actualización automática cada 30 segundos.
+- Pantalla completa, pausa, anterior y siguiente.
+- Controles se ocultan automáticamente para uso en TV.
+- Service Worker v47 actualizado para cachear pantalla.html correctamente.

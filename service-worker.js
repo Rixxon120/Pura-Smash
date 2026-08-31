@@ -1,5 +1,5 @@
-const CACHE_NAME="pura-smash-shell-v46";
-const APP_SHELL=["/","/index.html","/manifest.webmanifest","/assets/styles.eb314dab60.min.css","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/assets/icons/icon-maskable-192.png","/assets/icons/icon-maskable-512.png","/assets/icons/apple-touch-icon.png"];
+const CACHE_NAME="pura-smash-shell-v47";
+const APP_SHELL=["/","/index.html","/pantalla.html","/manifest.webmanifest","/assets/styles.eb314dab60.min.css","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/assets/icons/icon-maskable-192.png","/assets/icons/icon-maskable-512.png","/assets/icons/apple-touch-icon.png"];
 
 self.addEventListener("install",event=>{
   event.waitUntil(
@@ -25,14 +25,15 @@ self.addEventListener("fetch",event=>{
   if(req.method!=="GET") return;
 
   if(req.mode==="navigate"){
+    const fallbackPath=url.pathname==="/pantalla.html"?"/pantalla.html":"/index.html";
     event.respondWith(
       fetch(req)
         .then(res=>{
           const copy=res.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put("/index.html",copy));
+          caches.open(CACHE_NAME).then(cache=>cache.put(fallbackPath,copy));
           return res;
         })
-        .catch(()=>caches.match("/index.html"))
+        .catch(()=>caches.match(fallbackPath))
     );
     return;
   }
