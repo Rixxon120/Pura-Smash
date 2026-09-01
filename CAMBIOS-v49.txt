@@ -1,0 +1,7 @@
+Pura Smash v49
+
+- Nueva categoría Bebidas separada de Papas.
+- La categoría Bebidas solo aparece si hay al menos una bebida visible/activa.
+- El producto genérico Refresco queda oculto como legacy.
+- Preparado para bebidas individuales conectadas a inventario y recetas.
+- Base: v48 (derivada de v47 Modo Pantalla).

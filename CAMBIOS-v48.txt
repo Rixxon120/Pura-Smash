@@ -1,0 +1,9 @@
+PURA SMASH v48 — AGOTADO SIMPLE
+
+Base: v47 MODO PANTALLA.
+
+Cambio:
+- En el menú del cliente, cuando un producto no tiene stock, se muestra únicamente “Agotado temporalmente”.
+- Se eliminó el texto adicional “Sin stock suficiente para prepararlo”.
+- Se mantiene sin cambios el modo pantalla y todas las funciones de la v47.
+- Caché PWA actualizado a v48.

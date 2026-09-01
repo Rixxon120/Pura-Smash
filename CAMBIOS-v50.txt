@@ -1,0 +1,6 @@
+PURA SMASH v50
+- Precios de bebidas calculados por costo objetivo 33,3%.
+- Categoría Bebidas individual.
+- Combo Smash Doble permite escoger exactamente una bebida disponible.
+- Recargo del combo varía según costo de la bebida.
+- Validación cliente, pedido local y Supabase.

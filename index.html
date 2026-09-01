@@ -358,7 +358,8 @@ let archivoLogoPendiente = null;
 const CATEGORIAS = [
 { id: "burgers", nombre: "Smash Burgers" },
 { id: "combos", nombre: "Combos" },
-{ id: "papas-bebidas", nombre: "Papas y Bebidas" }
+{ id: "papas-bebidas", nombre: "Papas" },
+{ id: "bebidas", nombre: "Bebidas" }
 ];
 const PRODUCTOS_BASE = [
 {
@@ -429,12 +430,12 @@ etiqueta: ""
 },
 {
 id: "refresco",
-categoria: "papas-bebidas",
-nombre: "Refresco en Lata (354 ml)",
-descripcion: "Refresco en lata bien fría. Preguntá los sabores disponibles.",
+categoria: "bebidas",
+nombre: "Refresco genérico (legacy)",
+descripcion: "Producto genérico anterior.",
 precio: 1200,
 costo: 400,
-disponible: true,
+disponible: false,
 admiteExtras: false,
 etiqueta: ""
 }
@@ -1035,6 +1036,20 @@ e.disponible !== false &&
 String(e.nombre || "").trim().length > 0
 );
 }
+function esExtraBebidaCombo(extra){
+return String(extra?.id||"").startsWith("combo-bebida-");
+}
+function extrasParaProducto(producto){
+const todos=extrasDisponibles();
+if(String(producto?.id)==="combo-smash-doble") return todos;
+return todos.filter(e=>!esExtraBebidaCombo(e));
+}
+function bebidasComboDisponibles(){
+return extrasDisponibles().filter(esExtraBebidaCombo).filter(extraDisponibleStock);
+}
+function bebidaComboSeleccionada(productoId){
+return (seleccionExtras[productoId]||[]).map(extraPorId).find(esExtraBebidaCombo)||null;
+}
 async function recargarExtrasDesdeSupabase(){
 await asegurarSupabase();
 const { data, error } = await supabaseClient
@@ -1080,11 +1095,15 @@ const extra=EXTRAS.find(e=>String(e.id)===String(extraId));
 if(extra && !extraDisponibleStock(extra)){ mostrarConfirmacion('Este extra está agotado temporalmente.','error'); return; }
 if(!seleccionExtras[productoId]) seleccionExtras[productoId] = [];
 if(marcado){
+if(esExtraBebidaCombo(extra)){
+seleccionExtras[productoId]=seleccionExtras[productoId].filter(id=>!esExtraBebidaCombo(extraPorId(id)));
+}
 if(!seleccionExtras[productoId].includes(extraId)) seleccionExtras[productoId].push(extraId);
 }else{
 seleccionExtras[productoId] = seleccionExtras[productoId].filter(id => id !== extraId);
 }
-actualizarControlCantidad(productoId);
+if(String(productoId)==="combo-smash-doble") renderMenu();
+else actualizarControlCantidad(productoId);
 }
 /* ============================================================
 6. RENDER DEL MENÚ (vista cliente)
@@ -1117,7 +1136,8 @@ async function cargarDisponibilidadMenuStock(){
 }
 function renderNav(){
 const nav = document.getElementById("cat-nav");
-nav.innerHTML = CATEGORIAS.map((c,i) =>
+const catsVisibles=CATEGORIAS.filter(c=>PRODUCTOS.some(p=>productoVisibleEnMenu(p)&&p.categoria===c.id));
+nav.innerHTML = catsVisibles.map((c,i) =>
 `<button class="cat-btn${i===0 ? " active" : ""}" data-cat="${c.id}" onclick="irACategoria('${c.id}')">${c.nombre}</button>`
 ).join("");
 }
@@ -1155,6 +1175,7 @@ console.warn("No se pudo actualizar el SEO dinámico del menú:",error);
 }
 }
 function renderMenu(){
+renderNav();
 const root = document.getElementById("menu-root");
 root.innerHTML = CATEGORIAS.map(cat => {
 const items = PRODUCTOS.filter(p => productoVisibleEnMenu(p) && p.categoria === cat.id);
@@ -1197,7 +1218,9 @@ const precioBase=Number(p.precio)||0;
 const vigente=precioVigente(p);
 const precioActual=Number(vigente.precio)||precioBase;
 const tienePromo=!!promo && precioActual < precioBase;
-const extrasDisp=p.admiteExtras ? extrasDisponibles() : [];
+const extrasDisp=p.admiteExtras ? extrasParaProducto(p) : [];
+const bebidasCombo=String(p.id)==="combo-smash-doble" ? extrasDisp.filter(esExtraBebidaCombo) : [];
+const extrasNormales=extrasDisp.filter(e=>!esExtraBebidaCombo(e));
 const stockProd=stockProducto(p.id);
 const agotadoStock=!productoDisponibleStock(p);
 const seleccion=seleccionExtras[p.id] || [];
@@ -1226,10 +1249,25 @@ ${tienePromo ? `
 <span class="promo-saving">Ahorrás ${money(precioBase-precioActual)}</span>
 </div>
 ` : ""}
-${extrasDisp.length ? `
+${bebidasCombo.length ? `
+<div class="extras-box combo-drink-box">
+<div class="extras-label">🥤 Elegí tu bebida</div>
+<div class="stock-note" style="margin-bottom:8px">Incluí exactamente una bebida con tu combo.</div>
+${bebidasCombo.map(e=>{
+const nombreExtra=String(e.nombre||"").trim()||"Bebida";
+return `
+<label class="extra-chip ${extraDisponibleStock(e)?"":"stock-out"}" data-extra-id="${escAttr(e.id)}">
+<input type="radio" name="combo-bebida-${escAttr(p.id)}" ${seleccion.includes(e.id)?"checked":""} ${extraDisponibleStock(e)?"":"disabled"} onchange="toggleExtraSeleccion('${p.id}','${e.id}', this.checked)">
+<span class="extra-name">${escHtml(nombreExtra)}</span>
+<span class="extra-price">${Number(e.precio)>0?`+${money(e.precio)}`:"Incluida"}</span>
+</label>`;
+}).join("")}
+</div>
+` : String(p.id)==="combo-smash-doble" ? `<div class="extras-box"><div class="extras-label">🥤 Bebida</div><div class="sold-out-label">No hay bebidas disponibles</div></div>` : ""}
+${extrasNormales.length ? `
 <div class="extras-box">
 <div class="extras-label">Extras</div>
-${extrasDisp.map(e => {
+${extrasNormales.map(e => {
 const nombreExtra=String(e.nombre||"").trim()||"Extra";
 return `
 <label class="extra-chip ${extraDisponibleStock(e)?"":"stock-out"}" data-extra-id="${escAttr(e.id)}">
@@ -1245,7 +1283,7 @@ ${renderPrecioFooter(p)}
 ${!STOCK_MENU_LISTO
 ? `<button class="add-btn" type="button" disabled>Verificando stock…</button>`
 : !productoDisponibleStock(p)
-? `<span class="sold-out-label">Agotado temporalmente</span>${stockProd?.maximo===0?`<div class="stock-note">Sin stock suficiente para prepararlo</div>`:""}`
+? `<span class="sold-out-label">Agotado temporalmente</span>`
 : renderControlCantidad(p.id)}
 </div>
 </div>
@@ -1266,6 +1304,7 @@ if(!STOCK_MENU_LISTO) return `<button class="add-btn" type="button" disabled>Ver
 if(!pedidosPublicosAbiertos()) return `<button class="add-btn" type="button" disabled aria-disabled="true">Cerrado</button>`;
 const p=PRODUCTOS.find(x=>String(x.id)===String(productoId));
 if(!p || !productoDisponibleStock(p)) return `<span class="sold-out-label">Agotado temporalmente</span>`;
+if(String(productoId)==="combo-smash-doble" && !bebidaComboSeleccionada(productoId)) return `<button class="add-btn" type="button" disabled>Elegí una bebida</button>`;
 const clave=claveLinea(productoId,seleccionExtras[productoId]);
 const cant=(carrito[clave]&&carrito[clave].cantidad)||0;
 const max=maxProductoStock(productoId);
@@ -1292,6 +1331,7 @@ if(!STOCK_MENU_LISTO){ mostrarConfirmacion("Estamos verificando el inventario. I
 if(bloquearPedidoSiCerrado()) return;
 const p=PRODUCTOS.find(p=>String(p.id)===String(productoId));
 if(!p || !productoDisponibleStock(p)){ mostrarConfirmacion('Este producto está agotado temporalmente.','error'); return; }
+if(String(productoId)==="combo-smash-doble" && !bebidaComboSeleccionada(productoId)){ mostrarConfirmacion('Elegí una bebida para tu Combo Smash Doble.','error'); return; }
 const max=maxProductoStock(productoId);
 if(max!==null && cantidadProductoEnCarrito(productoId)>=max){ mostrarConfirmacion('Ya alcanzaste la cantidad disponible de este producto.','error'); return; }
 registrarEventoAnalytics('add_to_cart',{producto_id:String(productoId)});
@@ -2319,7 +2359,7 @@ root.innerHTML='<div class="a-empty">Agregá al menos un producto.</div>';
 }else{
 root.innerHTML=lineasPedidoLocal.map((l,i)=>{
 const producto=PRODUCTOS.find(p=>String(p.id)===String(l.productoId));
-const extrasDisp=producto?.admiteExtras ? extrasDisponibles() : [];
+const extrasDisp=producto?.admiteExtras ? extrasParaProducto(producto) : [];
 const seleccion=(l.extrasIds||[]).map(String);
 return `
 <div class="local-order-item-card">
@@ -2334,10 +2374,10 @@ ${PRODUCTOS.filter(p=>p.disponible!==false).map(p=>`
 </div>
 ${extrasDisp.length ? `
 <div class="local-order-extras">
-<div class="local-order-extras-title">Extras</div>
+<div class="local-order-extras-title">${String(producto?.id)==="combo-smash-doble"?"Extras y bebida":"Extras"}</div>
 ${extrasDisp.map(e=>`
 <label class="local-extra-chip">
-<input type="checkbox"
+<input type="${esExtraBebidaCombo(e)?"radio":"checkbox"}" ${esExtraBebidaCombo(e)?`name="local-combo-bebida-${i}"`:""}
 ${seleccion.includes(String(e.id)) ? "checked" : ""}
 onchange="toggleExtraPedidoLocal(${i},'${escAttr(e.id)}',this.checked)">
 <span>${escHtml(e.nombre)}</span>
@@ -2366,6 +2406,8 @@ const linea=lineasPedidoLocal[i];
 if(!linea) return;
 linea.extrasIds=(linea.extrasIds||[]).map(String);
 if(checked){
+const ex=extraPorId(String(extraId));
+if(esExtraBebidaCombo(ex)) linea.extrasIds=linea.extrasIds.filter(id=>!esExtraBebidaCombo(extraPorId(id)));
 if(!linea.extrasIds.includes(String(extraId))) linea.extrasIds.push(String(extraId));
 }else{
 linea.extrasIds=linea.extrasIds.filter(id=>id!==String(extraId));
@@ -2406,6 +2448,13 @@ function totalPedidoLocal(){
 return itemsPedidoLocal().reduce((s,it)=>s+it.subtotal,0);
 }
 async function registrarPedidoLocal(){
+for(const linea of lineasPedidoLocal){
+ if(String(linea.productoId)==="combo-smash-doble" && !(linea.extrasIds||[]).some(id=>esExtraBebidaCombo(extraPorId(String(id))))){
+  mostrarConfirmacion("Elegí una bebida para cada Combo Smash Doble.","error");
+  return;
+ }
+}
+
 const items=itemsPedidoLocal();
 if(!items.length){
 mostrarConfirmacion("Agregá al menos un producto.","error");
