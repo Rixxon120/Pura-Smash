@@ -2381,7 +2381,7 @@ ${extrasDisp.map(e=>`
 ${seleccion.includes(String(e.id)) ? "checked" : ""}
 onchange="toggleExtraPedidoLocal(${i},'${escAttr(e.id)}',this.checked)">
 <span>${escHtml(e.nombre)}</span>
-<strong>+${money(e.precio)}</strong>
+<strong>${esExtraBebidaCombo(e)?"Incluida":`+${money(e.precio)}`}</strong>
 </label>
 `).join("")}
 </div>

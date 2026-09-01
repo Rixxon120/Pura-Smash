@@ -1,0 +1,5 @@
+Pura Smash v51
+- El Combo Smash Doble mantiene precio propio (₡6.900).
+- La bebida elegida dentro del combo está incluida, con recargo ₡0.
+- En menú y pedido local se muestra “Incluida” en lugar de +₡0.
+- El costo real de la bebida sí se registra para inventario y margen.
