@@ -271,7 +271,7 @@
             Elegir logo
             <input type="file" id="config-logo-file" accept="image/*" onchange="previsualizarLogoConfig(this)"></label><button class="a-btn save" id="btn-subir-logo" onclick="subirLogoConfig()" disabled>Guardar logo</button><button class="a-btn delete" onclick="eliminarLogoConfig()">Restaurar</button></div><div class="config-status" id="config-logo-status"></div></div><div class="admin-card config-card"><div class="admin-card-name">📍 Punto exacto de Pura Smash</div><p class="config-help">Este punto es el origen de Google Routes. Marcá exactamente la cocina/local. Si el destino es este mismo punto, la distancia debe quedar prácticamente en 0 km.</p><div class="a-row"><div class="a-field"><label>Latitud</label><input id="config-local-lat" type="number" step="0.000001" placeholder="9.xxxxxx"></div><div class="a-field"><label>Longitud</label><input id="config-local-lng" type="number" step="0.000001" placeholder="-84.xxxxxx"></div></div><div class="a-actions"><button class="a-btn ghost" onclick="usarMiUbicacionComoLocal()">📍 Usar mi ubicación actual</button><button class="a-btn save" onclick="guardarUbicacionLocal()">Guardar punto exacto</button></div><div class="config-status" id="config-local-status">Abrí el panel estando físicamente en Pura Smash y usá “Mi ubicación actual” para máxima precisión.</div></div><div class="admin-card config-card"><div class="admin-card-name">Datos del negocio</div><div class="a-field"><label for="config-whatsapp">WhatsApp del negocio</label><input type="tel" id="config-whatsapp" inputmode="tel" placeholder="89810775"></div><div class="a-field"><label for="config-horario">Horario visible</label><input type="text" id="config-horario" placeholder="Ej: Mar–Dom · 5:00 p.m. – 10:00 p.m."></div><div class="a-toggle-row"><div><span>Estado del negocio</span><small class="config-help-inline">Se mostrará como Abierto o Cerrado en la portada.</small></div><button class="switch on" id="config-abierto-switch" onclick="this.classList.toggle('on')" aria-label="Cambiar estado abierto/cerrado"></button></div><div class="a-actions"><button class="a-btn save" onclick="guardarConfiguracionNegocio()">Guardar configuración</button></div></div></div></div></div><div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div><div class="ps-confirm-overlay hidden" id="ps-confirm-overlay" aria-hidden="true"><div class="ps-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ps-confirm-title" aria-describedby="ps-confirm-message"><div class="ps-confirm-icon" id="ps-confirm-icon">✓</div><div class="ps-confirm-content"><h3 id="ps-confirm-title">Confirmar acción</h3><p id="ps-confirm-message">¿Querés continuar?</p></div><div class="ps-confirm-actions"><button type="button" class="ps-confirm-btn cancel" id="ps-confirm-cancel">Cancelar</button><button type="button" class="ps-confirm-btn accept" id="ps-confirm-accept">Confirmar</button></div></div></div><script defer>
 function productoVisibleEnMenu(p){ return p && p.disponible !== false; }
-const PURA_SMASH_BUILD="2026.08.24-v38-stock-produccion";
+const PURA_SMASH_BUILD="2026.09.01-v53-envio-compartido";
 function alertaError(mensaje){
 if(typeof mostrarConfirmacion==="function") mostrarConfirmacion(String(mensaje??"Ocurrió un error."),"error");
 else console.error(mensaje);
@@ -717,7 +717,7 @@ if(error && /permission|42501|not allowed/i.test(String(error.message||error.cod
 }
 if(error){ console.error('Supabase pedido RPC:',error); throw new Error([error.message,error.details,error.hint].filter(Boolean).join(' · ')); }
 const row=Array.isArray(data)?data[0]:data;
-return {id:row?.id||payload.id,codigo:row?.codigo||payload.codigo};
+return {id:row?.id||payload.id,codigo:row?.codigo||payload.codigo,envioCosto:Number(row?.envio_costo ?? payload.envioCosto)||0,envioCompartido:!!row?.envio_compartido,pedidoPrincipalId:row?.pedido_principal_id||null,pedidoPrincipalCodigo:row?.pedido_principal_codigo||null};
 }
 async function actualizarPedidoDB(id, cambios){
 await asegurarSupabase();
@@ -776,7 +776,10 @@ preparandoEn:p.preparando_en,
 listoEn:p.listo_en,
 entregadoEn:p.entregado_en,
 canceladoEn:p.cancelado_en,
-excluirMetricas:!!p.excluir_metricas
+excluirMetricas:!!p.excluir_metricas,
+envioCompartido:!!p.envio_compartido,
+pedidoPrincipalId:p.pedido_principal_id||null,
+pedidoPrincipalCodigo:p.pedido_principal_codigo||null
 }));
 registrarPedidosRecibidos(PEDIDOS);
 }
@@ -1653,6 +1656,18 @@ clearTimeout(timer);
 function costoExpressPorKm(km){
 if(km<0.05)return 0;if(km<=2)return 1000;if(km<=4)return 1500;if(km<=6)return 2000;if(km<=8)return 2500;return null;
 }
+async function verificarEnvioCompartidoPrevio(telefono,lat,lng){
+try{
+  await asegurarSupabase();
+  const {data,error}=await supabaseClient.rpc("buscar_pedido_envio_compartido",{p_telefono:String(telefono||""),p_lat:Number(lat),p_lng:Number(lng)});
+  if(error) throw error;
+  const row=Array.isArray(data)?data[0]:data;
+  return row?.pedido_principal_id ? {id:row.pedido_principal_id,codigo:row.pedido_principal_codigo||""} : null;
+}catch(error){
+  console.warn("No se pudo verificar envío compartido previamente:",error);
+  return null;
+}
+}
 async function cotizarEnvio(lat,lng){
 await asegurarSupabase();
 
@@ -1711,7 +1726,7 @@ if(cotizacionEnvio.duracion){
 const seg=Number(String(cotizacionEnvio.duracion).replace("s",""));
 if(Number.isFinite(seg)) duracionTxt=`<div class="dq-row"><span>Tiempo estimado en ruta</span><b>${Math.max(1,Math.round(seg/60))} min</b></div>`;
 }
-box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia por carretera</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div>${duracionTxt}<div class="dq-row"><span>Costo de envío</span><b>${Number(cotizacionEnvio.costo)===0?"GRATIS":money(cotizacionEnvio.costo)}</b></div><div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div><div style="font-size:10px;opacity:.62;margin-top:8px">📍 ${fuente}</div>`;
+box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia por carretera</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div>${duracionTxt}<div class="dq-row"><span>Costo de envío</span><b>${Number(cotizacionEnvio.costo)===0?"GRATIS":money(cotizacionEnvio.costo)}</b></div>${cotizacionEnvio.envioCompartido&&cotizacionEnvio.pedidoPrincipalCodigo?`<div style="font-size:11px;color:#9de7b0;margin-top:6px;font-weight:800;">➕ Se entrega junto con ${escHtml(cotizacionEnvio.pedidoPrincipalCodigo)} · sin segundo cobro de envío</div>`:""}<div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div><div style="font-size:10px;opacity:.62;margin-top:8px">📍 ${fuente}</div>`;
 }
 
 
@@ -1888,6 +1903,14 @@ return;
 let q;
 try{q=await cotizarEnvio(ubicacionCliente.lat,ubicacionCliente.lng);}catch(error){mostrarConfirmacion("No se pudo verificar la zona de entrega. Intentá nuevamente.","error");return;}
 if(!q || !q.permitido){mostrarConfirmacion(`El destino está a ${q?.distanciaKm?.toFixed(1)||"más de 8"} km. Pura Smash entrega hasta un máximo de 8 km.`,"error");return;}
+const envioCompartidoPrevio=await verificarEnvioCompartidoPrevio(telefono,ubicacionCliente.lat,ubicacionCliente.lng);
+if(envioCompartidoPrevio){
+  q.costo=0;
+  q.envioCompartido=true;
+  q.pedidoPrincipalCodigo=envioCompartidoPrevio.codigo;
+  cotizacionEnvio={...q};
+  renderCotizacionEnvio();
+}
 const items=construirItemsPedido();
 const codigo=codigoPedido();
 const pedido={
@@ -1908,38 +1931,22 @@ distanciaKm:q.distanciaKm,
 distanciaRutaKm:q.distanciaRutaKm,
 distanciaLineaKm:q.distanciaLineaKm,
 loyaltyToken:loyaltyToken(),
+envioCompartido:!!q.envioCompartido,
+pedidoPrincipalCodigo:q.pedidoPrincipalCodigo||null,
 total:totalCarrito()+q.costo
 };
 pedido.total=(Number(pedido.subtotalProductos)||0)+(Number(pedido.envioCosto)||0);
-const lineas=[
-"🍔 *NUEVO PEDIDO — PURA SMASH*",
-`Código: *${codigo}*`,
-"",
-`Hola, soy ${nombre}. Quiero pedir:`
-];
-items.forEach(it=>{
-const extrasTxt=(it.extras||[]).map(e=>e.nombre).join(", ");
-lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} — ${money(it.subtotal)}`);
-});
-lineas.push(
-"",
-`🍔 Subtotal: ${money(pedido.subtotalProductos)}`,
-`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${Number(pedido.envioCosto)===0?"GRATIS":money(pedido.envioCosto)}`,
-`💰 *Total: ${money(pedido.total)}*`,
-`📞 WhatsApp: +${telefono}`,
-`📍 Señas: ${direccion}`,
-`🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`,
-`🚗 Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`
-);
-if(nota) lineas.push(`📝 Nota: ${nota}`);
-lineas.push("","🔥 Pedido registrado. Quedo pendiente de la confirmación de Pura Smash.");
-const whatsappUrl=`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
 const boton=document.getElementById("btn-enviar-whatsapp");
 const textoAnterior=boton.textContent;
 boton.disabled=true;
 boton.textContent="Registrando pedido…";
 try{
-await guardarPedidoPublico(pedido);
+const guardado=await guardarPedidoPublico(pedido);
+pedido.envioCosto=Number(guardado.envioCosto)||0;
+pedido.envioCompartido=!!guardado.envioCompartido;
+pedido.pedidoPrincipalId=guardado.pedidoPrincipalId||null;
+pedido.pedidoPrincipalCodigo=guardado.pedidoPrincipalCodigo||null;
+pedido.total=(Number(pedido.subtotalProductos)||0)+(Number(pedido.envioCosto)||0);
 await cargarDisponibilidadMenuStock();
 renderMenu();
 }catch(error){
@@ -1966,6 +1973,30 @@ visible=`No se pudo registrar: ${msg}`;
 mostrarConfirmacion(visible,"error");
 return;
 }
+const lineas=[
+"🍔 *NUEVO PEDIDO — PURA SMASH*",
+`Código: *${codigo}*`,
+...(pedido.envioCompartido&&pedido.pedidoPrincipalCodigo?[`➕ *Pedido adicional al ${pedido.pedidoPrincipalCodigo}*`,`🛵 Se entrega junto con el pedido anterior · Envío GRATIS`]:[]),
+"",
+`Hola, soy ${nombre}. Quiero pedir:`
+];
+items.forEach(it=>{
+const extrasTxt=(it.extras||[]).map(e=>e.nombre).join(", ");
+lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} — ${money(it.subtotal)}`);
+});
+lineas.push(
+"",
+`🍔 Subtotal: ${money(pedido.subtotalProductos)}`,
+`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${Number(pedido.envioCosto)===0?"GRATIS":money(pedido.envioCosto)}`,
+`💰 *Total: ${money(pedido.total)}*`,
+`📞 WhatsApp: +${telefono}`,
+`📍 Señas: ${direccion}`,
+`🗺️ Google Maps: https://www.google.com/maps/search/?api=1&query=${pedido.lat},${pedido.lng}`,
+`🚗 Waze: https://waze.com/ul?ll=${pedido.lat}%2C${pedido.lng}&navigate=yes`
+);
+if(nota) lineas.push(`📝 Nota: ${nota}`);
+lineas.push("",pedido.envioCompartido?"🔥 Pedido adicional registrado para salir junto con el anterior.":"🔥 Pedido registrado. Quedo pendiente de la confirmación de Pura Smash.");
+const whatsappUrl=`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
 ultimoPedidoExito={pedido,whatsappUrl};
 try{
 sessionStorage.setItem("puraSmashPedidoExito",JSON.stringify({
@@ -1974,6 +2005,8 @@ clienteNombre:pedido.clienteNombre,
 subtotalProductos:pedido.subtotalProductos,
 envioCosto:pedido.envioCosto,
 distanciaKm:pedido.distanciaKm,
+envioCompartido:!!pedido.envioCompartido,
+pedidoPrincipalCodigo:pedido.pedidoPrincipalCodigo||null,
 total:pedido.total,
 whatsappUrl,
 fecha:Date.now()
@@ -2760,7 +2793,10 @@ preparandoEn:p.preparando_en,
 listoEn:p.listo_en,
 entregadoEn:p.entregado_en,
 canceladoEn:p.cancelado_en,
-excluirMetricas:!!p.excluir_metricas
+excluirMetricas:!!p.excluir_metricas,
+envioCompartido:!!p.envio_compartido,
+pedidoPrincipalId:p.pedido_principal_id||null,
+pedidoPrincipalCodigo:p.pedido_principal_codigo||null
 };
 }
 
@@ -3135,9 +3171,11 @@ return `<div class="admin-card order-card ${p.estado} ${urgencia}" data-order-ca
 <span class="order-status ${p.estado}">${estadoPedidoLabel(p.estado)}</span>
 ${etiquetaUrgencia ? `<span class="order-urgency-badge ${urgencia}" data-urgency-badge="${escAttr(p.id)}">${etiquetaUrgencia}</span>` : `<span class="order-urgency-badge normal hidden" data-urgency-badge="${escAttr(p.id)}"></span>`}
 ${p.excluirMetricas ? `<span class="order-status cancelado" title="No cuenta en métricas ni reportes">Excluido</span>` : ""}
+${p.envioCompartido ? `<span class="order-status listo" title="Se entrega junto con ${escAttr(p.pedidoPrincipalCodigo||'pedido anterior')}">➕ Adicional ${p.pedidoPrincipalCodigo?`· ${escHtml(p.pedidoPrincipalCodigo)}`:""}</span>` : ""}
 </div>
 </div>
 ${p.excluirMetricas ? `<div class="order-metric-note" style="color:#e7a873;">Este pedido está excluido de métricas y reportes.</div>` : ""}
+${p.envioCompartido ? `<div class="order-metric-note" style="color:#9de7b0;">🛵 Envío compartido GRATIS · entregar junto con <strong>${escHtml(p.pedidoPrincipalCodigo||"pedido anterior")}</strong></div>` : ""}
 <div class="order-time" data-pedido-timer="${escAttr(p.id)}">${formatoDuracion(msPreparacionPedido(p))}</div>
 <div class="order-time-label">${p.estado==="cancelado"?"Tiempo hasta cancelación":p.listoEn?"Tiempo total de preparación":"Tiempo desde que se pidió"}</div>
 ${listoReal ? `<div class="order-metric-note">Listo en ${listoReal}</div>` : ""}
@@ -3183,7 +3221,7 @@ Tu pedido *${p.codigo}* ya está en preparación en Pura Smash.
 ${detalleProductos||"• Tu pedido"}
 
 ${p.distanciaKm!==null&&p.distanciaKm!==undefined?`🛵 Distancia de reparto: ${Number(p.distanciaKm).toFixed(1)} km
-🚚 Envío Express: ${money(envioConfirmacion)}
+🚚 Envío Express: ${envioConfirmacion===0?"GRATIS":money(envioConfirmacion)}${p.envioCompartido&&p.pedidoPrincipalCodigo?` · junto con ${p.pedidoPrincipalCodigo}`:""}
 `:""}🍔 Subtotal: ${money(subtotalConfirmacion)}
 💰 *Total a pagar: ${money(totalConfirmacion)}*
 
