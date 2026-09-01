@@ -1,0 +1,5 @@
+Pura Smash v52
+- Envío gratis para distancias menores de 50 metros.
+- Google Routes aplica la regla usando metros reales.
+- Respaldo geográfico aplica 0,05 km.
+- Interfaz y WhatsApp muestran GRATIS cuando corresponde.

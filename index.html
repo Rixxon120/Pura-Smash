@@ -1651,7 +1651,7 @@ clearTimeout(timer);
 }
 }
 function costoExpressPorKm(km){
-if(km<=2)return 1000;if(km<=4)return 1500;if(km<=6)return 2000;if(km<=8)return 2500;return null;
+if(km<0.05)return 0;if(km<=2)return 1000;if(km<=4)return 1500;if(km<=6)return 2000;if(km<=8)return 2500;return null;
 }
 async function cotizarEnvio(lat,lng){
 await asegurarSupabase();
@@ -1711,7 +1711,7 @@ if(cotizacionEnvio.duracion){
 const seg=Number(String(cotizacionEnvio.duracion).replace("s",""));
 if(Number.isFinite(seg)) duracionTxt=`<div class="dq-row"><span>Tiempo estimado en ruta</span><b>${Math.max(1,Math.round(seg/60))} min</b></div>`;
 }
-box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia por carretera</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div>${duracionTxt}<div class="dq-row"><span>Costo de envío</span><b>${money(cotizacionEnvio.costo)}</b></div><div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div><div style="font-size:10px;opacity:.62;margin-top:8px">📍 ${fuente}</div>`;
+box.innerHTML=`<strong>🛵 Tu envío Express</strong><div class="dq-row"><span>Distancia por carretera</span><b>${cotizacionEnvio.distanciaKm.toFixed(1)} km</b></div>${duracionTxt}<div class="dq-row"><span>Costo de envío</span><b>${Number(cotizacionEnvio.costo)===0?"GRATIS":money(cotizacionEnvio.costo)}</b></div><div class="dq-row"><span>Total con envío</span><b>${money(total)}</b></div><div style="font-size:10px;opacity:.62;margin-top:8px">📍 ${fuente}</div>`;
 }
 
 
@@ -1924,7 +1924,7 @@ lineas.push(`• ${it.cantidad}x ${it.nombre}${extrasTxt?` + ${extrasTxt}`:""} �
 lineas.push(
 "",
 `🍔 Subtotal: ${money(pedido.subtotalProductos)}`,
-`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${money(pedido.envioCosto)}`,
+`🛵 Envío Express (${pedido.distanciaKm.toFixed(1)} km por carretera): ${Number(pedido.envioCosto)===0?"GRATIS":money(pedido.envioCosto)}`,
 `💰 *Total: ${money(pedido.total)}*`,
 `📞 WhatsApp: +${telefono}`,
 `📍 Señas: ${direccion}`,
@@ -2030,7 +2030,7 @@ cerrarHoja("sheet-carrito");
 const overlay=document.getElementById("pedido-exito");
 document.getElementById("pedido-exito-codigo").textContent=pedido.codigo;
 const detalleEnvio=pedido.envioCosto!==undefined
-? ` Incluye ${money(Number(pedido.envioCosto)||0)} de envío Express${pedido.distanciaKm?` (${Number(pedido.distanciaKm).toFixed(1)} km)`:``}.`
+? ` Incluye ${Number(pedido.envioCosto)===0?"envío Express GRATIS":money(Number(pedido.envioCosto)||0)+" de envío Express"}${pedido.distanciaKm?` (${Number(pedido.distanciaKm).toFixed(1)} km)`:``}.`
 : "";
 document.getElementById("pedido-exito-texto").textContent=`${pedido.clienteNombre}, recibimos tu pedido por ${money(pedido.total)}.${detalleEnvio} Tu pedido ya quedó registrado. Podés pagar por SINPE Móvil al 8981-0775 o en efectivo contra entrega.`;
 const btn=document.getElementById("pedido-exito-whatsapp");
