@@ -1,0 +1,14 @@
+PURA SMASH v54 — ACHIEVEMENTS
+
+Base: Pura-Smash-v53-PEDIDO-ADICIONAL-ENVIO-COMPARTIDO
+
+Cambios:
+- Nueva pestaña administrativa: 🏆 Logros.
+- Achievements calculados automáticamente con pedidos, ventas y gastos existentes.
+- Progreso de hamburguesas vendidas, ventas acumuladas, récord diario y clientes recurrentes.
+- Niveles: Fundador, En crecimiento, Plancha Pro, Smash Boss y Leyenda Smash.
+- Meta “Ya no estoy solo” basada en utilidad neta de los últimos 30 días.
+- El costo mensual estimado del primer ayudante puede editarse desde el panel.
+- Se exige un colchón del 25% para considerar segura la contratación.
+- Aviso visual “ACHIEVEMENT UNLOCKED” cuando se desbloquea un logro nuevo.
+- No requiere migración SQL adicional para esta versión.

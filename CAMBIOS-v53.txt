@@ -1,0 +1,9 @@
+PURA SMASH v53 — PEDIDO ADICIONAL / ENVÍO COMPARTIDO
+
+- Segundo pedido con el mismo WhatsApp dentro de 15 minutos.
+- Debe ser prácticamente la misma ubicación (menos de 50 m).
+- El pedido principal debe seguir Pendiente o Preparando.
+- El segundo pedido recibe envío GRATIS y queda enlazado al código original.
+- El panel marca claramente los pedidos adicionales.
+- Si el pedido original ya está Listo, Entregado o Cancelado, se cobra un envío nuevo.
+- Supabase valida la regla en servidor.
